@@ -7,7 +7,7 @@ const News = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://admin.sus-soil.eu/wp-json/wp/v2/posts?per_page=3');
+        const response = await fetch('https://admin.sus-soil.eu/wp-json/wp/v2/posts?per_page=3');
         const data = await response.json();
         setPosts(data);
       } catch (error) {
