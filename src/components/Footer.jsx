@@ -1,34 +1,41 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaFacebookF, FaTwitter, FaLinkedinIn } from 'react-icons/fa';  // Importa los íconos de Font Awesome
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white p-6">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">Universidad XYZ</h2>
-          <p className="text-sm">Dirección: Calle Ejemplo, Ciudad</p>
-          <p className="text-sm">Teléfono: (123) 456-7890</p>
+    <footer className="bg-white shadow-md">
+      <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between">
+        <div className="mb-6 md:mb-0">
+          <h2 className="text-gray-800 text-xl font-bold">SUS-SOIL</h2>
         </div>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold">Enlaces Rápidos</h3>
+        <div className="mb-6 md:mb-0">
+          <h3 className="text-gray-800 text-lg font-semibold">Quick Links</h3>
           <ul className="list-none">
-            <li><a href="/about" className="hover:underline">Acerca de</a></li>
-            <li><a href="/news" className="hover:underline">Noticias</a></li>
-            <li><a href="/contact" className="hover:underline">Contacto</a></li>
-            <li><a href="/resources" className="hover:underline">Recursos</a></li>
+            <li><Link to="/about" className="text-gray-600 hover:text-blue-500 transition duration-300">About Us</Link></li>
+            <li><Link to="/news" className="text-gray-600 hover:text-blue-500 transition duration-300">News</Link></li>
+            <li><Link to="/contact" className="text-gray-600 hover:text-blue-500 transition duration-300">Contact</Link></li>
+            <li><Link to="/resources" className="text-gray-600 hover:text-blue-500 transition duration-300">Resources</Link></li>
           </ul>
         </div>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold">Redes Sociales</h3>
+        <div className="mb-6 md:mb-0">
+          <h3 className="text-gray-800 text-lg font-semibold">Social Media</h3>
           <ul className="flex space-x-4">
-            <li><a href="https://facebook.com" className="hover:underline">Facebook</a></li>
-            <li><a href="https://twitter.com" className="hover:underline">Twitter</a></li>
-            <li><a href="https://linkedin.com" className="hover:underline">LinkedIn</a></li>
+            <li><a href="https://facebook.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaFacebookF /></a></li>
+            <li><a href="https://twitter.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaTwitter /></a></li>
+            <li><a href="https://linkedin.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaLinkedinIn /></a></li>
           </ul>
+        </div>
+        <div>
+          <h3 className="text-gray-800 text-lg font-semibold">Join Our Newsletter</h3>
+          <form className="flex flex-col space-y-3">
+            <input type="email" placeholder="Enter your email" className="px-4 py-2 border rounded-lg" />
+            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Subscribe</button>
+          </form>
         </div>
       </div>
-      <div className="text-center mt-4 border-t border-gray-700 pt-4">
-        <p className="text-sm">© {new Date().getFullYear()} Universidad XYZ. Todos los derechos reservados.</p>
+      <div className="text-center mt-4 border-t border-gray-300 pt-4">
+        <p className="text-gray-600 text-sm">© {new Date().getFullYear()} University XYZ. All rights reserved.</p>
       </div>
     </footer>
   );
