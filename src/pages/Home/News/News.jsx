@@ -24,12 +24,8 @@ const News = () => {
         {posts.map((post) => (
           <div key={post.id} className="bg-gray-100 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out">
             <h3 className="text-xl font-semibold mb-2">{post.title.rendered}</h3>
-            <div className="text-gray-600 text-sm"
-              dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-            />
-            <a href={post.link} className="inline-block mt-4 text-blue-600 hover:text-blue-800 transition-colors duration-300">
-              Read More
-            </a>
+            <div className="text-gray-600 text-sm" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
+            <a href={`/news/${post.id}`} className="text-blue-500 hover:underline mt-2 block">Read More</a>
           </div>
         ))}
       </div>

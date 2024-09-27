@@ -43,8 +43,8 @@ const NewsPage = () => {
                 <img src={post._embedded['wp:featuredmedia'][0].source_url} alt={post.title.rendered} className="w-full h-48 object-cover mb-2" />
               )}
               <div dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
-              <a href={post.link} className="text-blue-500 hover:underline mt-2 block">Read More</a>
-            </div>
+              // Modify the existing News component or wherever the news list is generated
+              <a href={`/news/${post.id}`} className="text-blue-500 hover:underline mt-2 block">Read More</a>            </div>
           ))}
         </div>
       </section>
