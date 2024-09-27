@@ -32,5 +32,4 @@ const News = () => {
     </section>
   );
 };
-
 export default News;
