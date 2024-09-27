@@ -6,6 +6,7 @@ import Map from './Mapa/Mapa';
 import Details from './Detalles/Detalles';
 import Contact from './Contacto/Contacto';
 import News from './News/News'; 
+import Colaboradores from './Colaboradores/Colaboradores';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -23,10 +24,11 @@ const Home = () => {
   return (
     <div>
       <Hero />
-      <Map />
       <Details />
+      <Map />
       <News posts={posts} /> {/* Añade la sección de noticias */}
       <Contact />
+      <Colaboradores />
       <Footer />
     </div>
   );
