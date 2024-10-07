@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contacto = () => {
   return (
-    <section className="bg-gray-100 p-8 rounded-md">
+    <section className=" p-8 rounded-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="flex-1 text-center md:text-left">
           <p className="text-lg text-gray-800">

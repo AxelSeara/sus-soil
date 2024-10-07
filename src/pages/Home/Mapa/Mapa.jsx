@@ -19,10 +19,10 @@ const Mapa = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-6">Consortium & Living Labs</h2>
+      <h2 className="text-3xl font-bold text-center mb-6 font-serif">Consortium & Living Labs</h2>
       <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        {/* Placeholder for the map */}
-        <div className="flex-1 bg-gray-200 rounded-lg shadow-inner border-2 border-gray-300 relative md:min-w-0 w-full h-64 md:h-auto">
+        {/* Placeholder for the map as a square */}
+        <div className="flex-1 bg-gray-200 rounded-lg shadow-inner border-2 border-gray-300 relative md:min-w-0 w-full md:w-64 md:h-64" style={{ minHeight: '256px' }}>
           <div className={`absolute inset-0 transition-colors duration-300 ${activeRegion ? 'bg-green-300' : 'bg-gray-200'}`}></div>
         </div>
 

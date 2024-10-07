@@ -6,7 +6,7 @@ const Colaboradores = () => {
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-center mb-6">Collaborators</h2>
+      <h2 className="text-2xl font-bold text-center mb-6 font-serif">Collaborators</h2>
       <div className="grid grid-cols-3 gap-4 md:grid-cols-9">
         {logos.map((_, index) => (
           <div key={index} className="bg-gray-200 flex items-center justify-center p-4 rounded">

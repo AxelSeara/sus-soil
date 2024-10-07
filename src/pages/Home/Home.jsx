@@ -27,8 +27,8 @@ const Home = () => {
       <Details />
       <Map />
       <News posts={posts} /> {/* Añade la sección de noticias */}
-      <Contact />
       <Colaboradores />
+      <Contact />
       <Footer />
     </div>
   );

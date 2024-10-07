@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaFacebookF, FaTwitter, FaLinkedinIn } from 'react-icons/fa';  // Importa los íconos de Font Awesome
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube } from 'react-icons/fa'; // Restored original Twitter icon
 
 const Footer = () => {
   return (
     <footer className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between">
         <div className="mb-6 md:mb-0">
-          <h2 className="text-gray-800 text-xl font-bold">SUS-SOIL</h2>
+          <Link to="/" className="text-gray-800 text-xl font-bold font-serif">SUS-SOIL</Link> {/* Font applied */}
         </div>
         <div className="mb-6 md:mb-0">
           <h3 className="text-gray-800 text-lg font-semibold">Quick Links</h3>
@@ -21,9 +21,10 @@ const Footer = () => {
         <div className="mb-6 md:mb-0">
           <h3 className="text-gray-800 text-lg font-semibold">Social Media</h3>
           <ul className="flex space-x-4">
-            <li><a href="https://facebook.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaFacebookF /></a></li>
-            <li><a href="https://twitter.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaTwitter /></a></li>
-            <li><a href="https://linkedin.com" className="text-gray-600 hover:text-blue-600 transition duration-300"><FaLinkedinIn /></a></li>
+            <li><a href="https://facebook.com" className="text-gray-600 hover:text-green-500 transition duration-300"><FaFacebookF /></a></li>
+            <li><a href="https://twitter.com" className="text-gray-600 hover:text-green-500 transition duration-300"><FaTwitter /></a></li>
+            <li><a href="https://linkedin.com" className="text-gray-600 hover:text-green-500 transition duration-300"><FaLinkedinIn /></a></li>
+            <li><a href="https://youtube.com" className="text-gray-600 hover:text-green-500 transition duration-300"><FaYoutube /></a></li>
           </ul>
         </div>
         <div>
