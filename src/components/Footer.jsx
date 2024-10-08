@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube } from 'react-icons/fa'; // Restored original Twitter icon
+import logo from '../assets/logo.png'; // Asegúrate de que la ruta es correcta
 
 const Footer = () => {
   return (
     <footer className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row justify-between">
         <div className="mb-6 md:mb-0">
-          <Link to="/" className="text-gray-800 text-xl font-bold font-serif">SUS-SOIL</Link> {/* Font applied */}
+          <Link to="/">
+            <img src={logo} alt="SUS-SOIL Logo" className="h-16" /> {/* Ajusta la altura según necesites */}
+          </Link>
         </div>
         <div className="mb-6 md:mb-0">
           <h3 className="text-gray-800 text-lg font-semibold">Quick Links</h3>
@@ -31,7 +34,7 @@ const Footer = () => {
           <h3 className="text-gray-800 text-lg font-semibold">Join Our Newsletter</h3>
           <form className="flex flex-col space-y-3">
             <input type="email" placeholder="Enter your email" className="px-4 py-2 border rounded-lg" />
-            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">Subscribe</button>
+            <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600">Subscribe</button>
           </form>
         </div>
       </div>

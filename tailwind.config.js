@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'pattern-bg': "url('/pattern.svg')",
+      },
       fontFamily: {
         serif: ['Merriweather', 'serif'],
       }

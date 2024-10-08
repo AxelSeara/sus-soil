@@ -1,56 +1,37 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-const gradientVariants = {
-  initial: { background: 'linear-gradient(120deg, #4caf50, #388e3c)' },
-  animate: {
-    background: ['linear-gradient(120deg, #4caf50, #388e3c)', 'linear-gradient(120deg, #388e3c, #4caf50)'],
-    transition: {
-      duration: 2.5,
-      repeat: Infinity,
-      repeatType: 'reverse'
-    }
-  }
-};
-
-const contentVariants = {
-  offscreen: {
-    y: 50,
-    opacity: 0
-  },
-  onscreen: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: 'spring',
-      bounce: 0.4,
-      duration: 0.8
-    }
-  }
-};
+import backgroundImage from '../../../assets/bg.png'; // Asegúrate de que la ruta es correcta
 
 const Hero = () => {
+  // Definimos las variantes para la animación
+  const textVariants = {
+    initial: {
+      scale: 0.9,
+      filter: "blur(4px)",
+      opacity: 0
+    },
+    animate: {
+      scale: 1,
+      filter: "blur(0px)",
+      opacity: 1,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
-    <div className="relative h-screen flex flex-col md:flex-row items-center justify-center text-white overflow-hidden">
-      <motion.div
-        className="absolute w-full h-full"
-        variants={gradientVariants}
-        initial="initial"
-        animate="animate"
-      />
-      <motion.div className="z-10 flex-1 flex justify-center items-center p-5 mt-16"
-        initial="offscreen"
-        whileInView="onscreen"
-        viewport={{ once: true, amount: 0.8 }}
-      >
-        <img src="https://via.placeholder.com/450" alt="Eco Image" className="w-full md:w-1/2 h-auto object-cover rounded-lg shadow-lg" />
-      </motion.div>
-      <motion.div className="z-10 flex-1 p-5 text-center"
-        initial="offscreen"
-        whileInView="onscreen"
-        viewport={{ once: true, amount: 0.8 }}
-      >
-        <h1 className="text-3xl md:text-5xl font-bold mb-4 font-serif">
+    <div className="relative h-screen flex flex-col md:flex-row items-center justify-center text-white overflow-hidden"
+         style={{ 
+           background: `url(${backgroundImage}) repeat`,
+           backgroundSize: '55.33%'  // Ajusta este valor si necesitas cambiar el tamaño de cada 'tile'
+         }}>
+      <motion.div className="z-10 p-5 text-center"
+                  variants={textVariants}
+                  initial="initial"
+                  animate="animate">
+        <h1 className="text-5xl font-bold mb-4">
           Sustainable Soil and Subsoil Health Promotion
         </h1>
         <p className="mb-4">

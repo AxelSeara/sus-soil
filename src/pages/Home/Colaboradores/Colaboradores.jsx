@@ -1,19 +1,45 @@
 import React from 'react';
 
+// Manually importing all 24 logo images
+import logo1 from '../../../assets/partners/1.png';
+import logo2 from '../../../assets/partners/2.png';
+import logo3 from '../../../assets/partners/3.png';
+import logo4 from '../../../assets/partners/4.png';
+import logo5 from '../../../assets/partners/5.png';
+import logo6 from '../../../assets/partners/6.png';
+import logo7 from '../../../assets/partners/7.png';
+import logo8 from '../../../assets/partners/8.png';
+import logo9 from '../../../assets/partners/9.png';
+import logo10 from '../../../assets/partners/10.png';
+import logo11 from '../../../assets/partners/11.png';
+import logo12 from '../../../assets/partners/12.png';
+import logo13 from '../../../assets/partners/13.png';
+import logo14 from '../../../assets/partners/14.png';
+import logo15 from '../../../assets/partners/15.png';
+import logo16 from '../../../assets/partners/16.png';
+import logo17 from '../../../assets/partners/17.png';
+import logo18 from '../../../assets/partners/18.png';
+import logo19 from '../../../assets/partners/19.png';
+import logo20 from '../../../assets/partners/20.png';
+import logo21 from '../../../assets/partners/21.png';
+import logo22 from '../../../assets/partners/22.png';
+import logo23 from '../../../assets/partners/23.png';
+import logo24 from '../../../assets/partners/24.png';
+
 const Colaboradores = () => {
-  // Array to represent 27 placeholders for logos
-  const logos = new Array(27).fill(0);
+  // Array to hold the imported logo images
+  const logos = [
+    logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12,
+    logo13, logo14, logo15, logo16, logo17, logo18, logo19, logo20, logo21, logo22, logo23, logo24
+  ];
 
   return (
     <div className="container mx-auto px-4 py-12">
       <h2 className="text-2xl font-bold text-center mb-6 font-serif">Collaborators</h2>
-      <div className="grid grid-cols-3 gap-4 md:grid-cols-9">
-        {logos.map((_, index) => (
-          <div key={index} className="bg-gray-200 flex items-center justify-center p-4 rounded">
-            <svg className="h-10 w-10 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-              <rect width="100%" height="100%" />
-              <text fill="#000000" fontSize="12" dy="10.5" x="50%" y="50%" textAnchor="middle">Logo</text>
-            </svg>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-6 lg:grid-cols-8">
+        {logos.map((logo, index) => (
+          <div key={index} className="flex items-center justify-center p-4 rounded">
+            <img src={logo} alt={`Logo ${index + 1}`} className="h-16 object-contain" />
           </div>
         ))}
       </div>
