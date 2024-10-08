@@ -25,7 +25,7 @@ const Hero = () => {
     <div className="relative h-screen flex flex-col md:flex-row items-center justify-center text-white overflow-hidden"
          style={{ 
            background: `url(${backgroundImage}) repeat`,
-           backgroundSize: '55.33%'  // Ajusta este valor si necesitas cambiar el tamaño de cada 'tile'
+           backgroundSize: '55.33%'  // pattern size adjust
          }}>
       <motion.div className="z-10 p-5 text-center"
                   variants={textVariants}
