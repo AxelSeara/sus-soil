@@ -48,7 +48,6 @@ const NewsPage = () => {
           ))}
         </div>
       </section>
-      <Footer />
     </div>
   );
 };

@@ -29,7 +29,6 @@ const Home = () => {
       <News posts={posts} /> {/* Añade la sección de noticias */}
       <Colaboradores />
       <Contact />
-      <Footer />
     </div>
   );
 };

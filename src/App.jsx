@@ -9,6 +9,7 @@ import LivingLabs from './pages/LivingLabs';
 import Resources from './pages/Resources';
 import KnowledgeCloud from './pages/KnowledgeCloud';
 import Contact from './pages/Contact';
+import Footer from './components/Footer';
 
 const App = () => {
     return (
@@ -23,6 +24,7 @@ const App = () => {
                 <Route path="/knowledge-cloud" element={<KnowledgeCloud />} />
                 <Route path="/contact" element={<Contact />} />
             </Routes>
+            <Footer />
         </Router>
     );
 };
