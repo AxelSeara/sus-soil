@@ -63,7 +63,6 @@ const NewsDetail = () => {
                     ))}
                 </div>
             </section>
-            <Footer />
         </div>
     );
 };
