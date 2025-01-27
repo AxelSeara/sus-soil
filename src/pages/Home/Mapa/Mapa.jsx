@@ -19,46 +19,48 @@ const Mapa = () => {
   const handleMouseLeave = () => setActiveRegion(null);
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-center mb-6 font-serif">Consortium & Living Labs</h2>
-      <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-12">
+    <div className="container mx-auto px-4 py-20">
+      <h2 className="text-4xl font-bold text-center mb-12 font-serif text-brown">Consortium & Living Labs</h2>
+      <div className="flex flex-col md:flex-row justify-between items-center space-y-12 md:space-y-0 md:space-x-16">
 
-        {/* Left section with green circles, responsive adjustment */}
-        <div className="flex-1 md:flex md:flex-col items-center space-y-6">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-1">
-            <div className="flex items-center justify-center bg-green-500 text-white w-32 h-32 rounded-full">
-              <p className="text-center font-bold">22 Partners<br />from 13 Countries</p>
+        {/* Left section with green circles */}
+        <div className="flex-1 md:flex md:flex-col items-center space-y-8">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-1">
+            <div className="flex items-center justify-center bg-lightGreen text-brown w-40 h-40 rounded-full p-4">
+              <p className="text-center font-bold text-sm leading-tight">22 Partners<br />from 13 Countries</p>
             </div>
-            <div className="flex items-center justify-center bg-green-500 text-white w-32 h-32 rounded-full">
-              <p className="text-center font-bold">15 Living Labs</p>
+            <div className="flex items-center justify-center bg-lightGreen text-brown w-40 h-40 rounded-full p-4">
+              <p className="text-center font-bold text-sm leading-tight">15 Living Labs</p>
             </div>
           </div>
         </div>
 
         {/* Center section with the map */}
-        <div className="flex-1 relative">
-          <img src={mapImage} alt="Map" className="w-full h-auto" />
+        <div className="flex-1 relative flex items-center justify-center">
+          <div className="relative w-80 h-80 rounded-full overflow-hidden">
+            <img src={mapImage} alt="Map" className="w-full h-full object-cover" />
+          </div>
           {activeRegion && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div
-                className="w-full h-full rounded-full"
-                style={{ backgroundColor: regions.find(r => r.id === activeRegion)?.color, opacity: 0.7 }}
+                className="w-64 h-64 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: regions.find(r => r.id === activeRegion)?.color, opacity: 0.8 }}
               >
-                <p className="text-white text-xl font-semibold">{regions.find(r => r.id === activeRegion)?.label}</p>
+                <p className="text-white text-2xl font-semibold">{regions.find(r => r.id === activeRegion)?.label}</p>
               </div>
             </div>
           )}
         </div>
 
         {/* Right section with region list */}
-        <div className="flex-1 space-y-2">
+        <div className="flex-1 space-y-4">
           {regions.map(region => (
             <button
               key={region.id}
               onMouseEnter={() => handleMouseEnter(region.id)}
               onMouseLeave={handleMouseLeave}
-              className={`block min-w-[150px] text-center m-2 p-2 rounded-full transition-transform duration-300 transform hover:scale-105 ${activeRegion === region.id ? 'text-white' : 'text-gray-800'}`}
-              style={{ backgroundColor: activeRegion === region.id ? region.color : '#f0f0f0' }}
+              className={`block w-full text-center py-3 rounded-full transition-transform duration-300 transform hover:scale-105 shadow-md ${activeRegion === region.id ? 'text-white' : 'text-brown'}`}
+              style={{ backgroundColor: activeRegion === region.id ? region.color : '#f8f8f8' }}
             >
               {region.label}
             </button>

@@ -48,10 +48,10 @@ const Detalles = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 relative text-center">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-4 font-serif">The Project</h2>
-        <p className="text-lg">
+    <div className="container mx-auto px-4 py-24 relative text-center">
+      <div className="mb-16">
+        <h2 className="text-4xl font-bold mb-6 font-serif text-brown">The Project</h2>
+        <p className="text-lg text-boreal">
           SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15
           Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil
           management and land uses and their impacts on the subsoil spatial variations and dynamics to best
@@ -59,7 +59,7 @@ const Detalles = () => {
         </p>
       </div>
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -67,18 +67,18 @@ const Detalles = () => {
         {objectives.map((objective, index) => (
           <motion.div
             key={index}
-            className="bg-green-500 rounded-full w-64 h-64 flex items-center justify-center p-6 mx-auto shadow-lg"
+            className="bg-lightGreen rounded-full w-64 h-64 flex items-center justify-center p-6 mx-auto shadow-lg"
             variants={circleVariants}
           >
-            <div>
-              <h3 className="text-white font-bold">{objective.title}</h3>
-              <p className="text-white">{objective.description}</p>
+            <div className="text-center">
+              <h3 className="text-brown font-bold text-lg mb-2">{objective.title}</h3>
+              <p className="text-boreal text-sm">{objective.description}</p>
             </div>
           </motion.div>
         ))}
       </motion.div>
-      <div className="absolute top-0 right-0 w-48 h-48 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-50"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-50"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-lightGreen rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-lightGreen rounded-full mix-blend-multiply filter blur-2xl opacity-50"></div>
     </div>
   );
 };

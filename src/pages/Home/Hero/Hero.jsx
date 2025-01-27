@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import backgroundImage from '../../../assets/bg.png'; // Asegúrate de que la ruta es correcta
+import backgroundImage from '../../../assets/bg1.svg'; // Asegúrate de que la ruta es correcta
 
 const Hero = () => {
   // Definimos las variantes para la animación
@@ -37,7 +37,7 @@ const Hero = () => {
         <p className="mb-4">
           by implementing agroecological land use and management
         </p>
-        <button className="px-6 py-3 bg-green-700 hover:bg-green-800 rounded-full font-bold shadow-lg transition-colors">
+        <button className="px-6 py-3 bg-brown hover:bg-opacity-80 rounded-full font-bold shadow-lg transition-colors">
           Learn More About The Project
         </button>
       </motion.div>

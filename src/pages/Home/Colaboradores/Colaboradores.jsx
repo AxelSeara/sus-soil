@@ -34,12 +34,12 @@ const Colaboradores = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <h2 className="text-2xl font-bold text-center mb-6 font-serif">Collaborators</h2>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-6 lg:grid-cols-8">
+    <div className="container mx-auto px-6 py-16 bg-lightGreen rounded-lg">
+      <h2 className="text-3xl font-bold text-center mb-8 text-brown font-serif">Collaborators</h2>
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-6 lg:grid-cols-8">
         {logos.map((logo, index) => (
-          <div key={index} className="flex items-center justify-center p-4 rounded">
-            <img src={logo} alt={`Logo ${index + 1}`} className="h-16 object-contain" />
+          <div key={index} className="flex items-center justify-center p-2">
+            <img src={logo} alt={`Logo ${index + 1}`} className="h-20 object-contain" />
           </div>
         ))}
       </div>
