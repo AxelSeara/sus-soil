@@ -18,4 +18,4 @@ const Contacto = () => {
   );
 };
 
-export default Contacto;g
+export default Contacto;
