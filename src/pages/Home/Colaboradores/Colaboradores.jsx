@@ -29,21 +29,31 @@ import logo24 from '../../../assets/partners/24.png';
 const Colaboradores = () => {
   // Array to hold the imported logo images
   const logos = [
-    logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10, logo11, logo12,
-    logo13, logo14, logo15, logo16, logo17, logo18, logo19, logo20, logo21, logo22, logo23, logo24
+    logo1, logo2, logo3, logo4, logo5, logo6, logo7, logo8, logo9, logo10,
+    logo11, logo12, logo13, logo14, logo15, logo16, logo17, logo18, logo19,
+    logo20, logo21, logo22, logo23, logo24,
   ];
 
   return (
-    <div className="container mx-auto px-6 py-16 bg-lightGreen rounded-lg">
-      <h2 className="text-3xl font-bold text-center mb-8 text-brown font-serif">Collaborators</h2>
+    <section className="container mx-auto px-6 py-16 bg-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold text-center mb-8 text-brown font-serif">
+        Collaborators
+      </h2>
       <div className="grid grid-cols-2 gap-6 md:grid-cols-6 lg:grid-cols-8">
         {logos.map((logo, index) => (
-          <div key={index} className="flex items-center justify-center p-2">
-            <img src={logo} alt={`Logo ${index + 1}`} className="h-20 object-contain" />
+          <div
+            key={index}
+            className="flex items-center justify-center p-2 bg-white hover:bg-boreal/10 transition-colors rounded-md"
+          >
+            <img
+              src={logo}
+              alt={`Logo ${index + 1}`}
+              className="h-20 object-contain"
+            />
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
