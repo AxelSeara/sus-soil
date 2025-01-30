@@ -1,21 +1,20 @@
-// index.jsx
 import React, { StrictMode, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
 import App from './App.jsx';
 import './index.css';
-import logo from './assets/logo.png'; // Ajusta la ruta según tu proyecto
+import logo from './assets/logo.png'; // Asegúrate de la ruta (usa /assets si está en carpeta public)
 
-// Variables de entorno
+// Variables de entorno (o booleans fijos)
 const isUnderConstruction = import.meta.env.VITE_UNDER_CONSTRUCTION === 'true';
 const constructionPass = import.meta.env.VITE_CONSTRUCTION_PASS || 'prueba';
 
-// Variantes para la animación del fondo con colores de marca
+// Animación del fondo
 const backgroundVariants = {
   initial: {
     background: [
-      'linear-gradient(120deg, #9dbf4c, #add946)', // Color de marca 1
-      'linear-gradient(120deg, #add946, #9dbf4c)', // Color de marca 2
+      'linear-gradient(120deg, #9dbf4c, #add946)',
+      'linear-gradient(120deg, #add946, #9dbf4c)',
     ],
   },
   animate: {
@@ -36,15 +35,18 @@ function UnderConstruction() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [authorized, setAuthorized] = useState(false);
-
-  // Simulamos una carga inicial (e.g. verificar estado del servidor)
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Aquí podrías esperar a que se carguen datos reales en lugar de un setTimeout.
+    // Verifica si ya está guardada la autorización en sessionStorage
+    const storedAuth = sessionStorage.getItem('underConstructionAuthorized');
+    if (storedAuth === 'true') {
+      setAuthorized(true);
+    }
+    // Simula carga inicial (logo, etc.)
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500); // 1.5 segundos simulando la “carga” inicial
+    }, 1500); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -52,12 +54,14 @@ function UnderConstruction() {
     e.preventDefault();
     if (password === constructionPass) {
       setAuthorized(true);
+      // Almacena en sessionStorage para no pedir pass de nuevo
+      sessionStorage.setItem('underConstructionAuthorized', 'true');
     } else {
       setErrorMsg('Wrong password');
     }
   };
 
-  // 1) Primero mostramos el “spinner” de carga
+  // 1) Si está en modo “carga”, se muestra el spinner
   if (loading) {
     return (
       <motion.div
@@ -66,14 +70,13 @@ function UnderConstruction() {
         initial="initial"
         animate="animate"
       >
-        {/* Spinner con Tailwind */}
         <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-white border-r-transparent mb-4"></div>
         <p className="text-lg font-semibold">Loading site...</p>
       </motion.div>
     );
   }
 
-  // 2) Si la contraseña es correcta, cargamos la App
+  // 2) Si ya está autorizado, carga la app
   if (authorized) {
     return (
       <StrictMode>
@@ -82,7 +85,7 @@ function UnderConstruction() {
     );
   }
 
-  // 3) Página de construcción con el formulario de contraseña
+  // 3) Pantalla de construcción si no está autorizado
   return (
     <motion.div
       className="h-screen flex flex-col items-center justify-center text-center text-white px-4"
@@ -90,6 +93,7 @@ function UnderConstruction() {
       initial="initial"
       animate="animate"
     >
+      {/* Asegúrate de que la ruta del logo sea correcta */}
       <img src={logo} alt="Logo" className="w-32 mb-6" />
 
       <h1 className="text-2xl md:text-3xl font-bold mb-2">We're getting ready!</h1>
