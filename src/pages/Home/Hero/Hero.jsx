@@ -1,77 +1,141 @@
-import React from 'react';
+// Hero.jsx
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import backgroundImage from '../../../assets/bg1.svg';
 
-const Hero = () => {
-  // Variants para el contenedor principal (para animar los hijos en secuencia)
-  const containerVariants = {
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
+// Paleta de colores verdes
+const GREEN_COLORS = [
+  '#6eba77',
+  '#87c27b',
+  '#9dbf4c',
+  '#add946',
+  '#a6d776',
+  '#6EBA77',
+];
 
-  // Variants para cada elemento hijo
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: 20,
+// Variants para animar cada forma
+const shapeVariants = {
+  initial: { scale: 0, opacity: 0 },
+  animate: {
+    scale: 1,
+    opacity: 0.8,
+    transition: {
+      duration: 2, // tiempo de la animación de “crecer”
+      ease: 'easeOut',
     },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-      },
-    },
+  },
+};
+
+// Variants para el texto y el botón
+const textVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: 'easeOut' },
+  },
+};
+
+// Función para generar una forma aleatoria
+function createRandomShape() {
+  // Ancho/alto aleatorio entre 100 y 300 px
+  const size = Math.floor(Math.random() * 200) + 100;
+  // Posición aleatoria (%) dentro del contenedor
+  const top = Math.floor(Math.random() * 80) + 10;   // entre 10% y 90%
+  const left = Math.floor(Math.random() * 80) + 10;  // entre 10% y 90%
+  // Color aleatorio de la paleta
+  const color = GREEN_COLORS[Math.floor(Math.random() * GREEN_COLORS.length)];
+
+  // Elegimos si es círculo o semicírculo
+  const shapeType = Math.random() < 0.5 ? 'circle' : 'semicircle';
+
+  return {
+    id: Date.now() + '_' + Math.random(), // identificador único
+    size,
+    top,
+    left,
+    color,
+    shapeType,
   };
+}
+
+export default function Hero() {
+  const [shapes, setShapes] = useState([]);
+
+  useEffect(() => {
+    // Agrega la primera tanda de formas
+    const initialShapes = Array.from({ length: 3 }).map(() => createRandomShape());
+    setShapes(initialShapes);
+
+    // Cada 4 segundos, agrega una forma nueva
+    const interval = setInterval(() => {
+      setShapes((prev) => [...prev, createRandomShape()]);
+    }, 4000);
+
+    // Limpia el intervalo al desmontar
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      style={{
-        background: `url(${backgroundImage}) repeat`,
-        backgroundSize: '55.33%', // Ajusta el patron segun sea necesario
-      }}
-    >
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-green-200">
+      {/* Renderizamos cada shape */}
+      {shapes.map((shape) => (
+        <motion.div
+          key={shape.id}
+          variants={shapeVariants}
+          initial="initial"
+          animate="animate"
+          className="absolute"
+          style={{
+            width: shape.size,
+            height: shape.size,
+            top: shape.top + '%',
+            left: shape.left + '%',
+            transform: 'translate(-50%, -50%)',
+            backgroundColor: shape.color,
+            opacity: 0.8,
+            borderRadius: shape.shapeType === 'circle' ? '9999px' : '9999px 9999px 0 0',
+            boxShadow: '0 0 20px rgba(0,0,0,0.2)',
+          }}
+        />
+      ))}
+
       {/* Overlay sutil para resaltar el texto */}
       <div className="absolute inset-0 bg-black/30" />
 
-      <motion.div
-        className="relative z-10 w-full max-w-3xl mx-auto px-4 text-center text-white"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
+      {/* Contenido principal */}
+      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-center text-white">
+        {/* Título animado */}
         <motion.h1
-          className="text-4xl md:text-5xl font-bold mb-6"
-          variants={itemVariants}
+          className="text-5xl md:text-6xl font-extrabold mb-6"
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
         >
           Sustainable Soil and Subsoil Health Promotion
         </motion.h1>
 
+        {/* Párrafo animado */}
         <motion.p
-          className="mb-8 text-lg md:text-xl"
-          variants={itemVariants}
+          className="mb-8 text-xl md:text-2xl leading-relaxed"
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
         >
           By implementing agroecological land use and management
         </motion.p>
 
+        {/* Botón animado */}
         <motion.button
-          className="px-6 py-3 bg-brown hover:bg-opacity-80 rounded-full font-bold shadow-lg transition-colors"
-          variants={itemVariants}
+          className="px-8 py-4 bg-brown text-white rounded-full font-semibold 
+                     shadow-lg transition-colors text-lg md:text-xl
+                     hover:bg-opacity-90"
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
         >
           Learn More About The Project
         </motion.button>
-      </motion.div>
+      </div>
     </div>
   );
-};
-
-export default Hero;
+}

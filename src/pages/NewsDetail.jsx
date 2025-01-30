@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  FaFacebookF,
-  FaXTwitter,
-  FaEnvelope,
-} from 'react-icons/fa6'; // Usa react-icons/fa6 (Font Awesome 6) si lo prefieres
-// O, si no está disponible, usa 'react-icons/fa' con adaptaciones.
+import { FaFacebookF, FaXTwitter, FaEnvelope } from 'react-icons/fa6';
 
+// ===================== SKELETONS =====================
 const SkeletonPostDetail = () => (
   <div className="animate-pulse">
     {/* Título placeholder */}
@@ -33,6 +29,17 @@ const SkeletonRecentPostCard = () => (
   </div>
 );
 
+const SkeletonEventCard = () => (
+  <div className="border p-4 rounded-lg shadow-md animate-pulse">
+    <div className="h-6 bg-gray-300 w-3/4 rounded mb-2"></div>
+    <div className="w-full h-48 bg-gray-200 mb-2 rounded"></div>
+    <div className="h-4 bg-gray-300 w-1/2 rounded mb-2"></div>
+    <div className="h-4 bg-gray-200 w-2/3 rounded mb-4"></div>
+    <div className="h-8 bg-gray-300 w-full rounded"></div>
+  </div>
+);
+
+// ===================== COMPONENT =====================
 const NewsDetail = () => {
   const { id } = useParams();
 
@@ -44,8 +51,12 @@ const NewsDetail = () => {
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
 
+  // Eventos recientes
+  const [recentEvents, setRecentEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+
   useEffect(() => {
-    // Carga de la publicación principal
+    // Carga la publicación principal
     const fetchPost = async () => {
       try {
         setLoadingPost(true);
@@ -58,11 +69,11 @@ const NewsDetail = () => {
         console.error('Error fetching post:', error);
       } finally {
         setLoadingPost(false);
-        window.scrollTo(0, 0); // Mover la vista al inicio al cargar el detalle
+        window.scrollTo(0, 0); // Al cargar el detalle, sube al top
       }
     };
 
-    // Carga de las publicaciones recientes
+    // Carga noticias recientes
     const fetchRecentPosts = async () => {
       try {
         setLoadingRecent(true);
@@ -78,11 +89,28 @@ const NewsDetail = () => {
       }
     };
 
+    // Carga eventos recientes
+    const fetchRecentEvents = async () => {
+      try {
+        setLoadingEvents(true);
+        const response = await fetch(
+          'https://admin.sus-soil.eu/wp-json/wp/v2/event?per_page=3&order=desc&orderby=date&_embed'
+        );
+        const data = await response.json();
+        setRecentEvents(data);
+      } catch (error) {
+        console.error('Error fetching recent events:', error);
+      } finally {
+        setLoadingEvents(false);
+      }
+    };
+
     fetchPost();
     fetchRecentPosts();
+    fetchRecentEvents();
   }, [id]);
 
-  // Mostrar skeleton si aún está cargando la publicación principal
+  // ================== RENDER: LOADING POST ==================
   if (loadingPost && !post) {
     return (
       <div className="container mx-auto px-4 py-6">
@@ -91,7 +119,7 @@ const NewsDetail = () => {
     );
   }
 
-  // Si terminó de cargar pero no encontró la publicación
+  // ================== RENDER: NO POST FOUND ==================
   if (!post) {
     return (
       <div className="container mx-auto px-4 py-6">
@@ -100,20 +128,31 @@ const NewsDetail = () => {
     );
   }
 
-  // Variables auxiliares
+  // ================== DATA POST ==================
   const title = post.title?.rendered || 'No Title';
   const imageUrl =
     post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
   const dateFormatted = new Date(post.date).toLocaleDateString();
 
+  // ================== RENDER ==================
   return (
     <div>
       {/* Contenido principal de la publicación */}
       <section className="container mx-auto px-4 py-6">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 mt-16 text-brown font-serif">
-          {title}
-        </h1>
+        <div className="flex items-center justify-between mb-4 mt-16">
+          <h1 className="text-3xl md:text-4xl font-bold text-brown">
+            {title}
+          </h1>
+          {/* Botón pequeño para ir a todas las noticias */}
+          <Link
+            to="/news"
+            className="bg-brown text-white px-3 py-2 rounded-full text-sm hover:bg-opacity-80 transition-colors"
+          >
+            All News
+          </Link>
+        </div>
 
+        {/* Imagen principal */}
         {imageUrl && (
           <img
             src={imageUrl}
@@ -123,15 +162,13 @@ const NewsDetail = () => {
         )}
 
         {/* Fecha y contenido */}
-        <div className="mt-2">
-          <p className="text-gray-500 text-sm mb-4">
-            Published on <span className="font-medium">{dateFormatted}</span>
-          </p>
-          <div
-            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-            className="text-brown leading-relaxed"
-          />
-        </div>
+        <p className="text-gray-500 text-sm mb-4">
+          Published on <span className="font-medium">{dateFormatted}</span>
+        </p>
+        <div
+          dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+          className="text-brown leading-relaxed"
+        />
 
         {/* Botones de compartir */}
         <div className="flex flex-wrap gap-3 mt-6">
@@ -169,7 +206,7 @@ const NewsDetail = () => {
 
       {/* Noticias Recientes */}
       <section className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-bold mb-4 text-brown font-serif">
+        <h2 className="text-2xl font-bold mb-4 text-brown">
           Recent News
         </h2>
 
@@ -182,7 +219,7 @@ const NewsDetail = () => {
         )}
 
         {!loadingRecent && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
             {recentPosts.map((recentPost) => {
               const recentTitle = recentPost.title?.rendered || 'No Title';
               const recentImageUrl =
@@ -195,7 +232,7 @@ const NewsDetail = () => {
                   to={`/news/${recentPost.id}`}
                   className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
                 >
-                  <h3 className="text-xl font-semibold text-brown font-serif mb-2">
+                  <h3 className="text-lg font-bold text-brown mb-2">
                     {recentTitle}
                   </h3>
                   {recentImageUrl ? (
@@ -207,7 +244,6 @@ const NewsDetail = () => {
                   ) : (
                     <div className="w-full h-48 bg-gray-200 mb-2 rounded" />
                   )}
-                  {/* Puedes mostrar la fecha o un pequeño excerpt, si lo deseas */}
                   <p className="text-sm text-brown">
                     Published on{' '}
                     <span className="font-medium">
@@ -220,6 +256,70 @@ const NewsDetail = () => {
           </div>
         )}
       </section>
+
+      {/* Últimos Eventos */}
+      <section className="container mx-auto px-4 py-6">
+        <h2 className="text-2xl font-bold mb-4 text-brown">
+          Latest Events
+        </h2>
+
+        {loadingEvents && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, idx) => (
+              <SkeletonEventCard key={idx} />
+            ))}
+          </div>
+        )}
+
+        {!loadingEvents && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
+            {recentEvents.map((ev) => {
+              const evTitle = ev.acf?.title || 'Untitled';
+              const evImageUrl =
+                ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+              const evDate = ev.acf?.date || ev.date;
+              const evId = ev.id;
+
+              return (
+                <Link
+                  key={evId}
+                  to={`/event/${evId}`}
+                  className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
+                >
+                  <h3 className="text-lg font-bold text-brown mb-2">
+                    {evTitle}
+                  </h3>
+                  {evImageUrl ? (
+                    <img
+                      src={evImageUrl}
+                      alt={evTitle}
+                      className="w-full h-48 object-cover mb-2 rounded"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gray-200 mb-2 rounded" />
+                  )}
+                  {/* Muestra la fecha */}
+                  <p className="text-sm text-brown mb-1">
+                    Date: <span className="font-medium">{new Date(evDate).toLocaleDateString()}</span>
+                  </p>
+                  {/* Podrías mostrar la ubicación, excerpt, etc. */}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Animación sutil: fade-in con Tailwind + keyframes, si deseas */}
+      <style>{`
+        .fade-in {
+          animation: fadeIn 0.8s ease-in forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 };
