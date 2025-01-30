@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import mapImage from '../../../assets/map.png'; // Ajusta la ruta si es necesario
 
 // Variants para animaciones sutiles
@@ -148,6 +149,17 @@ const MapaAlternative = () => {
               })}
             </div>
           </motion.div>
+        </div>
+
+        {/* Botón "View More about Living Labs" */}
+        <div className="text-center mt-12">
+          <Link
+            to="/living-labs"
+            className="px-8 py-4 bg-brown text-white font-bold rounded-full shadow-md 
+                      hover:bg-opacity-90 transition-transform duration-200 transform hover:-translate-y-1"
+          >
+            View More about Living Labs
+          </Link>
         </div>
       </div>
     </motion.section>

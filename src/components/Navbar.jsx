@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { AnimatePresence, motion } from 'framer-motion';
+import logo from '../assets/1lineLogo.svg'; // 🔥 Ajusta la ruta según tu estructura
+
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
@@ -12,12 +14,9 @@ const Navbar = () => {
       <div className="max-w-screen-xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <img
-            src="/src/assets/1lineLogo.svg"
-            alt="SUS-SOIL Logo"
-            className="h-8"
-          />
+          <img src={logo} alt="SUS-SOIL Logo" className="h-8" />
         </Link>
+
 
         {/* Mobile Menu Button */}
         <button
