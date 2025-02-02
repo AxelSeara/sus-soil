@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Variants para animaciones de contenedor y tarjetas
+// Variants para animaciones del contenedor
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -16,6 +16,7 @@ const containerVariants = {
   },
 };
 
+// Variants para las tarjetas con ajuste en el spring
 const cardVariants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: {
@@ -23,18 +24,18 @@ const cardVariants = {
     scale: 1,
     transition: {
       type: 'spring',
-      stiffness: 70,
-      damping: 15,
+      stiffness: 90, // un poco más de rigidez
+      damping: 20,   // mayor amortiguamiento para suavizar
     },
   },
 };
 
-// Objetivos con títulos e íconos (emojis grandes)
+// Objetivos con títulos e íconos (emojis grandes) y texto de ejemplo
 const objectives = [
-  { title: 'Awareness for land managers', emoji: '🌍' },
-  { title: 'Supporting EU transformation', emoji: '🔄' },
-  { title: 'Ecosystem services delivery', emoji: '🌿' },
-  { title: 'Water security & climate', emoji: '💧' },
+  { title: 'Awareness for land managers', emoji: '🌍', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+  { title: 'Supporting EU transformation', emoji: '🔄', text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.' },
+  { title: 'Ecosystem services delivery', emoji: '🌿', text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere.' },
+  { title: 'Water security & climate', emoji: '💧', text: 'Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque.' },
 ];
 
 export default function Detalles() {
@@ -72,13 +73,11 @@ export default function Detalles() {
               The Project
             </h2>
             <p className="text-lg md:text-xl text-brown max-w-4xl mt-4">
-              SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15
-              Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil
-              management and land uses and their impacts.
+              SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil management and land uses and their impacts.
             </p>
           </motion.div>
 
-          {/* Grid de tarjetas (bento-box style) */}
+          {/* Grid de tarjetas */}
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             variants={containerVariants}
@@ -97,6 +96,9 @@ export default function Detalles() {
                 <h3 className="text-brown font-bold text-lg mt-4">
                   {obj.title}
                 </h3>
+                <p className="text-sm text-gray-700 mt-2">
+                  {obj.text}
+                </p>
               </motion.div>
             ))}
           </motion.div>
