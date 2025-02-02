@@ -1,6 +1,8 @@
+// Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+// Se utiliza el logo desde src/assets/logo.png
 import logo from '../assets/1lineLogo.svg';
 
 /**
@@ -15,7 +17,6 @@ const XIcon = ({ size = 16 }) => (
     fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Ejemplo de X simple */}
     <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7c0.4,0.4,0.4,1,0,1.4l-1.3,1.3
       c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4
       l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
@@ -38,58 +39,49 @@ const Footer = () => {
           <h3 className="text-brown text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="list-none space-y-2">
             <li>
-              <Link
-                to="/"
-                className="text-brown hover:text-green-700 transition duration-300"
-              >
+              <Link to="/" className="text-brown hover:text-green-700 transition duration-300">
                 Home
               </Link>
             </li>
             <li>
-              <Link
-                to="/contact"
-                className="text-brown hover:text-green-700 transition duration-300"
-              >
+              <Link to="/contact" className="text-brown hover:text-green-700 transition duration-300">
                 Contact
               </Link>
             </li>
             <li>
-              <Link
-                to="/living-labs"
-                className="text-brown hover:text-green-700 transition duration-300"
-              >
+              <Link to="/living-labs" className="text-brown hover:text-green-700 transition duration-300">
                 Living Labs
               </Link>
             </li>
             <li>
-              <Link
-                to="/resources"
-                className="text-brown hover:text-green-700 transition duration-300"
-              >
+              <Link to="/resources" className="text-brown hover:text-green-700 transition duration-300">
                 Resources
               </Link>
             </li>
           </ul>
         </div>
 
-        {/* Social Media */}
+        {/* Social Media y News & Events */}
         <div>
           <h3 className="text-brown text-lg font-semibold mb-4">Social Media</h3>
-          <ul className="flex space-x-4">
+          <ul className="flex space-x-4 mb-4">
             <li>
               <a
                 href="https://facebook.com"
                 className="text-brown hover:text-green-700 transition duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <FaFacebookF />
               </a>
             </li>
             <li>
               <a
-                href="https://x.com" 
+                href="https://x.com"
                 className="text-brown hover:text-green-700 transition duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {/* Nuevo ícono de X */}
                 <XIcon size={16} />
               </a>
             </li>
@@ -97,6 +89,8 @@ const Footer = () => {
               <a
                 href="https://linkedin.com"
                 className="text-brown hover:text-green-700 transition duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <FaLinkedinIn />
               </a>
@@ -105,11 +99,29 @@ const Footer = () => {
               <a
                 href="https://youtube.com"
                 className="text-brown hover:text-green-700 transition duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <FaYoutube />
               </a>
             </li>
           </ul>
+          {/* Sección: News and Events */}
+          <div>
+            <h3 className="text-brown text-lg font-semibold mb-2">News and Events</h3>
+            <ul className="list-none space-y-2">
+              <li>
+                <Link to="/news" className="text-brown hover:text-green-700 transition duration-300">
+                  News
+                </Link>
+              </li>
+              <li>
+                <Link to="/events" className="text-brown hover:text-green-700 transition duration-300">
+                  Events
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Newsletter */}
@@ -135,6 +147,17 @@ const Footer = () => {
       <div className="text-center mt-8 border-t border-brown pt-4">
         <p className="text-brown text-sm">
           © {new Date().getFullYear()} SUS-SOIL. All rights reserved.
+        </p>
+        <p className="text-brown text-sm mt-2">
+          Designed by{" "}
+          <a
+            href="https://www.axels.studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-green-700"
+          >
+            Axel S
+          </a>
         </p>
       </div>
     </footer>
