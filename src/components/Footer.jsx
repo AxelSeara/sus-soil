@@ -149,7 +149,7 @@ const Footer = () => {
           © {new Date().getFullYear()} SUS-SOIL. All rights reserved.
         </p>
         <p className="text-brown text-sm mt-2">
-          Designed by{" "}
+          Website designed by{" "}
           <a
             href="https://www.axels.studio"
             target="_blank"

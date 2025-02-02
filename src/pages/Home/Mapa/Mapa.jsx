@@ -108,7 +108,7 @@ const MapaAlternative = () => {
             <img
               src={mapImage}
               alt="Map"
-              className="w-full h-full object-cover"
+              className="w-600 h-600 object-cover"
             />
             {activeRegion && (
               <motion.div
