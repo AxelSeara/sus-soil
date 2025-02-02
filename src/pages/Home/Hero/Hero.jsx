@@ -16,11 +16,11 @@ const GREEN_COLORS = [
 const shapeVariants = {
   initial: { scale: 0, opacity: 0 },
   animate: {
-    scale: 1,
+    scale: 1.2, // Las formas crecen un poco más
     opacity: 0.8,
     transition: {
-      duration: 2, // tiempo de la animación de “crecer”
-      ease: 'easeOut',
+      duration: 2.5, // Duración extendida para una animación más suave
+      ease: 'easeInOut',
     },
   },
 };
@@ -37,11 +37,11 @@ const textVariants = {
 
 // Función para generar una forma aleatoria
 function createRandomShape() {
-  // Ancho/alto aleatorio entre 100 y 300 px
+  // Tamaño aleatorio entre 100 y 300 px
   const size = Math.floor(Math.random() * 200) + 100;
-  // Posición aleatoria (%) dentro del contenedor
-  const top = Math.floor(Math.random() * 80) + 10;   // entre 10% y 90%
-  const left = Math.floor(Math.random() * 80) + 10;  // entre 10% y 90%
+  // Posición aleatoria (%) en toda la superficie
+  const top = Math.floor(Math.random() * 100);
+  const left = Math.floor(Math.random() * 100);
   // Color aleatorio de la paleta
   const color = GREEN_COLORS[Math.floor(Math.random() * GREEN_COLORS.length)];
 
@@ -77,7 +77,7 @@ export default function Hero() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-green-200">
-      {/* Renderizamos cada shape */}
+      {/* Renderizamos cada forma */}
       {shapes.map((shape) => (
         <motion.div
           key={shape.id}
@@ -99,11 +99,8 @@ export default function Hero() {
         />
       ))}
 
-      {/* Overlay sutil para resaltar el texto */}
-      <div className="absolute inset-0 bg-black/30" />
-
       {/* Contenido principal */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-center text-white">
+      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-left text-brown">
         {/* Título animado */}
         <motion.h1
           className="text-5xl md:text-6xl font-extrabold mb-6"
@@ -126,9 +123,7 @@ export default function Hero() {
 
         {/* Botón animado */}
         <motion.button
-          className="px-8 py-4 bg-brown text-white rounded-full font-semibold 
-                     shadow-lg transition-colors text-lg md:text-xl
-                     hover:bg-opacity-90"
+          className="px-8 py-4 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-lg md:text-xl hover:bg-opacity-90"
           variants={textVariants}
           initial="hidden"
           animate="visible"

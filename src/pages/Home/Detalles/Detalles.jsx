@@ -40,7 +40,7 @@ const objectives = [
 export default function Detalles() {
   return (
     <>
-      {/* Estilos en línea para gradiente de fondo y animación de iconos */}
+      {/* Estilos en línea para animar el gradiente de los íconos */}
       <style>
         {`
           @keyframes gradientMotion {
@@ -49,7 +49,7 @@ export default function Detalles() {
             100% { background-position: 0% 50%; }
           }
           .icon-gradient-bg {
-            background: linear-gradient(90deg, #6eba77, #9dbf4c, #add946, #6eba77);
+            background: linear-gradient(90deg, #6EBB78, #89C37B, #B0D392, #6EBB78);
             background-size: 200% 200%;
             animation: gradientMotion 5s infinite ease-in-out;
             -webkit-background-clip: text;
@@ -58,15 +58,9 @@ export default function Detalles() {
         `}
       </style>
 
-      <div
-        className="relative py-24 px-4"
-        // Mismo degradado de fondo que en el Hero
-        style={{
-          background: 'linear-gradient(to bottom, #6eba77 0%, #ffffff 40%)',
-        }}
-      >
+      <div className="relative py-24 px-4 bg-green-200">
         <div className="max-w-screen-xl mx-auto">
-          {/* Tarjeta grande (texto principal) */}
+          {/* Tarjeta principal */}
           <motion.div
             className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
             initial={{ opacity: 0, y: 30 }}
@@ -84,7 +78,7 @@ export default function Detalles() {
             </p>
           </motion.div>
 
-          {/* Grid con las tarjetas (bento-box style) */}
+          {/* Grid de tarjetas (bento-box style) */}
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             variants={containerVariants}
@@ -95,15 +89,11 @@ export default function Detalles() {
             {objectives.map((obj, index) => (
               <motion.div
                 key={index}
-                className="rounded-xl bg-white/50 backdrop-blur-md shadow-md 
-                           p-6 text-center cursor-pointer hover:shadow-xl 
-                           hover:bg-white/70 transition-all duration-300"
+                className="rounded-xl bg-white/50 backdrop-blur-md shadow-md p-6 text-center cursor-pointer hover:shadow-xl hover:bg-white/70 transition-all duration-300"
                 variants={cardVariants}
               >
-                {/* Ícono grande con degradado animado */}
+                {/* Ícono grande con gradiente animado */}
                 <div className="text-6xl icon-gradient-bg">{obj.emoji}</div>
-
-                {/* Solo título, sin descripción */}
                 <h3 className="text-brown font-bold text-lg mt-4">
                   {obj.title}
                 </h3>

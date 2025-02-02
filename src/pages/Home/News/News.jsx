@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-// Componente SkeletonCard: muestra un placeholder
-// mientras se cargan las noticias
+// Componente SkeletonCard: muestra un placeholder mientras se cargan las noticias
 function SkeletonCard() {
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg animate-pulse flex flex-col space-y-4">
@@ -36,7 +35,7 @@ const News = () => {
   }, []);
 
   return (
-    <section className="bg-lightGreen py-12 px-6 md:px-16 rounded-xl shadow-md my-8">
+    <section className="bg-green-200 py-12 px-6 md:px-16 rounded-xl shadow-md my-8">
       <h2 className="text-4xl font-bold text-center mb-10 text-brown">
         Latest News
       </h2>

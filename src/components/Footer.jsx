@@ -15,7 +15,7 @@ const XIcon = ({ size = 16 }) => (
     fill="currentColor"
     xmlns="http://www.w3.org/2000/svg"
   >
-    {/* Ejemplo de X simple. Puedes reemplazar 'd' con una ruta oficial si la publican */}
+    {/* Ejemplo de X simple */}
     <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7c0.4,0.4,0.4,1,0,1.4l-1.3,1.3
       c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4
       l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
@@ -24,9 +24,8 @@ const XIcon = ({ size = 16 }) => (
 
 const Footer = () => {
   return (
-    <footer className="bg-lightGreen">
+    <footer className="bg-gradient-to-b from-white to-green-200">
       <div className="container mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-start md:items-center space-y-8 md:space-y-0">
-
         {/* Logo */}
         <div>
           <Link to="/">

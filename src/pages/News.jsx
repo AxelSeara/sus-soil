@@ -1,19 +1,26 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * SkeletonCard:
- * Tarjeta en modo “skeleton” para mostrar
- * mientras se obtienen los datos de posts y eventos.
+ * Componente SkeletonCard: placeholder mientras se cargan los datos
  */
-const SkeletonCard = () => (
-  <div className="bg-white p-4 rounded-xl shadow-md animate-pulse flex flex-col space-y-3">
-    <div className="h-4 bg-gray-300 rounded w-2/3"></div>
-    <div className="h-32 bg-gray-200 rounded"></div>
-    <div className="h-3 bg-gray-300 rounded w-3/4"></div>
-    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-    <div className="h-8 bg-gray-300 rounded w-full mt-auto"></div>
-  </div>
-);
+function SkeletonCard() {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-lg animate-pulse flex flex-col space-y-4">
+      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+      <div className="h-40 bg-gray-200 rounded"></div>
+      <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+      <div className="h-10 bg-gray-300 rounded w-full mt-auto"></div>
+    </div>
+  );
+}
+
+// Variantes para la animación de las tarjetas
+const cardVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeInOut' } },
+};
 
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
@@ -21,10 +28,12 @@ const NewsPage = () => {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
-  // Filtro de tipo: 'all' | 'news' | 'events'
+  // Filtro: 'all' | 'news' | 'events'
   const [filterType, setFilterType] = useState('all');
+  // Estado para mostrar los skeletons brevemente al cambiar el filtro
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
-  // Llamadas a la API de WordPress
+  // Obtención de noticias y eventos desde la API
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -56,204 +65,261 @@ const NewsPage = () => {
     fetchEvents();
   }, []);
 
+  // Cuando se cambie el filtro, mostramos los skeletons por 300ms
+  useEffect(() => {
+    setShowSkeleton(true);
+    const timer = setTimeout(() => {
+      setShowSkeleton(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filterType]);
+
   /**
-   * Unifica posts (News) y eventos, asignándoles un campo “date”
-   * para poder mezclarlos y ordenarlos cronológicamente.
+   * Crea una versión unificada de posts y eventos para el filtro “All”.
+   * Para los eventos se realiza un mapeo que extrae los campos relevantes.
    */
   const allData = useMemo(() => {
-    // Mapeo de noticias
     const mappedPosts = posts.map((p) => ({
       id: p.id,
       type: 'news',
-      date: p.date, // WordPress post.date
+      date: p.date,
       title: p.title.rendered,
-      excerpt: p.excerpt.rendered, // posible recorte
+      excerpt: p.excerpt.rendered,
       featuredMedia: p._embedded?.['wp:featuredmedia']?.[0]?.source_url,
     }));
 
-    // Mapeo de eventos
     const mappedEvents = events.map((e) => ({
       id: e.id,
       type: 'event',
       date: e.acf?.date || e.date,
-      title: e.acf?.title,
-      excerpt: e.acf?.description,
+      title: e.acf?.title || e.title?.rendered || 'Untitled',
+      excerpt: e.acf?.description || '',
       featuredMedia: e._embedded?.['wp:featuredmedia']?.[0]?.source_url,
-      location: e.acf?.location,
+      location: e.acf?.location || '',
     }));
 
-    // Unifica y ordena por fecha (desc)
     const unified = [...mappedPosts, ...mappedEvents].sort((a, b) => {
       return new Date(b.date) - new Date(a.date);
     });
     return unified;
   }, [posts, events]);
 
-  // ============ RENDER DE NOTICIAS ============
+  // Renderiza solo las noticias
   const renderNewsCards = () => {
     if (loadingPosts) {
-      // Muestra placeholders mientras cargan las noticias
-      return [...Array(3)].map((_, i) => <SkeletonCard key={`newsSkeleton-${i}`} />);
+      return [...Array(3)].map((_, i) => (
+        <motion.div
+          key={`newsSkeleton-${i}`}
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <SkeletonCard />
+        </motion.div>
+      ));
     }
 
     return posts.map((post) => (
-      <div
+      <motion.div
         key={post.id}
-        className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
+        variants={cardVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="flex flex-col"
       >
-        <h3 className="text-xl font-bold mb-3 text-brown">
-          {post.title.rendered}
-        </h3>
-
-        {post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
-          <img
-            src={post._embedded['wp:featuredmedia'][0].source_url}
-            alt={post.title.rendered}
-            className="w-full h-32 object-cover mb-3 rounded-lg"
+        <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
+          <h3 className="text-2xl font-bold mb-4 text-brown">{post.title.rendered}</h3>
+          {post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
+            <img
+              src={post._embedded['wp:featuredmedia'][0].source_url}
+              alt={post.title.rendered || 'Post image'}
+              className="mb-4 rounded-lg object-cover w-full h-40"
+            />
+          ) : (
+            <div className="w-full h-40 bg-gray-200 mb-4 rounded-lg" />
+          )}
+          <div
+            className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
+            dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
           />
-        ) : (
-          // Placeholder si no hay imagen
-          <div className="w-full h-32 bg-gray-200 mb-3 rounded-lg" />
-        )}
-
-        {/* Texto más corto y line-clamp para reducir altura */}
-        <div
-          className="text-brown mb-3 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
-          dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-        />
-
-        <a
-          href={`/news/${post.id}`}
-          className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
-        >
-          Read More
-        </a>
-      </div>
+          <a
+            href={`/news/${post.id}`}
+            className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
+          >
+            Read More
+          </a>
+        </div>
+      </motion.div>
     ));
   };
 
-  // ============ RENDER DE EVENTOS ============
+  // Renderiza solo los eventos
   const renderEventCards = () => {
     if (loadingEvents) {
-      // Muestra placeholders mientras cargan los eventos
-      return [...Array(3)].map((_, i) => <SkeletonCard key={`eventSkeleton-${i}`} />);
+      return [...Array(3)].map((_, i) => (
+        <motion.div
+          key={`eventSkeleton-${i}`}
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <SkeletonCard />
+        </motion.div>
+      ));
     }
 
-    return events.map((event) => (
-      <div
+    const mappedEvents = events.map((e) => ({
+      id: e.id,
+      title: e.acf?.title || e.title?.rendered || 'Untitled',
+      excerpt: e.acf?.description || '',
+      featuredMedia: e._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      location: e.acf?.location || '',
+      date: e.acf?.date || e.date,
+    }));
+
+    if (mappedEvents.length === 0) {
+      return <p className="text-brown text-center">No events available.</p>;
+    }
+
+    return mappedEvents.map((event) => (
+      <motion.div
         key={event.id}
-        className="bg-darkGreen text-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
+        variants={cardVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="flex flex-col"
       >
-        <h3 className="text-xl font-bold mb-3">{event.title || 'Untitled'}</h3>
-
-        {event.featuredMedia ? (
-          <img
-            src={event.featuredMedia}
-            alt={event.title || 'Event image'}
-            className="w-full h-32 object-cover mb-3 rounded-lg"
-          />
-        ) : (
-          // Placeholder si no hay imagen
-          <div className="w-full h-32 bg-gray-200 mb-3 rounded-lg" />
-        )}
-
-        {/* Texto y ubicación, recortado si es muy largo */}
-        <p className="mb-2 line-clamp-2 overflow-hidden text-ellipsis text-sm">
-          {event.excerpt || ''}
-        </p>
-        {event.location && (
-          <p className="mb-2 text-sm">
-            Location: <span className="font-semibold">{event.location}</span>
+        <div className="bg-darkGreen text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
+          <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
+          {event.featuredMedia ? (
+            <img
+              src={event.featuredMedia}
+              alt={event.title}
+              className="mb-4 rounded-lg object-cover w-full h-40"
+            />
+          ) : (
+            <div className="w-full h-40 bg-gray-200 mb-4 rounded-lg" />
+          )}
+          <p className="mb-2 line-clamp-2 overflow-hidden text-ellipsis text-sm">
+            {event.excerpt || ''}
           </p>
-        )}
-
-        <p className="mb-3 text-sm">
-          Date: <span className="font-semibold">{event.date}</span>
-        </p>
-
-        <a
-          href={`/event/${event.id}`}
-          className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
-        >
-          See Event
-        </a>
-      </div>
+          {event.location && (
+            <p className="mb-2 text-sm">
+              Location: <span className="font-semibold">{event.location}</span>
+            </p>
+          )}
+          <p className="mb-4 text-sm">
+            Date: <span className="font-semibold">{new Date(event.date).toLocaleDateString()}</span>
+          </p>
+          <a
+            href={`/event/${event.id}`}
+            className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
+          >
+            See Event
+          </a>
+        </div>
+      </motion.div>
     ));
   };
 
-  // ============ RENDER DE BOTH (ALL) ============
+  // Renderiza la unión de ambos tipos (news y events)
   const renderAllCards = () => {
     const isLoadingAll = loadingPosts || loadingEvents;
     if (isLoadingAll) {
-      return [...Array(3)].map((_, i) => <SkeletonCard key={`allSkeleton-${i}`} />);
+      return [...Array(3)].map((_, i) => (
+        <motion.div
+          key={`allSkeleton-${i}`}
+          variants={cardVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+        >
+          <SkeletonCard />
+        </motion.div>
+      ));
     }
 
     return allData.map((item) => {
       if (item.type === 'news') {
         return (
-          <div
+          <motion.div
             key={`${item.type}-${item.id}`}
-            className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
+            variants={cardVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="flex flex-col"
           >
-            <h3 className="text-xl font-bold mb-3 text-brown">{item.title}</h3>
-            {item.featuredMedia ? (
-              <img
-                src={item.featuredMedia}
-                alt={item.title}
-                className="w-full h-32 object-cover mb-3 rounded-lg"
+            <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
+              <h3 className="text-2xl font-bold mb-4 text-brown">{item.title}</h3>
+              {item.featuredMedia ? (
+                <img
+                  src={item.featuredMedia}
+                  alt={item.title}
+                  className="mb-4 rounded-lg object-cover w-full h-40"
+                />
+              ) : (
+                <div className="w-full h-40 bg-gray-200 mb-4 rounded-lg" />
+              )}
+              <div
+                className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
+                dangerouslySetInnerHTML={{ __html: item.excerpt || '' }}
               />
-            ) : (
-              <div className="w-full h-32 bg-gray-200 mb-3 rounded-lg" />
-            )}
-            <div
-              className="text-brown mb-3 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
-              dangerouslySetInnerHTML={{ __html: item.excerpt || '' }}
-            />
-            <a
-              href={`/news/${item.id}`}
-              className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
-            >
-              Read More
-            </a>
-          </div>
+              <a
+                href={`/news/${item.id}`}
+                className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
+              >
+                Read More
+              </a>
+            </div>
+          </motion.div>
         );
       } else {
         // item.type === 'event'
         return (
-          <div
+          <motion.div
             key={`${item.type}-${item.id}`}
-            className="bg-darkGreen text-white p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow flex flex-col"
+            variants={cardVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="flex flex-col"
           >
-            <h3 className="text-xl font-bold mb-3">{item.title || 'Untitled'}</h3>
-            {item.featuredMedia ? (
-              <img
-                src={item.featuredMedia}
-                alt={item.title}
-                className="w-full h-32 object-cover mb-3 rounded-lg"
+            <div className="bg-darkGreen text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
+              <h3 className="text-2xl font-bold mb-4">{item.title || 'Untitled'}</h3>
+              {item.featuredMedia ? (
+                <img
+                  src={item.featuredMedia}
+                  alt={item.title}
+                  className="mb-4 rounded-lg object-cover w-full h-40"
+                />
+              ) : (
+                <div className="w-full h-40 bg-gray-200 mb-4 rounded-lg" />
+              )}
+              <div
+                className="mb-2 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
+                dangerouslySetInnerHTML={{ __html: item.excerpt || '' }}
               />
-            ) : (
-              <div className="w-full h-32 bg-gray-200 mb-3 rounded-lg" />
-            )}
-
-            <p className="mb-2 line-clamp-2 overflow-hidden text-ellipsis text-sm">
-              {item.excerpt || ''}
-            </p>
-            {item.location && (
-              <p className="mb-2 text-sm">
-                Location: <span className="font-semibold">{item.location}</span>
+              {item.location && (
+                <p className="mb-2 text-sm">
+                  Location: <span className="font-semibold">{item.location}</span>
+                </p>
+              )}
+              <p className="mb-4 text-sm">
+                Date: <span className="font-semibold">{new Date(item.date).toLocaleDateString()}</span>
               </p>
-            )}
-            <p className="mb-3 text-sm">
-              Date: <span className="font-semibold">{item.date}</span>
-            </p>
-
-            <a
-              href={`/event/${item.id}`}
-              className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
-            >
-              See Event
-            </a>
-          </div>
+              <a
+                href={`/event/${item.id}`}
+                className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
+              >
+                See Event
+              </a>
+            </div>
+          </motion.div>
         );
       }
     });
@@ -266,7 +332,7 @@ const NewsPage = () => {
           Latest News & Events
         </h2>
 
-        {/* Botones de filtro: All / News / Events */}
+        {/* Botones de filtro */}
         <div className="flex justify-center items-center space-x-4 mb-8">
           <button
             onClick={() => setFilterType('all')}
@@ -294,13 +360,30 @@ const NewsPage = () => {
           </button>
         </div>
 
-        {/* Contenedor de tarjetas */}
+        {/* Contenedor de tarjetas con AnimatePresence */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filterType === 'all'
-            ? renderAllCards()
-            : filterType === 'news'
-            ? renderNewsCards()
-            : renderEventCards()}
+          <AnimatePresence>
+            {showSkeleton ? (
+              // Se muestran 3 skeletons durante la transición
+              [...Array(3)].map((_, i) => (
+                <motion.div
+                  key={`transition-skel-${i}`}
+                  variants={cardVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  <SkeletonCard />
+                </motion.div>
+              ))
+            ) : filterType === 'all' ? (
+              renderAllCards()
+            ) : filterType === 'news' ? (
+              renderNewsCards()
+            ) : (
+              renderEventCards()
+            )}
+          </AnimatePresence>
         </div>
       </section>
     </div>

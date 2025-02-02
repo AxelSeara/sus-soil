@@ -50,7 +50,7 @@ const MapaAlternative = () => {
 
   return (
     <motion.section
-      className="relative py-24 px-4 bg-white"
+      className="relative py-24 px-4 bg-gradient-to-b from-green-200 to-white"
       variants={containerVariants}
       initial="hidden"
       whileInView="visible"
@@ -155,8 +155,7 @@ const MapaAlternative = () => {
         <div className="text-center mt-12">
           <Link
             to="/living-labs"
-            className="px-8 py-4 bg-brown text-white font-bold rounded-full shadow-md 
-                      hover:bg-opacity-90 transition-transform duration-200 transform hover:-translate-y-1"
+            className="px-8 py-4 bg-brown text-white font-bold rounded-full shadow-md hover:bg-opacity-90 transition-transform duration-200 transform hover:-translate-y-1"
           >
             View More about Living Labs
           </Link>
