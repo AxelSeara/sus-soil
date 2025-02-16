@@ -19,7 +19,6 @@ const News = () => {
   const [loadingEvents, setLoadingEvents] = useState(true);
 
   useEffect(() => {
-    // Llamada a la API para posts (noticias)
     const fetchPosts = async () => {
       try {
         const response = await fetch(
@@ -34,7 +33,6 @@ const News = () => {
       }
     };
 
-    // Llamada a la API para eventos
     const fetchEvents = async () => {
       try {
         const response = await fetch(
@@ -55,9 +53,9 @@ const News = () => {
 
   return (
     <>
-      {/* Sección Latest News sin contenedor envolvente */}
+      {/* Sección Latest News */}
       <section className="py-12 px-6 md:px-16 my-8">
-        <h2 className="text-4xl font-bold text-center mb-10 text-brown">
+        <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
           Latest News
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -68,18 +66,16 @@ const News = () => {
                   key={post.id}
                   className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-[0_0_20px_rgba(110,187,120,0.7)] transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col"
                 >
-                  <h3 className="text-2xl font-bold mb-4 text-brown">
+                  <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
                     {post.title.rendered}
                   </h3>
-                  {post._embedded &&
-                    post._embedded['wp:featuredmedia'] &&
-                    post._embedded['wp:featuredmedia'][0].source_url && (
-                      <img
-                        src={post._embedded['wp:featuredmedia'][0].source_url}
-                        alt={post.title.rendered || 'Post image'}
-                        className="mb-4 rounded-lg object-cover w-full h-40"
-                      />
-                    )}
+                  {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+                    <img
+                      src={post._embedded['wp:featuredmedia'][0].source_url}
+                      alt={post.title.rendered || 'Post image'}
+                      className="mb-4 rounded-lg object-cover w-full h-40"
+                    />
+                  )}
                   <div className="mt-auto">
                     <a
                       href={`/news/${post.id}`}
@@ -93,12 +89,12 @@ const News = () => {
         </div>
       </section>
 
-      {/* Separador centrado */}
-      <div className="w-24 mx-auto border-t-2 border-green-500 my-8"></div>
+      {/* Separador */}
+      <div className="w-24 mx-auto border-t-2 border-darkGreen my-8"></div>
 
-      {/* Sección Latest Events sin contenedor envolvente */}
+      {/* Sección Latest Events */}
       <section className="py-12 px-6 md:px-16 my-8">
-        <h2 className="text-4xl font-bold text-center mb-10 text-brown">
+        <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
           Latest Events
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -109,19 +105,17 @@ const News = () => {
                   key={event.id}
                   className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-[0_0_20px_rgba(110,187,120,0.7)] transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col"
                 >
-                  <h3 className="text-2xl font-bold mb-4 text-brown">
+                  <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
                     {event.title.rendered || event.acf?.title || "Untitled Event"}
                   </h3>
-                  {event._embedded &&
-                  event._embedded['wp:featuredmedia'] &&
-                  event._embedded['wp:featuredmedia'][0].source_url ? (
+                  {event._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
                     <img
                       src={event._embedded['wp:featuredmedia'][0].source_url}
                       alt={event.title.rendered || "Event image"}
                       className="mb-4 rounded-lg object-cover w-full h-40"
                     />
                   ) : (
-                    <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg">
+                    <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
                       <span className="text-gray-500">No image available</span>
                     </div>
                   )}

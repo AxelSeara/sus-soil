@@ -2,8 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { AnimatePresence, motion } from 'framer-motion';
-import logo from '../assets/1lineLogo.svg'; // 🔥 Ajusta la ruta según tu estructura
-
+import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg'; // 🔥 Ajusta la ruta según tu estructura
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
@@ -12,15 +11,14 @@ const Navbar = () => {
   return (
     <nav className="fixed w-full z-50 bg-white shadow-md backdrop-blur-lg">
       <div className="max-w-screen-xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
+        {/* Logo (tamaño aumentado a 2x) */}
         <Link to="/" className="flex items-center">
-          <img src={logo} alt="SUS-SOIL Logo" className="h-8" />
+          <img src={logo} alt="SUS-SOIL Logo" className="h-16" />
         </Link>
-
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden text-boreal p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green rounded-lg"
+          className="md:hidden text-boreal p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lightGreen rounded-lg"
           onClick={toggleMenu}
         >
           {open ? <FiX size={24} /> : <FiMenu size={24} />}
@@ -32,7 +30,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 Home
               </Link>
@@ -40,7 +38,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/news"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 News
               </Link>
@@ -48,7 +46,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/living-labs"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 Living Labs
               </Link>
@@ -56,7 +54,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/resources"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 Resources
               </Link>
@@ -64,7 +62,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/knowledge-cloud"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 Knowledge Cloud
               </Link>
@@ -72,7 +70,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/contact"
-                className="text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                className="text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
               >
                 Contact
               </Link>
@@ -96,7 +94,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Home
@@ -105,7 +103,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/news"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   News
@@ -114,7 +112,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/living-labs"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Living Labs
@@ -123,7 +121,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/resources"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Resources
@@ -132,7 +130,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/knowledge-cloud"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Knowledge Cloud
@@ -141,7 +139,7 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/contact"
-                  className="block text-boreal p-2 rounded-lg hover:bg-green hover:text-white transition-colors"
+                  className="block text-boreal p-2 rounded-lg hover:bg-lightGreen hover:text-white transition-colors"
                   onClick={() => setOpen(false)}
                 >
                   Contact

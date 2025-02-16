@@ -1,6 +1,6 @@
 // EventDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   FaFacebookF,
@@ -43,17 +43,38 @@ const BlueskyIcon = ({ size = 16 }) => (
 /**
  * Helper para formatear la fecha para Google Calendar.
  * Se asume un evento de día completo.
+ * Si la fecha es inválida, retorna '00000000'.
  */
 const formatDateForCalendar = (dateStr) => {
   const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '00000000';
   const year = d.getUTCFullYear();
   const month = ('0' + (d.getUTCMonth() + 1)).slice(-2);
   const day = ('0' + d.getUTCDate()).slice(-2);
   return `${year}${month}${day}`;
 };
 
+/**
+ * Helper para generar un slug a partir del título y la fecha.
+ * El slug tendrá el formato: titulo-slug-YYYY-MM-DD.
+ * Si la fecha es inválida, se usará 'unknown-date'.
+ */
+const generateSlug = (title, date) => {
+  let datePart = 'unknown-date';
+  const d = new Date(date);
+  if (!isNaN(d.getTime())) {
+    datePart = d.toISOString().slice(0, 10); // Formato YYYY-MM-DD
+  }
+  const slugifiedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return `${slugifiedTitle}-${datePart}`;
+};
+
 const EventDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [showShareOptions, setShowShareOptions] = useState(false);
@@ -80,6 +101,19 @@ const EventDetail = () => {
     };
     fetchEvent();
   }, [id]);
+
+  // Una vez cargado el evento, actualizamos la URL para incluir el slug (título y fecha)
+  useEffect(() => {
+    if (event) {
+      const titleText = event.acf?.title || event.title?.rendered || 'no-title';
+      const eventDate = event.acf?.date || event.date;
+      const slug = generateSlug(titleText, eventDate);
+      const expectedPath = `/event/${event.id}-${slug}`;
+      if (window.location.pathname !== expectedPath) {
+        navigate(expectedPath, { replace: true });
+      }
+    }
+  }, [event, navigate]);
 
   if (loadingEvent) {
     return (
@@ -212,15 +246,15 @@ const EventDetail = () => {
             )}
           </div>
           {/* Columna derecha: Detalles en tarjeta vertical (formato A4) */}
-          <div className="bg-green-200 p-6 rounded-xl shadow-lg flex flex-col min-h-[800px]">
+          <div className="bg-darkGreen-20 p-6 rounded-xl shadow-lg flex flex-col min-h-[800px]">
             <h1 className="text-3xl sm:text-4xl font-bold text-brown mb-4">
               {title}
             </h1>
-            <p className="text-gray-500 text-sm mb-2">
+            <p className="text-brown text-sm mb-2">
               Date: <span className="font-medium">{new Date(date).toLocaleDateString()}</span>
             </p>
             {location && (
-              <p className="text-gray-500 text-sm mb-4">
+              <p className="text-brown text-sm mb-4">
                 Location: <span className="font-medium">{location}</span>
               </p>
             )}
@@ -237,7 +271,7 @@ const EventDetail = () => {
             href={calendarLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-brown text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
+            className="bg-brown text-white px-6 py-3 rounded-full hover:bg-brown-80 transition-colors"
           >
             Add to Calendar
           </a>
@@ -340,7 +374,7 @@ const EventDetail = () => {
         <div className="mt-12 text-center">
           <Link
             to="/news"
-            className="bg-brown text-white px-6 py-3 rounded-full hover:bg-opacity-90 transition-colors"
+            className="bg-brown text-white px-6 py-3 rounded-full hover:bg-brown-80 transition-colors"
           >
             Back to Events & News
           </Link>

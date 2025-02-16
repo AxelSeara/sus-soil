@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
@@ -20,6 +21,20 @@ const cardVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } },
   exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeInOut' } },
+};
+
+/**
+ * Función auxiliar para generar un slug SEO friendly
+ * Formato: id-slugifiedTitle-YYYY-MM-DD
+ */
+const generateNewsSlug = (id, title, date) => {
+  const d = new Date(date);
+  const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10);
+  const slugifiedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
 const NewsPage = () => {
@@ -83,8 +98,8 @@ const NewsPage = () => {
       id: p.id,
       type: 'news',
       date: p.date,
-      title: p.title.rendered,
-      excerpt: p.excerpt.rendered,
+      title: p.title.rendered || 'No Title',
+      excerpt: p.excerpt.rendered || '',
       featuredMedia: p._embedded?.['wp:featuredmedia']?.[0]?.source_url,
     }));
 
@@ -130,7 +145,9 @@ const NewsPage = () => {
         className="flex flex-col"
       >
         <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-          <h3 className="text-2xl font-bold mb-4 text-brown">{post.title.rendered}</h3>
+          <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
+            {post.title.rendered}
+          </h3>
           {post._embedded?.['wp:featuredmedia']?.[0]?.source_url ? (
             <img
               src={post._embedded['wp:featuredmedia'][0].source_url}
@@ -144,12 +161,13 @@ const NewsPage = () => {
             className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
             dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
           />
-          <a
-            href={`/news/${post.id}`}
+          {/* Aquí se utiliza Link con una URL SEO friendly */}
+          <Link
+            to={`/news/${generateNewsSlug(post.id, post.title.rendered, post.date)}`}
             className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
           >
             Read More
-          </a>
+          </Link>
         </div>
       </motion.div>
     ));
@@ -194,7 +212,7 @@ const NewsPage = () => {
         className="flex flex-col"
       >
         <div className="bg-darkGreen text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-          <h3 className="text-2xl font-bold mb-4">{event.title}</h3>
+          <h3 className="text-2xl font-medium font-serif mb-4">{event.title}</h3>
           {event.featuredMedia ? (
             <img
               src={event.featuredMedia}
@@ -215,12 +233,12 @@ const NewsPage = () => {
           <p className="mb-4 text-sm">
             Date: <span className="font-semibold">{new Date(event.date).toLocaleDateString()}</span>
           </p>
-          <a
-            href={`/event/${event.id}`}
+          <Link
+            to={`/event/${event.id}`}
             className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
           >
             See Event
-          </a>
+          </Link>
         </div>
       </motion.div>
     ));
@@ -255,7 +273,7 @@ const NewsPage = () => {
             className="flex flex-col"
           >
             <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-              <h3 className="text-2xl font-bold mb-4 text-brown">{item.title}</h3>
+              <h3 className="text-2xl font-medium font-serif mb-4 text-brown">{item.title}</h3>
               {item.featuredMedia ? (
                 <img
                   src={item.featuredMedia}
@@ -269,12 +287,12 @@ const NewsPage = () => {
                 className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
                 dangerouslySetInnerHTML={{ __html: item.excerpt || '' }}
               />
-              <a
-                href={`/news/${item.id}`}
+              <Link
+                to={`/news/${generateNewsSlug(item.id, item.title, item.date)}`}
                 className="bg-brown text-white px-4 py-2 rounded-full hover:bg-brown-80 transition-colors text-center"
               >
                 Read More
-              </a>
+              </Link>
             </div>
           </motion.div>
         );
@@ -290,7 +308,7 @@ const NewsPage = () => {
             className="flex flex-col"
           >
             <div className="bg-darkGreen text-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-              <h3 className="text-2xl font-bold mb-4">{item.title || 'Untitled'}</h3>
+              <h3 className="text-2xl font-medium font-serif mb-4">{item.title || 'Untitled'}</h3>
               {item.featuredMedia ? (
                 <img
                   src={item.featuredMedia}
@@ -312,12 +330,12 @@ const NewsPage = () => {
               <p className="mb-4 text-sm">
                 Date: <span className="font-semibold">{new Date(item.date).toLocaleDateString()}</span>
               </p>
-              <a
-                href={`/event/${item.id}`}
+              <Link
+                to={`/event/${item.id}`}
                 className="bg-white text-darkGreen px-4 py-2 rounded-full hover:text-darkGreen-80 transition-colors text-center mt-auto"
               >
                 See Event
-              </a>
+              </Link>
             </div>
           </motion.div>
         );
@@ -328,7 +346,7 @@ const NewsPage = () => {
   return (
     <div className="bg-white min-h-screen">
       <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-bold mb-8 mt-16 text-center text-brown">
+        <h2 className="text-3xl font-medium font-serif mb-8 mt-16 text-center text-brown">
           Latest News & Events
         </h2>
 

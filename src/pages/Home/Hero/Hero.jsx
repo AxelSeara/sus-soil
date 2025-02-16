@@ -1,136 +1,155 @@
 // Hero.jsx
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Paleta de colores verdes
-const GREEN_COLORS = [
-  '#6eba77',
-  '#87c27b',
-  '#9dbf4c',
-  '#add946',
-  '#a6d776',
-  '#6EBA77',
-];
+// Tonos de verde
+const darkGreen = "#6EBA77"; // Tailwind: darkGreen
+const green = "#89C37B";     // Tailwind: green
 
-// Variants para animar cada forma
+// Hook para detectar si es móvil (ancho < 768px)
+const useIsMobile = () => {
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  return width < 768;
+};
+
+// Pequeña función para generar una forma aleatoria:
+//   - shapeType: circle, left, right
+//   - color: darkGreen, green
+function randomShape() {
+  const shapes = ["circle", "left", "right"];
+  const colors = ["darkGreen", "green"];
+  return {
+    shapeType: shapes[Math.floor(Math.random() * shapes.length)],
+    color: colors[Math.floor(Math.random() * colors.length)],
+  };
+}
+
+// Mapa de colores
+const colorMap = {
+  darkGreen,
+  green,
+};
+
+// Variants para animar cada figura
 const shapeVariants = {
-  initial: { scale: 0, opacity: 0 },
-  animate: {
-    scale: 1.2, // Las formas crecen un poco más
-    opacity: 0.8,
+  hidden: { scale: 0, opacity: 0 },
+  show: {
+    scale: 1,
+    opacity: 1,
+    transition: { duration: 0.6, ease: 'easeInOut' },
+  },
+};
+
+// Variants para el contenedor (stagger)
+const containerVariants = {
+  hidden: {},
+  show: {
     transition: {
-      duration: 2.5, // Duración extendida para una animación más suave
-      ease: 'easeInOut',
+      staggerChildren: 0.1,
     },
   },
 };
 
-// Variants para el texto y el botón
-const textVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: 'easeOut' },
-  },
-};
-
-// Función para generar una forma aleatoria
-function createRandomShape() {
-  // Tamaño aleatorio entre 100 y 300 px
-  const size = Math.floor(Math.random() * 200) + 100;
-  // Posición aleatoria (%) en toda la superficie
-  const top = Math.floor(Math.random() * 100);
-  const left = Math.floor(Math.random() * 100);
-  // Color aleatorio de la paleta
-  const color = GREEN_COLORS[Math.floor(Math.random() * GREEN_COLORS.length)];
-
-  // Elegimos si es círculo o semicírculo
-  const shapeType = Math.random() < 0.5 ? 'circle' : 'semicircle';
-
-  return {
-    id: Date.now() + '_' + Math.random(), // identificador único
-    size,
-    top,
-    left,
-    color,
-    shapeType,
-  };
-}
-
 export default function Hero() {
-  const [shapes, setShapes] = useState([]);
+  const isMobile = useIsMobile();
 
-  useEffect(() => {
-    // Agrega la primera tanda de formas
-    const initialShapes = Array.from({ length: 3 }).map(() => createRandomShape());
-    setShapes(initialShapes);
+  // Total de figuras:
+  //  - 12 en móvil
+  //  - 24 en escritorio
+  const totalShapes = isMobile ? 12 : 24;
 
-    // Cada 4 segundos, agrega una forma nueva
-    const interval = setInterval(() => {
-      setShapes((prev) => [...prev, createRandomShape()]);
-    }, 4000);
-
-    // Limpia el intervalo al desmontar
-    return () => clearInterval(interval);
-  }, []);
+  // Generamos el array de figuras
+  const [shapes] = useState(() =>
+    Array.from({ length: totalShapes }, () => randomShape())
+  );
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-green-200">
-      {/* Renderizamos cada forma */}
-      {shapes.map((shape) => (
-        <motion.div
-          key={shape.id}
-          variants={shapeVariants}
-          initial="initial"
-          animate="animate"
-          className="absolute"
-          style={{
-            width: shape.size,
-            height: shape.size,
-            top: shape.top + '%',
-            left: shape.left + '%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: shape.color,
-            opacity: 0.8,
-            borderRadius: shape.shapeType === 'circle' ? '9999px' : '9999px 9999px 0 0',
-            boxShadow: '0 0 20px rgba(0,0,0,0.2)',
-          }}
-        />
-      ))}
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-lightGreen">
+      {/* Contenedor flex que aloja las figuras */}
+      <motion.div
+        className="absolute inset-0 flex flex-wrap"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        {shapes.map((shape, i) => {
+          // Forzamos cada celda a 1/6 del ancho (6 columnas)
+          // y un cuadrado (usando pb-[100%])
+          return (
+            <motion.div
+              key={i}
+              className="relative w-1/6"
+              variants={shapeVariants}
+            >
+              {/* Capa para forzar cuadrado */}
+              <div className="pb-[100%]" />
+              {/* Contenedor para la forma */}
+              <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+                {renderShape(shape)}
+              </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
 
       {/* Contenido principal */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-left text-brown">
-        {/* Título animado */}
-        <motion.h1
-          className="text-5xl md:text-6xl font-extrabold mb-6"
-          variants={textVariants}
-          initial="hidden"
-          animate="visible"
-        >
+      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-left text-brown font-serif">
+        <h1 className="text-3xl md:text-4xl font-extrabold mb-6">
           Sustainable Soil and Subsoil Health Promotion
-        </motion.h1>
-
-        {/* Párrafo animado */}
-        <motion.p
-          className="mb-8 text-xl md:text-2xl leading-relaxed"
-          variants={textVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          By implementing agroecological land use and management
-        </motion.p>
-
-        {/* Botón animado */}
-        <motion.button
-          className="px-8 py-4 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-lg md:text-xl hover:bg-opacity-90"
-          variants={textVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        </h1>
+        <p className="mb-8 text-lg md:text-xl leading-relaxed">
+          By implementing agroecological land use and management.
+        </p>
+        <button className="px-6 py-3 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-base md:text-lg hover:bg-opacity-90">
           Learn More About The Project
-        </motion.button>
+        </button>
       </div>
     </div>
   );
+}
+
+// Renderiza la forma correspondiente
+function renderShape({ shapeType, color }) {
+  const bgColor = colorMap[color];
+
+  if (shapeType === "circle") {
+    // Círculo perfecto: rellena el cuadrado
+    return (
+      <div
+        className="absolute w-full h-full rounded-full"
+        style={{ backgroundColor: bgColor }}
+      />
+    );
+  } else if (shapeType === "left") {
+    // Semicírculo anclado a la izquierda
+    // Ponemos un contenedor 2x de ancho y recortamos la mitad izquierda
+    return (
+      <div
+        className="absolute w-[200%] h-full rounded-full"
+        style={{
+          backgroundColor: bgColor,
+          clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
+        }}
+      />
+    );
+  } else {
+    // shapeType === "right"
+    // Semicírculo anclado a la derecha
+    // Ponemos un contenedor 2x de ancho y recortamos la mitad derecha
+    return (
+      <div
+        className="absolute w-[200%] h-full rounded-full"
+        style={{
+          backgroundColor: bgColor,
+          left: "-100%",
+          clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
+        }}
+      />
+    );
+  }
 }

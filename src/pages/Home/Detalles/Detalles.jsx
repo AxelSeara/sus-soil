@@ -24,13 +24,13 @@ const cardVariants = {
     scale: 1,
     transition: {
       type: 'spring',
-      stiffness: 90, // un poco más de rigidez
-      damping: 20,   // mayor amortiguamiento para suavizar
+      stiffness: 90,
+      damping: 20,
     },
   },
 };
 
-// Objetivos con títulos e íconos (emojis grandes) y texto de ejemplo
+// Objetivos con títulos e íconos
 const objectives = [
   { title: 'Awareness for land managers', emoji: '🌍', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
   { title: 'Supporting EU transformation', emoji: '🔄', text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.' },
@@ -40,70 +40,50 @@ const objectives = [
 
 export default function Detalles() {
   return (
-    <>
-      {/* Estilos en línea para animar el gradiente de los íconos */}
-      <style>
-        {`
-          @keyframes gradientMotion {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          .icon-gradient-bg {
-            background: linear-gradient(90deg, #6EBB78, #89C37B, #B0D392, #6EBB78);
-            background-size: 200% 200%;
-            animation: gradientMotion 5s infinite ease-in-out;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          }
-        `}
-      </style>
+    <div className="relative py-24 px-4 bg-lightGreen">
+      <div className="max-w-screen-xl mx-auto">
+        {/* Tarjeta principal */}
+        <motion.div
+          className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
+            The Project
+          </h2>
+          <p className="text-lg md:text-xl text-brown font-sans max-w-4xl mt-4">
+            SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil management and land uses and their impacts.
+          </p>
+        </motion.div>
 
-      <div className="relative py-24 px-4 bg-green-200">
-        <div className="max-w-screen-xl mx-auto">
-          {/* Tarjeta principal */}
-          <motion.div
-            className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-          >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-brown">
-              The Project
-            </h2>
-            <p className="text-lg md:text-xl text-brown max-w-4xl mt-4">
-              SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil management and land uses and their impacts.
-            </p>
-          </motion.div>
-
-          {/* Grid de tarjetas */}
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {objectives.map((obj, index) => (
-              <motion.div
-                key={index}
-                className="rounded-xl bg-white/50 backdrop-blur-md shadow-md p-6 text-center cursor-pointer hover:shadow-xl hover:bg-white/70 transition-all duration-300"
-                variants={cardVariants}
-              >
-                {/* Ícono grande con gradiente animado */}
-                <div className="text-6xl icon-gradient-bg">{obj.emoji}</div>
-                <h3 className="text-brown font-bold text-lg mt-4">
-                  {obj.title}
-                </h3>
-                <p className="text-sm text-gray-700 mt-2">
-                  {obj.text}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+        {/* Grid de tarjetas */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {objectives.map((obj, index) => (
+            <motion.div
+              key={index}
+              className="rounded-xl bg-white/50 backdrop-blur-md shadow-md p-6 text-center cursor-pointer hover:shadow-xl hover:bg-white/70 transition-all duration-300"
+              variants={cardVariants}
+            >
+              {/* Ícono grande con color darkGreen */}
+              <div className="text-6xl text-darkGreen">{obj.emoji}</div>
+              <h3 className="text-brown font-medium font-serif text-lg mt-4">
+                {obj.title}
+              </h3>
+              <p className="text-sm text-brown font-sans mt-2">
+                {obj.text}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
-    </>
+    </div>
   );
 }

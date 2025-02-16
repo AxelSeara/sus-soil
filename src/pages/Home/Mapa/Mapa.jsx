@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Link } from 'react-router-dom'; // ¡Importa Link aquí!
-import CountUp from 'react-countup'; // Optional: if you prefer using a library for count up
-import mapImage from '../../../assets/map.png'; // Adjust the path if necessary
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import mapImage from '../../../assets/map.png';
 
-// Variant to animate the section from the left
+// Variants para animaciones
 const sectionVariants = {
   hidden: { x: -100, opacity: 0 },
   visible: {
@@ -14,7 +13,6 @@ const sectionVariants = {
   },
 };
 
-// Variants for container and cards
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -42,15 +40,7 @@ const itemVariants = {
   },
 };
 
-// Sample objectives with example text
-const objectives = [
-  { title: 'Awareness for land managers', emoji: '🌍', text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
-  { title: 'Supporting EU transformation', emoji: '🔄', text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.' },
-  { title: 'Ecosystem services delivery', emoji: '🌿', text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere.' },
-  { title: 'Water security & climate', emoji: '💧', text: 'Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque.' },
-];
-
-// Regions for Living Labs
+// Regiones de Living Labs
 const regions = [
   { id: 'Boreal', label: 'Boreal', color: '#284b55' },
   { id: 'Atlantic', label: 'Atlantic', color: '#2e8479' },
@@ -65,21 +55,20 @@ const regions = [
 const MapaAlternative = () => {
   const [activeRegion, setActiveRegion] = useState(null);
 
-  // Toggle active region on click
   const handleRegionClick = (regionId) => {
     setActiveRegion((prev) => (prev === regionId ? null : regionId));
   };
 
   return (
     <motion.section
-      className="relative py-24 px-4 bg-gradient-to-b from-green-200 to-white"
+      className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white"
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
     >
       <div className="max-w-screen-xl mx-auto">
-        {/* Main Card */}
+        {/* Tarjeta principal */}
         <motion.div
           className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
           initial={{ opacity: 0, y: 30 }}
@@ -87,15 +76,15 @@ const MapaAlternative = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold text-brown">
+          <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
             Consortium & Living Labs
           </h2>
-          <p className="text-lg md:text-xl text-brown max-w-4xl mt-4">
+          <p className="text-lg md:text-xl text-brown font-sans max-w-4xl mt-4">
             Explore the different types of ecosystems and areas we work in, as well as the overall location of our Living Labs.
           </p>
         </motion.div>
 
-        {/* Grid of Cards */}
+        {/* Grid de tarjetas */}
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           variants={containerVariants}
@@ -103,12 +92,12 @@ const MapaAlternative = () => {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {/* Map Card: now only the circular map image with a subtle shadow */}
+          {/* Mapa */}
           <motion.div className="relative w-80 h-80 rounded-full overflow-hidden shadow-sm mx-auto" variants={itemVariants}>
             <img
               src={mapImage}
               alt="Map"
-              className="w-600 h-600 object-cover"
+              className="w-full h-full object-cover"
             />
             {activeRegion && (
               <motion.div
@@ -133,7 +122,7 @@ const MapaAlternative = () => {
             )}
           </motion.div>
 
-          {/* Info Card: Summary with CountUp values in a single column */}
+          {/* Resumen con CountUp */}
           <motion.div
             className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 flex flex-col items-center"
             variants={itemVariants}
@@ -145,20 +134,20 @@ const MapaAlternative = () => {
               className="flex flex-col items-center"
             >
               <motion.div className="text-4xl font-bold text-brown">
-                <CountUpWrapper end={22} duration={2} />
+                22
               </motion.div>
               <p className="text-sm text-brown mt-1">Partners</p>
               <motion.div className="text-4xl font-bold text-brown mt-4">
-                <CountUpWrapper end={13} duration={2} />
+                13
               </motion.div>
               <p className="text-sm text-brown mt-1">Countries</p>
               <motion.div className="text-4xl font-bold text-brown mt-4">
-                <CountUpWrapper end={15} duration={2} />
+                15
               </motion.div>
               <p className="text-sm text-brown mt-1">Living Labs</p>
             </motion.div>
 
-            {/* Region Buttons */}
+            {/* Botones de regiones */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               {regions.map((region) => {
                 const isActive = activeRegion === region.id;
@@ -181,7 +170,7 @@ const MapaAlternative = () => {
           </motion.div>
         </motion.div>
 
-        {/* "View More about Living Labs" Button */}
+        {/* Botón "View More about Living Labs" */}
         <div className="text-center mt-12">
           <Link
             to="/living-labs"
@@ -193,26 +182,6 @@ const MapaAlternative = () => {
       </div>
     </motion.section>
   );
-};
-
-// CountUpWrapper: simple count-up animation without external libraries,
-// triggered when the component is in view.
-const CountUpWrapper = ({ end, duration }) => {
-  const [count, setCount] = useState(0);
-  React.useEffect(() => {
-    let start = 0;
-    const increment = end / (duration * 60); // assuming 60fps
-    const counter = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        start = end;
-        clearInterval(counter);
-      }
-      setCount(Math.floor(start));
-    }, 1000 / 60);
-    return () => clearInterval(counter);
-  }, [end, duration]);
-  return <span>{count}</span>;
 };
 
 export default MapaAlternative;

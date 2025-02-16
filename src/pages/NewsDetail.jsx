@@ -1,10 +1,11 @@
-// EventDetail.jsx
+// NewsDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaEnvelope, FaWhatsapp, FaTelegramPlane, FaCopy } from 'react-icons/fa';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6'; // Ícono X para Twitter
+
 // Ícono para Bluesky (muy simplificado: una "B")
 const BlueskyIcon = ({ size = 16 }) => (
   <svg
@@ -21,15 +22,17 @@ const BlueskyIcon = ({ size = 16 }) => (
 );
 
 /**
- * Helper para formatear la fecha para Google Calendar.
- * Se asume un evento de día completo.
+ * Helper para generar un slug SEO friendly para una noticia.
+ * El formato será: id-slugifiedTitle-YYYY-MM-DD
  */
-const formatDateForCalendar = (dateStr) => {
-  const d = new Date(dateStr);
-  const year = d.getUTCFullYear();
-  const month = ('0' + (d.getUTCMonth() + 1)).slice(-2);
-  const day = ('0' + d.getUTCDate()).slice(-2);
-  return `${year}${month}${day}`;
+const generateNewsSlug = (id, title, date) => {
+  const d = new Date(date);
+  const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10); // YYYY-MM-DD
+  const slugifiedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
 // ===================== SKELETON COMPONENTS =====================
@@ -62,7 +65,9 @@ const SkeletonEventCard = () => (
 
 // ===================== COMPONENT =====================
 const NewsDetail = () => {
-  const { id } = useParams();
+  // Extraemos el parámetro "id" de la URL y separamos el valor numérico
+  const { id: routeId } = useParams();
+  const id = routeId.split('-')[0]; // Por ejemplo, "56" de "56-we-rise-by-lifting-others-2018-09-07"
 
   // Estados para la publicación principal
   const [post, setPost] = useState(null);
@@ -146,7 +151,7 @@ const NewsDetail = () => {
   if (!post) {
     return (
       <div className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-bold text-red-500">Post not found</h2>
+        <h2 className="text-2xl font-serif font-medium text-red-500">Post not found</h2>
       </div>
     );
   }
@@ -154,6 +159,9 @@ const NewsDetail = () => {
   const title = post.title?.rendered || 'No Title';
   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
   const dateFormatted = new Date(post.date).toLocaleDateString();
+
+  // Evitamos error si no existe el contenido
+  const content = post.content?.rendered || '<p>No content available.</p>';
 
   const handleCopyLink = async () => {
     try {
@@ -228,9 +236,12 @@ const NewsDetail = () => {
         {/* Header: Back link and title with Back to Events & News button */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-4 mt-16">
           <div className="flex items-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-brown ">{title}</h1>
+            <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown">{title}</h1>
           </div>
-          <Link to="/news" className="mt-4 sm:mt-0 bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 transition-colors">
+          <Link
+            to="/news"
+            className="mt-4 sm:mt-0 bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 transition-colors"
+          >
             Back to Events & News
           </Link>
         </div>
@@ -253,7 +264,7 @@ const NewsDetail = () => {
           Published on <span className="font-medium">{dateFormatted}</span>
         </p>
         <div
-          dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+          dangerouslySetInnerHTML={{ __html: content }}
           className="text-brown leading-relaxed"
         />
 
@@ -305,7 +316,7 @@ const NewsDetail = () => {
 
       {/* Recent News Section */}
       <section className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-bold mb-4 text-brown">Recent News</h2>
+        <h2 className="text-2xl font-serif font-medium mb-4 text-brown">Recent News</h2>
         {loadingRecent && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[...Array(3)].map((_, idx) => (
@@ -317,15 +328,19 @@ const NewsDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
             {recentPosts.map((recentPost) => {
               const recentTitle = recentPost.title?.rendered || 'No Title';
+              const recentDate = new Date(recentPost.date).toLocaleDateString();
               const recentImageUrl =
                 recentPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
               return (
                 <Link
                   key={recentPost.id}
-                  to={`/news/${recentPost.id}`}
+                  to={`/news/${generateNewsSlug(recentPost.id, recentTitle, recentPost.date)}`}
+                  aria-label={`Read news: ${recentTitle} published on ${recentDate}`}
                   className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
                 >
-                  <h3 className="text-lg font-bold text-brown mb-2">{recentTitle}</h3>
+                  <h3 className="text-lg font-serif font-medium text-brown mb-2">
+                    {recentTitle} - {recentDate}
+                  </h3>
                   {recentImageUrl ? (
                     <img
                       src={recentImageUrl}
@@ -335,12 +350,6 @@ const NewsDetail = () => {
                   ) : (
                     <div className="w-full h-48 bg-gray-200 mb-2 rounded" />
                   )}
-                  <p className="text-sm text-brown">
-                    Published on{' '}
-                    <span className="font-medium">
-                      {new Date(recentPost.date).toLocaleDateString()}
-                    </span>
-                  </p>
                 </Link>
               );
             })}
@@ -350,7 +359,7 @@ const NewsDetail = () => {
 
       {/* Latest Events Section */}
       <section className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-bold mb-4 text-brown">Latest Events</h2>
+        <h2 className="text-2xl font-serif font-medium mb-4 text-brown">Latest Events</h2>
         {loadingEvents && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[...Array(3)].map((_, idx) => (
@@ -362,16 +371,18 @@ const NewsDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
             {recentEvents.map((ev) => {
               const evTitle = ev.acf?.title || 'Untitled';
+              const evDate = new Date(ev.acf?.date || ev.date).toLocaleDateString();
               const evImageUrl =
                 ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-              const evDate = ev.acf?.date || ev.date;
               return (
                 <Link
                   key={ev.id}
                   to={`/event/${ev.id}`}
                   className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
                 >
-                  <h3 className="text-lg font-bold text-brown mb-2">{evTitle}</h3>
+                  <h3 className="text-lg font-serif font-medium text-brown mb-2">
+                    {evTitle} - {evDate}
+                  </h3>
                   {evImageUrl ? (
                     <img
                       src={evImageUrl}
@@ -384,7 +395,7 @@ const NewsDetail = () => {
                     </div>
                   )}
                   <p className="text-sm text-brown mb-1">
-                    Date: <span className="font-medium">{new Date(evDate).toLocaleDateString()}</span>
+                    Date: <span className="font-medium">{evDate}</span>
                   </p>
                 </Link>
               );
