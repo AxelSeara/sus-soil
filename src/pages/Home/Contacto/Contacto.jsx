@@ -1,5 +1,4 @@
 import React from 'react';
-import fundedLogo from '../../../assets/EN_FundedbytheEU_RGB_BLACK Outline.png';
 
 const Contacto = () => {
   return (
