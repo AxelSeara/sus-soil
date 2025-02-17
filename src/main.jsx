@@ -1,26 +1,27 @@
+// index.js (o main.jsx, según tu proyecto)
 import React, { StrictMode, useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion } from 'framer-motion';
 import App from './App.jsx';
-import './index.css';
-import logo from './assets/logo.png'; // Asegúrate de la ruta (usa /assets si está en carpeta public)
+import './index.css'; // Importa tus estilos Tailwind
+import logo from './assets/logo.png'; // Ajusta la ruta a tu logo
 
-// Variables de entorno (o booleans fijos)
+// Lee variables de entorno
 const isUnderConstruction = import.meta.env.VITE_UNDER_CONSTRUCTION === 'true';
 const constructionPass = import.meta.env.VITE_CONSTRUCTION_PASS || 'prueba';
 
-// Animación del fondo
+// Animación del fondo (usa tus colores darkGreen y lightGreen)
 const backgroundVariants = {
   initial: {
     background: [
-      'linear-gradient(120deg, #9dbf4c, #add946)',
-      'linear-gradient(120deg, #add946, #9dbf4c)',
+      'linear-gradient(120deg, #6EBA77, #B0D392)',
+      'linear-gradient(120deg, #B0D392, #6EBA77)',
     ],
   },
   animate: {
     background: [
-      'linear-gradient(120deg, #add946, #9dbf4c)',
-      'linear-gradient(120deg, #9dbf4c, #add946)',
+      'linear-gradient(120deg, #B0D392, #6EBA77)',
+      'linear-gradient(120deg, #6EBA77, #B0D392)',
     ],
     transition: {
       repeat: Infinity,
@@ -46,7 +47,7 @@ function UnderConstruction() {
     // Simula carga inicial (logo, etc.)
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500); 
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -54,18 +55,17 @@ function UnderConstruction() {
     e.preventDefault();
     if (password === constructionPass) {
       setAuthorized(true);
-      // Almacena en sessionStorage para no pedir pass de nuevo
       sessionStorage.setItem('underConstructionAuthorized', 'true');
     } else {
       setErrorMsg('Wrong password');
     }
   };
 
-  // 1) Si está en modo “carga”, se muestra el spinner
+  // 1) Pantalla de carga
   if (loading) {
     return (
       <motion.div
-        className="h-screen flex flex-col items-center justify-center text-center text-white"
+        className="h-screen flex flex-col items-center justify-center text-center text-white font-sans"
         variants={backgroundVariants}
         initial="initial"
         animate="animate"
@@ -76,7 +76,7 @@ function UnderConstruction() {
     );
   }
 
-  // 2) Si ya está autorizado, carga la app
+  // 2) Si autorizado, carga la app
   if (authorized) {
     return (
       <StrictMode>
@@ -85,18 +85,20 @@ function UnderConstruction() {
     );
   }
 
-  // 3) Pantalla de construcción si no está autorizado
+  // 3) Pantalla de construcción
   return (
     <motion.div
-      className="h-screen flex flex-col items-center justify-center text-center text-white px-4"
+      className="h-screen flex flex-col items-center justify-center text-center text-white px-4 font-sans"
       variants={backgroundVariants}
       initial="initial"
       animate="animate"
     >
-      {/* Asegúrate de que la ruta del logo sea correcta */}
+      {/* Logo */}
       <img src={logo} alt="Logo" className="w-32 mb-6" />
 
-      <h1 className="text-2xl md:text-3xl font-bold mb-2">We're getting ready!</h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-2 font-serif">
+        We're getting ready!
+      </h1>
       <p className="text-lg md:text-xl mb-8">
         Our website is under construction.
       </p>
@@ -105,7 +107,7 @@ function UnderConstruction() {
         <input
           type="password"
           placeholder="Enter construction pass"
-          className="px-4 py-2 mb-2 border border-gray-300 rounded text-gray-800 text-center focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="px-4 py-2 mb-2 border border-brown rounded text-brown text-center focus:outline-none focus:ring-2 focus:ring-darkGreen"
           value={password}
           onChange={(e) => {
             setPassword(e.target.value);
@@ -117,7 +119,7 @@ function UnderConstruction() {
         )}
         <button
           type="submit"
-          className="bg-gray-800 text-white py-2 rounded font-bold hover:bg-gray-700 transition-colors"
+          className="bg-brown text-white py-2 rounded font-bold text-lg hover:bg-opacity-90 focus:ring-2 focus:ring-darkGreen transition-colors"
         >
           Enter
         </button>

@@ -1,33 +1,51 @@
+// Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg'; ;
-
-const XIcon = ({ size = 16 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7c0.4,0.4,0.4,1,0,1.4l-1.3,1.3
-      c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4
-      l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
-  </svg>
-);
+import { XIcon } from './XIcon'; // Ajusta la ruta si lo separaste en un componente
+import susSoilLogo from '../assets/logo.png'; // Ajusta la ruta a tu logo SUS-SOIL
+import euLogo from '../assets/funded-ue-300x61.png'; // Ajusta la ruta a tu logo de la UE
 
 const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-white to-darkGreen">
-      <div className="container mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-start md:items-center space-y-8 md:space-y-0">
-        {/* Logo */}
-        <div>
-          <Link to="/">
-            <img src={logo} alt="SUS-SOIL Logo" className="h-20" />
-          </Link>
+      {/* ===========================
+          PREFOOTER SECTION
+          =========================== */}
+    <div className="bg-white py-8 px-4">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start justify-items-center">
+        {/* Columna 1: Logo SUS-SOIL */}
+        <div className="flex flex-col items-center">
+          {/* Ajusta h-40 si deseas un tamaño mayor para el logo SUS-SOIL */}
+          <img
+            src={susSoilLogo}
+            alt="SUS-SOIL Logo"
+            className="h-40 w-auto mb-4"
+          />
         </div>
 
+        {/* Columna 2: Logo UE + texto de soporte */}
+        <div className="flex flex-col items-center">
+          {/* Logo UE más pequeño (por ejemplo, h-16) */}
+          <img
+            src={euLogo}
+            alt="Funded by the EU"
+            className="h-16 w-auto mb-2"
+          />
+          {/* Texto más pequeño (text-sm), centrado y con ancho máximo ajustable */}
+          <p className="text-xs text-gray-700  leading-snug max-w-[310px]">
+            Views and opinions expressed are however those of the author(s) only and do not necessarily reflect 
+            those of the European Union or the European Research Executive Agency – EREA. Neither the European 
+            Union nor the granting authority can be held responsible for them. Grant agreement ID: 101061051
+          </p>
+        </div>
+      </div>
+    </div>
+
+      {/* ===========================
+          MAIN FOOTER SECTION
+          =========================== */}
+      <div className="container mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-start md:items-center space-y-8 md:space-y-0">
         {/* Quick Links */}
         <div>
           <h3 className="text-brown text-lg font-semibold mb-4">Quick Links</h3>

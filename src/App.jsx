@@ -11,10 +11,13 @@ import Resources from './pages/Resources';
 import KnowledgeCloud from './pages/KnowledgeCloud';
 import Contact from './pages/Contact';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
+import RegionDetail from './pages/RegionDetail';
 
 const App = () => {
   return (
     <Router>
+       <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -22,6 +25,7 @@ const App = () => {
         <Route path="/news/:id" element={<NewsDetail />} />
         <Route path="/event/:id" element={<EventDetail />} /> {/* Nueva ruta para eventos */}
         <Route path="/living-labs" element={<LivingLabs />} />
+        <Route path="/living-labs/:id" element={<RegionDetail />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/knowledge-cloud" element={<KnowledgeCloud />} />
         <Route path="/contact" element={<Contact />} />

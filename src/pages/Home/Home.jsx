@@ -28,7 +28,6 @@ const Home = () => {
       <Map />
       <News posts={posts} /> {/* Añade la sección de noticias */}
       <Colaboradores />
-      <Contact />
     </div>
   );
 };

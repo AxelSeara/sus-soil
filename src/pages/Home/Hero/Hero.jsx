@@ -1,6 +1,6 @@
 // Hero.jsx
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Tonos de verde
 const darkGreen = "#6EBA77"; // Tailwind: darkGreen
@@ -17,9 +17,7 @@ const useIsMobile = () => {
   return width < 768;
 };
 
-// Pequeña función para generar una forma aleatoria:
-//   - shapeType: circle, left, right
-//   - color: darkGreen, green
+// Función para generar una forma aleatoria
 function randomShape() {
   const shapes = ["circle", "left", "right"];
   const colors = ["darkGreen", "green"];
@@ -58,15 +56,19 @@ const containerVariants = {
 export default function Hero() {
   const isMobile = useIsMobile();
 
-  // Total de figuras:
-  //  - 12 en móvil
-  //  - 24 en escritorio
-  const totalShapes = isMobile ? 12 : 24;
+  // Definimos las columnas y la cantidad de figuras según el dispositivo
+  const columns = isMobile ? 3 : 6;
+  // 3 filas en móvil => 3 x 3 = 9 figuras
+  // 3 filas en escritorio => 3 x 6 = 18 figuras
+  const totalShapes = isMobile ? 9 : 18;
 
-  // Generamos el array de figuras
+  // Generamos el array de figuras aleatorias
   const [shapes] = useState(() =>
     Array.from({ length: totalShapes }, () => randomShape())
   );
+
+  // Calculamos la clase de ancho según columnas
+  const widthClass = `w-1/${columns}`;
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-lightGreen">
@@ -77,24 +79,20 @@ export default function Hero() {
         initial="hidden"
         animate="show"
       >
-        {shapes.map((shape, i) => {
-          // Forzamos cada celda a 1/6 del ancho (6 columnas)
-          // y un cuadrado (usando pb-[100%])
-          return (
-            <motion.div
-              key={i}
-              className="relative w-1/6"
-              variants={shapeVariants}
-            >
-              {/* Capa para forzar cuadrado */}
-              <div className="pb-[100%]" />
-              {/* Contenedor para la forma */}
-              <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                {renderShape(shape)}
-              </div>
-            </motion.div>
-          );
-        })}
+        {shapes.map((shape, i) => (
+          <motion.div
+            key={i}
+            className={`relative ${widthClass}`}
+            variants={shapeVariants}
+          >
+            {/* Fuerza la altura a ser igual al ancho (cuadrado) */}
+            <div className="pb-[100%]" />
+            {/* Contenedor para la forma */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+              {renderShape(shape)}
+            </div>
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* Contenido principal */}
@@ -118,7 +116,7 @@ function renderShape({ shapeType, color }) {
   const bgColor = colorMap[color];
 
   if (shapeType === "circle") {
-    // Círculo perfecto: rellena el cuadrado
+    // Círculo perfecto que rellena el cuadrado
     return (
       <div
         className="absolute w-full h-full rounded-full"
@@ -127,7 +125,6 @@ function renderShape({ shapeType, color }) {
     );
   } else if (shapeType === "left") {
     // Semicírculo anclado a la izquierda
-    // Ponemos un contenedor 2x de ancho y recortamos la mitad izquierda
     return (
       <div
         className="absolute w-[200%] h-full rounded-full"
@@ -140,7 +137,6 @@ function renderShape({ shapeType, color }) {
   } else {
     // shapeType === "right"
     // Semicírculo anclado a la derecha
-    // Ponemos un contenedor 2x de ancho y recortamos la mitad derecha
     return (
       <div
         className="absolute w-[200%] h-full rounded-full"
