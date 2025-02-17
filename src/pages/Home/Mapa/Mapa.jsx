@@ -52,12 +52,17 @@ const regions = [
   { id: 'Anatolian', label: 'Anatolian', color: '#a02b16' },
 ];
 
-const MapaAlternative = () => {
+export default function MapaAlternative() {
   const [activeRegion, setActiveRegion] = useState(null);
 
   const handleRegionClick = (regionId) => {
     setActiveRegion((prev) => (prev === regionId ? null : regionId));
   };
+
+  // Buscar la región activa para mostrar info
+  const regionData = activeRegion
+    ? regions.find((r) => r.id === activeRegion)
+    : null;
 
   return (
     <motion.section
@@ -80,7 +85,8 @@ const MapaAlternative = () => {
             Consortium & Living Labs
           </h2>
           <p className="text-lg md:text-xl text-brown font-sans max-w-4xl mt-4">
-            Explore the different types of ecosystems and areas we work in, as well as the overall location of our Living Labs.
+            Explore the different types of ecosystems and areas we work in, as well as
+            the overall location of our Living Labs.
           </p>
         </motion.div>
 
@@ -93,7 +99,10 @@ const MapaAlternative = () => {
           viewport={{ once: true }}
         >
           {/* Mapa */}
-          <motion.div className="relative w-80 h-80 rounded-full overflow-hidden shadow-sm mx-auto" variants={itemVariants}>
+          <motion.div
+            className="relative w-80 h-80 rounded-full overflow-hidden shadow-sm mx-auto"
+            variants={itemVariants}
+          >
             <img
               src={mapImage}
               alt="Map"
@@ -110,52 +119,48 @@ const MapaAlternative = () => {
                 <div
                   className="w-64 h-64 rounded-full flex items-center justify-center"
                   style={{
-                    backgroundColor: regions.find((r) => r.id === activeRegion)?.color,
+                    backgroundColor: regionData?.color,
                     opacity: 0.8,
                   }}
                 >
                   <p className="text-white text-2xl font-semibold">
-                    {regions.find((r) => r.id === activeRegion)?.label}
+                    {regionData?.label}
                   </p>
                 </div>
               </motion.div>
             )}
           </motion.div>
 
-          {/* Resumen con CountUp */}
+          {/* Resumen + Botones de regiones */}
           <motion.div
             className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 flex flex-col items-center"
             variants={itemVariants}
           >
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="flex flex-col items-center"
-            >
-              <motion.div className="text-4xl font-bold text-brown">
-                22
-              </motion.div>
-              <p className="text-sm text-brown mt-1">Partners</p>
-              <motion.div className="text-4xl font-bold text-brown mt-4">
-                13
-              </motion.div>
-              <p className="text-sm text-brown mt-1">Countries</p>
-              <motion.div className="text-4xl font-bold text-brown mt-4">
-                15
-              </motion.div>
-              <p className="text-sm text-brown mt-1">Living Labs</p>
-            </motion.div>
+            {/* Fila de 3 columnas: Partners, Countries, Labs */}
+            <div className="grid grid-cols-3 gap-8 w-full justify-items-center mb-6">
+              <div className="flex flex-col items-center">
+                <motion.div className="text-4xl font-bold text-brown">22</motion.div>
+                <p className="text-sm text-brown mt-1">Partners</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <motion.div className="text-4xl font-bold text-brown">13</motion.div>
+                <p className="text-sm text-brown mt-1">Countries</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <motion.div className="text-4xl font-bold text-brown">15</motion.div>
+                <p className="text-sm text-brown mt-1">Living Labs</p>
+              </div>
+            </div>
 
             {/* Botones de regiones */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
               {regions.map((region) => {
                 const isActive = activeRegion === region.id;
                 return (
                   <motion.button
                     key={region.id}
                     onClick={() => handleRegionClick(region.id)}
-                    className={`block w-full text-center py-2 rounded-full shadow-md font-semibold transition-transform duration-200 ${
+                    className={`block w-full text-center py-2 rounded-full shadow-md font-semibold text-xs md:text-sm whitespace-nowrap transition-transform duration-200 ${
                       isActive ? 'text-white scale-105' : 'text-brown'
                     }`}
                     style={{
@@ -167,6 +172,37 @@ const MapaAlternative = () => {
                 );
               })}
             </div>
+
+            {/* Sección adicional de info cuando se selecciona una región */}
+            {activeRegion && (
+              <motion.div
+                className="mt-8 p-4 bg-white/60 backdrop-blur-md shadow-md rounded w-full"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              >
+                <h3 className="text-xl font-bold text-brown mb-2 font-serif">
+                  More Info about {regionData?.label}
+                </h3>
+                <p className="text-sm text-brown mb-4">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                  Phasellus vel enim ut lorem eleifend dictum in ac nisl. 
+                  Aliquam erat volutpat. Vivamus vehicula facilisis sem, 
+                  at consequat metus imperdiet a.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
+                    Partners Placeholder
+                  </div>
+                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
+                    Collaborators
+                  </div>
+                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
+                    More Data
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
 
@@ -182,6 +218,4 @@ const MapaAlternative = () => {
       </div>
     </motion.section>
   );
-};
-
-export default MapaAlternative;
+}
