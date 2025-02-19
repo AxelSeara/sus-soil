@@ -1,4 +1,4 @@
-// RegionDetail.jsx
+// src/pages/RegionDetail.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
@@ -105,11 +105,15 @@ export default function RegionDetail() {
     setLoadingImg(true);
   }, [id]);
 
+  // Si la región no se encuentra
   if (!region) {
     return (
-      <div className="container mx-auto px-6 py-16 text-center">
+      <div className="container mx-auto px-6 py-16 text-center mt-16">
         <h2 className="text-2xl font-bold text-red-500">Region not found</h2>
-        <Link to="/living-labs" className="text-blue-600 underline mt-4 inline-block">
+        <Link
+          to="/living-labs"
+          className="text-blue-600 underline mt-4 inline-block"
+        >
           Back to Living Labs
         </Link>
       </div>
@@ -118,19 +122,33 @@ export default function RegionDetail() {
 
   return (
     <div className="container mx-auto px-6 py-16">
-      {/* Menú de acceso rápido */}
-      <div className="mb-6 flex flex-wrap justify-center gap-4 mt-16">
-  {regions.map((reg) => (
-    <Link
-      key={reg.id}
-      to={`/living-labs/${reg.id}`}
-      className="bg-white border border-brown text-brown px-4 py-2 rounded-lg font-semibold hover:bg-darkGreen hover:text-white transition-colors shadow-sm"
-    >
-      {reg.id}
-    </Link>
-  ))}
-</div>
+      {/* Quick Menu with all Regions */}
+      <div className="bg-white p-4 rounded shadow-sm mb-6 mt-16">
+        <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">
+          Quick Menu
+        </h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          {/* Link to All Living Labs */}
+          <Link
+            to="/living-labs"
+            className="bg-white border border-brown text-brown px-4 py-2 rounded-lg font-semibold hover:bg-darkGreen hover:text-white transition-colors shadow-sm"
+          >
+            All Living Labs
+          </Link>
+          {/* Links to each region */}
+          {regions.map((reg) => (
+            <Link
+              key={reg.id}
+              to={`/living-labs/${reg.id}`}
+              className="bg-white border border-brown text-brown px-4 py-2 rounded-lg font-semibold hover:bg-darkGreen hover:text-white transition-colors shadow-sm"
+            >
+              {reg.id}
+            </Link>
+          ))}
+        </div>
+      </div>
 
+      {/* Title */}
       <h1 className="text-4xl font-bold text-brown font-serif mb-8 text-center">
         {region.info}
       </h1>
@@ -158,6 +176,8 @@ export default function RegionDetail() {
         </p>
       </div>
 
+      <hr className="my-8 border-brown border" />
+
       {/* Sección: News related */}
       <div className="max-w-3xl mx-auto mb-6">
         <h3 className="text-xl font-bold font-serif text-brown mb-2">
@@ -171,11 +191,15 @@ export default function RegionDetail() {
                 key={i}
                 className="w-full h-20 bg-gray-200 flex items-center justify-center rounded shadow-sm"
               >
-                <span className="text-sm text-gray-700">News Placeholder {i + 1}</span>
+                <span className="text-sm text-gray-700">
+                  News Placeholder {i + 1}
+                </span>
               </div>
             ))}
         </div>
       </div>
+
+      <hr className="my-8 border-brown border" />
 
       {/* Sección: Colaboradores */}
       <div className="max-w-3xl mx-auto mb-6">
@@ -190,11 +214,15 @@ export default function RegionDetail() {
                 key={i}
                 className="w-full h-16 bg-gray-200 flex items-center justify-center rounded shadow-sm"
               >
-                <span className="text-sm text-gray-700">Logo {i + 1}</span>
+                <span className="text-sm text-gray-700">
+                  Logo {i + 1}
+                </span>
               </div>
             ))}
         </div>
       </div>
+
+      <hr className="my-8 border-brown border" />
 
       {/* Sección: Area Responsible */}
       <div className="max-w-3xl mx-auto mb-6">
@@ -211,7 +239,9 @@ export default function RegionDetail() {
               <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center shadow-sm mb-2">
                 <FaUser size={24} className="text-gray-700" />
               </div>
-              <span className="text-sm text-gray-700 font-serif">{person.name}</span>
+              <span className="text-sm text-gray-700 font-serif">
+                {person.name}
+              </span>
             </div>
           ))}
         </div>
