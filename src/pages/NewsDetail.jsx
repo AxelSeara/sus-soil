@@ -2,29 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaFacebookF, FaEnvelope, FaWhatsapp, FaTelegramPlane, FaCopy } from 'react-icons/fa';
-import { FaArrowLeft } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6'; // Ícono X para Twitter
+import {
+  FaCamera,
+  FaShareAlt
+} from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6'; // Icono X para Twitter
+import {
+  SkeletonPostDetail,
+  SkeletonRecentPostCard,
+  SkeletonEventCard,
+} from './Skeletons'; // Make sure you have "Skeletons.jsx" in the same folder
 
-// Ícono para Bluesky (muy simplificado: una "B")
-const BlueskyIcon = ({ size = 16 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <text x="2" y="18" fontSize="18" fontFamily="Arial" fill="currentColor">
-      B
-    </text>
-  </svg>
-);
-
-/**
- * Helper para generar un slug SEO friendly para una noticia.
- * El formato será: id-slugifiedTitle-YYYY-MM-DD
- */
+// Helper to create a slug from the post
 const generateNewsSlug = (id, title, date) => {
   const d = new Date(date);
   const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -35,66 +24,50 @@ const generateNewsSlug = (id, title, date) => {
   return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
-// ===================== SKELETON COMPONENTS =====================
-const SkeletonPostDetail = () => (
-  <div className="animate-pulse">
-    <div className="h-8 bg-gray-300 w-3/4 rounded mb-4"></div>
-    <div className="w-full h-64 bg-gray-200 rounded mb-4"></div>
-    <div className="h-4 bg-gray-300 w-1/2 rounded mb-2"></div>
-    <div className="h-4 bg-gray-200 w-full rounded mb-2"></div>
-    <div className="h-4 bg-gray-200 w-5/6 rounded mb-4"></div>
-  </div>
-);
-
-const SkeletonRecentPostCard = () => (
-  <div className="border p-4 rounded-lg shadow-md animate-pulse">
-    <div className="h-6 bg-gray-300 w-3/4 rounded mb-2"></div>
-    <div className="w-full h-48 bg-gray-200 mb-2 rounded"></div>
-  </div>
-);
-
-const SkeletonEventCard = () => (
-  <div className="border p-4 rounded-lg shadow-md animate-pulse">
-    <div className="h-6 bg-gray-300 w-3/4 rounded mb-2"></div>
-    <div className="w-full h-48 bg-gray-200 mb-2 rounded"></div>
-    <div className="h-4 bg-gray-300 w-1/2 rounded mb-2"></div>
-    <div className="h-4 bg-gray-200 w-2/3 rounded mb-4"></div>
-    <div className="h-8 bg-gray-300 w-full rounded"></div>
-  </div>
-);
-
-// ===================== COMPONENT =====================
-const NewsDetail = () => {
-  // Extraemos el parámetro "id" de la URL y separamos el valor numérico
+export default function NewsDetail() {
+  // We parse the numeric id from route param
   const { id: routeId } = useParams();
-  const id = routeId.split('-')[0]; // Por ejemplo, "56" de "56-we-rise-by-lifting-others-2018-09-07"
+  const numericId = routeId.split('-')[0]; // e.g. "56" from "56-we-rise..."
 
-  // Estados para la publicación principal
+  // States for the main post
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
 
-  // Estados para noticias recientes
+  // States for recent news
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
 
-  // Estados para eventos recientes
+  // States for recent events
   const [recentEvents, setRecentEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
-  // Estados para la sección de compartir
-  const [showShareOptions, setShowShareOptions] = useState(false);
-  const [copySuccess, setCopySuccess] = useState('');
+  // OS Share Handler
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: post?.title?.rendered || 'News',
+          text: `Check out this post: ${post?.title?.rendered}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Sharing failed', error);
+      }
+    } else {
+      console.log('Web Share API not supported in this browser.');
+    }
+  };
 
   useEffect(() => {
-    // Carga la publicación principal
+    // Fetch the main post
     const fetchPost = async () => {
       try {
         setLoadingPost(true);
         const response = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts/${id}?_embed`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts/${numericId}?_embed`
         );
-        const postData = await response.json();
-        setPost(postData);
+        const data = await response.json();
+        setPost(data);
       } catch (error) {
         console.error('Error fetching post:', error);
       } finally {
@@ -103,7 +76,7 @@ const NewsDetail = () => {
       }
     };
 
-    // Carga noticias recientes
+    // Fetch recent posts
     const fetchRecentPosts = async () => {
       try {
         setLoadingRecent(true);
@@ -119,7 +92,7 @@ const NewsDetail = () => {
       }
     };
 
-    // Carga eventos recientes
+    // Fetch recent events
     const fetchRecentEvents = async () => {
       try {
         setLoadingEvents(true);
@@ -129,7 +102,7 @@ const NewsDetail = () => {
         const data = await response.json();
         setRecentEvents(data);
       } catch (error) {
-        console.error('Error fetching recent events:', error);
+        console.error('Error fetching events:', error);
       } finally {
         setLoadingEvents(false);
       }
@@ -138,11 +111,11 @@ const NewsDetail = () => {
     fetchPost();
     fetchRecentPosts();
     fetchRecentEvents();
-  }, [id]);
+  }, [numericId]);
 
   if (loadingPost && !post) {
     return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 mt-16">
         <SkeletonPostDetail />
       </div>
     );
@@ -150,261 +123,196 @@ const NewsDetail = () => {
 
   if (!post) {
     return (
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 mt-16">
         <h2 className="text-2xl font-serif font-medium text-red-500">Post not found</h2>
+        <Link to="/news" className="text-blue-600 underline mt-4 inline-block">
+          Back to News
+        </Link>
       </div>
     );
   }
 
+  // Post data
   const title = post.title?.rendered || 'No Title';
   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
   const dateFormatted = new Date(post.date).toLocaleDateString();
-
-  // Evitamos error si no existe el contenido
   const content = post.content?.rendered || '<p>No content available.</p>';
-
-  const handleCopyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopySuccess('Link copied!');
-      setTimeout(() => setCopySuccess(''), 2000);
-    } catch (err) {
-      setCopySuccess('Failed to copy!');
-    }
-  };
-
-  const toggleShareOptions = () => {
-    setShowShareOptions(!showShareOptions);
-  };
-
-  // Opciones de compartir
-  const shareOptions = [
-    {
-      name: 'Facebook',
-      href: `https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`,
-      bg: 'bg-blue-600',
-      hover: 'hover:bg-blue-700',
-      icon: <FaFacebookF size={16} />,
-    },
-    {
-      name: 'Bluesky',
-      href: `https://blueskyweb.xyz/compose?text=${encodeURIComponent(title + " " + window.location.href)}`,
-      bg: 'bg-sky-400',
-      hover: 'hover:bg-sky-500',
-      icon: <BlueskyIcon size={16} />,
-    },
-    {
-      name: 'Twitter',
-      href: `https://twitter.com/intent/tweet?url=${window.location.href}&text=${encodeURIComponent(title)}`,
-      bg: 'bg-slate-500',
-      hover: 'hover:bg-slate-600',
-      icon: <FaXTwitter size={16} />,
-    },
-    {
-      name: 'Email',
-      href: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this post! ${window.location.href}`,
-      bg: 'bg-gray-600',
-      hover: 'hover:bg-gray-700',
-      icon: <FaEnvelope size={16} />,
-    },
-    {
-      name: 'WhatsApp',
-      href: `https://wa.me/?text=${encodeURIComponent(title + " " + window.location.href)}`,
-      bg: 'bg-green-500',
-      hover: 'hover:bg-green-600',
-      icon: <FaWhatsapp size={16} />,
-    },
-    {
-      name: 'Telegram',
-      href: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(title)}`,
-      bg: 'bg-blue-500',
-      hover: 'hover:bg-blue-600',
-      icon: <FaTelegramPlane size={16} />,
-    },
-    {
-      name: 'Copy Link',
-      onClick: handleCopyLink,
-      bg: 'bg-indigo-500',
-      hover: 'hover:bg-indigo-600',
-      icon: <FaCopy size={16} />,
-    },
-  ];
 
   return (
     <div className="bg-white min-h-screen">
-      <section className="container mx-auto px-4 py-12">
-        {/* Header: Back link and title with Back to Events & News button */}
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-4 mt-16">
-          <div className="flex items-center">
-            <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown">{title}</h1>
+      <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8">
+        {/* Left Column: 1/4 */}
+        <div className="md:col-span-1 mb-8 md:mb-0 flex flex-col space-y-6 mt-16">
+          {/* Region Tag (placeholder) */}
+          <div className="bg-boreal text-white font-bold px-4 py-2 rounded shadow-md">
+            Region: Boreal
           </div>
-          <Link
-            to="/news"
-            className="mt-4 sm:mt-0 bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 transition-colors"
-          >
-            Back to Events & News
-          </Link>
-        </div>
 
-        {/* Main Image */}
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-full max-h-[600px] object-cover rounded-md mb-4"
-          />
-        ) : (
-          <div className="w-full h-[800px] bg-gray-200 rounded-lg flex items-center justify-center">
-            <span className="text-gray-500 text-xl">Here flyer image</span>
+          {/* Publish Date */}
+          <div className="text-sm text-gray-600">
+            Published on: <span className="font-medium">{dateFormatted}</span>
           </div>
-        )}
 
-        {/* Date and Content */}
-        <p className="text-gray-500 text-sm mb-4">
-          Published on <span className="font-medium">{dateFormatted}</span>
-        </p>
-        <div
-          dangerouslySetInnerHTML={{ __html: content }}
-          className="text-brown leading-relaxed"
-        />
-
-        {/* Share Section */}
-        <div className="mt-6">
+          {/* Share Button (OS share) */}
           <button
-            onClick={toggleShareOptions}
-            className="bg-gray-200 text-brown px-6 py-3 rounded-full hover:bg-gray-300 transition-colors"
+            onClick={handleNativeShare}
+            className="bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 transition-colors inline-flex items-center space-x-2"
           >
-            Share
+            <span>Share</span>
+            <FaShareAlt />
           </button>
-          {showShareOptions && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="mt-4 border-t pt-4 max-w-xl mx-auto space-y-2"
-            >
-              {shareOptions.map((option, idx) =>
-                option.href ? (
-                  <a
-                    key={idx}
-                    href={option.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`w-full flex justify-between items-center ${option.bg} ${option.hover} text-white px-4 py-2 rounded transition-colors`}
-                  >
-                    <span>{option.name}</span>
-                    <span>{option.icon}</span>
-                  </a>
-                ) : (
-                  <button
-                    key={idx}
-                    onClick={option.onClick}
-                    className={`w-full flex justify-between items-center ${option.bg} ${option.hover} text-white px-4 py-2 rounded transition-colors`}
-                  >
-                    <span>{option.name}</span>
-                    <span>{option.icon}</span>
-                  </button>
-                )
-              )}
-              {copySuccess && (
-                <p className="mt-2 text-sm text-green-600 text-center">{copySuccess}</p>
-              )}
-            </motion.div>
-          )}
         </div>
-      </section>
 
-      {/* Recent News Section */}
-      <section className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-serif font-medium mb-4 text-brown">Recent News</h2>
-        {loadingRecent && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[...Array(3)].map((_, idx) => (
-              <SkeletonRecentPostCard key={idx} />
-            ))}
-          </div>
-        )}
-        {!loadingRecent && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
-            {recentPosts.map((recentPost) => {
-              const recentTitle = recentPost.title?.rendered || 'No Title';
-              const recentDate = new Date(recentPost.date).toLocaleDateString();
-              const recentImageUrl =
-                recentPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-              return (
-                <Link
-                  key={recentPost.id}
-                  to={`/news/${generateNewsSlug(recentPost.id, recentTitle, recentPost.date)}`}
-                  aria-label={`Read news: ${recentTitle} published on ${recentDate}`}
-                  className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
-                >
-                  <h3 className="text-lg font-serif font-medium text-brown mb-2">
-                    {recentTitle} - {recentDate}
-                  </h3>
-                  {recentImageUrl ? (
-                    <img
-                      src={recentImageUrl}
-                      alt={recentTitle}
-                      className="w-full h-48 object-cover mb-2 rounded"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-200 mb-2 rounded" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
+        {/* Center Column: 2/4 */}
+        <div className="md:col-span-2 mt-16">
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4">
+            {title}
+          </h1>
 
-      {/* Latest Events Section */}
-      <section className="container mx-auto px-4 py-6">
-        <h2 className="text-2xl font-serif font-medium mb-4 text-brown">Latest Events</h2>
-        {loadingEvents && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[...Array(3)].map((_, idx) => (
-              <SkeletonEventCard key={idx} />
-            ))}
-          </div>
-        )}
-        {!loadingEvents && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
-            {recentEvents.map((ev) => {
-              const evTitle = ev.acf?.title || 'Untitled';
-              const evDate = new Date(ev.acf?.date || ev.date).toLocaleDateString();
-              const evImageUrl =
-                ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-              return (
-                <Link
-                  key={ev.id}
-                  to={`/event/${ev.id}`}
-                  className="border p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow flex flex-col"
-                >
-                  <h3 className="text-lg font-serif font-medium text-brown mb-2">
-                    {evTitle} - {evDate}
-                  </h3>
-                  {evImageUrl ? (
-                    <img
-                      src={evImageUrl}
-                      alt={evTitle}
-                      className="w-full h-48 object-cover mb-2 rounded"
-                    />
-                  ) : (
-                    <div className="w-full h-48 bg-gray-200 mb-2 rounded flex items-center justify-center">
-                      <span className="text-gray-500">No image available</span>
-                    </div>
-                  )}
-                  <p className="text-sm text-brown mb-1">
-                    Date: <span className="font-medium">{evDate}</span>
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
+          {/* Main Image + Caption */}
+          {imageUrl ? (
+            <div className="mb-4">
+              <img
+                src={imageUrl}
+                alt={title}
+                className="w-full max-h-[600px] object-cover rounded-md"
+              />
+              <div className="text-sm text-gray-500 flex items-center space-x-2 mt-1">
+                <FaCamera />
+                <span>Photo by Author / Placeholder</span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-[400px] bg-gray-200 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-gray-500 text-xl">Here flyer image</span>
+            </div>
+          )}
 
-      {/* Animación sutil: fade-in */}
+          {/* Post Content */}a
+          <div
+            dangerouslySetInnerHTML={{ __html: content }}
+            className="text-brown leading-relaxed"
+          />
+        </div>
+
+        {/* Right Column: 1/4 (Last news & events + back to news) */}
+        <div className="md:col-span-1 flex flex-col space-y-6 md:mt-0 mt-16">
+          {/* Last News */}
+          <div>
+            <h2 className="text-xl font-serif font-medium text-brown mb-4">
+              Last News
+            </h2>
+            {loadingRecent ? (
+              <div className="grid grid-cols-1 gap-4">
+                {[...Array(3)].map((_, idx) => (
+                  <SkeletonRecentPostCard key={idx} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-4">
+                {recentPosts.map((recentPost) => {
+                  const rTitle = recentPost.title?.rendered || 'No Title';
+                  const rDate = new Date(recentPost.date).toLocaleDateString();
+                  const rImageUrl =
+                    recentPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+
+                  return (
+                    <Link
+                      key={recentPost.id}
+                      to={`/news/${generateNewsSlug(
+                        recentPost.id,
+                        rTitle,
+                        recentPost.date
+                      )}`}
+                      className="flex items-center space-x-3 hover:bg-lightGreen/20 rounded p-2 transition"
+                    >
+                      {/* Circle Image */}
+                      {rImageUrl ? (
+                        <img
+                          src={rImageUrl}
+                          alt={rTitle}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
+                          N/A
+                        </div>
+                      )}
+                      {/* Title */}
+                      <div className="text-sm text-brown">
+                        <div className="font-semibold">{rTitle}</div>
+                        <div className="text-xs text-gray-500">{rDate}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Latest Events */}
+          <div>
+            <h2 className="text-xl font-serif font-medium text-brown mb-4">
+              Latest Events
+            </h2>
+            {loadingEvents ? (
+              <div className="grid grid-cols-1 gap-4">
+                {[...Array(3)].map((_, idx) => (
+                  <SkeletonEventCard key={idx} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-4">
+                {recentEvents.map((ev) => {
+                  const evTitle = ev.acf?.title || 'Untitled';
+                  const evDate = new Date(ev.acf?.date || ev.date).toLocaleDateString();
+                  const evImageUrl =
+                    ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+
+                  return (
+                    <Link
+                      key={ev.id}
+                      to={`/event/${ev.id}`}
+                      className="flex items-center space-x-3 hover:bg-lightGreen/20 rounded p-2 transition"
+                    >
+                      {/* Circle Image */}
+                      {evImageUrl ? (
+                        <img
+                          src={evImageUrl}
+                          alt={evTitle}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">
+                          N/A
+                        </div>
+                      )}
+                      {/* Title */}
+                      <div className="text-sm text-brown">
+                        <div className="font-semibold">{evTitle}</div>
+                        <div className="text-xs text-gray-500">{evDate}</div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Back to news at bottom */}
+          <div className="text-center mt-auto">
+            <Link
+              to="/news"
+              className="inline-block bg-brown text-white py-2 px-6 rounded-lg hover:bg-opacity-80 font-serif"
+            >
+              Back to News
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Fade-in animation */}
       <style>{`
         .fade-in {
           animation: fadeIn 0.8s ease-in forwards;
@@ -416,6 +324,4 @@ const NewsDetail = () => {
       `}</style>
     </div>
   );
-};
-
-export default NewsDetail;
+}

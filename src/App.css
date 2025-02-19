@@ -17,6 +17,10 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+/* In your global CSS or tailwind base file */
+body {
+  padding-top: 64px; /* or 4rem */
+}
 
 @keyframes logo-spin {
   from {
