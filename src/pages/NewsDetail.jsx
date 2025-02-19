@@ -189,7 +189,7 @@ export default function NewsDetail() {
             </div>
           )}
 
-          {/* Post Content */}a
+          {/* Post Content */}
           <div
             dangerouslySetInnerHTML={{ __html: content }}
             className="text-brown leading-relaxed"

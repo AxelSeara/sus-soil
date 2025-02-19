@@ -1,93 +1,81 @@
-// Hero.jsx
+// src/components/Hero.jsx
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-// Tonos de verde
-const darkGreen = "#6EBA77"; // Tailwind: darkGreen
-const green = "#89C37B";     // Tailwind: green
+// Colores originales
+const darkGreen = "#6EBA77"; // Figura: tono oscuro
+const green = "#89C37B";     // Figura: tono medio
 
 // Hook para detectar si es móvil (ancho < 768px)
 const useIsMobile = () => {
-  const [width, setWidth] = useState(window.innerWidth);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(() => {
-    const handleResize = () => setWidth(window.innerWidth);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  return width < 768;
+  return isMobile;
 };
 
-// Función para generar una forma aleatoria
-function randomShape() {
-  const shapes = ["circle", "left", "right"];
-  const colors = ["darkGreen", "green"];
+// Función para generar una forma aleatoria (elige entre darkGreen y green)
+const randomShape = () => {
+  const shapeTypes = ["circle", "left", "right"];
+  // Selecciona aleatoriamente entre darkGreen y green
+  const colors = [darkGreen, green];
   return {
-    shapeType: shapes[Math.floor(Math.random() * shapes.length)],
+    shapeType: shapeTypes[Math.floor(Math.random() * shapeTypes.length)],
     color: colors[Math.floor(Math.random() * colors.length)],
   };
-}
-
-// Mapa de colores
-const colorMap = {
-  darkGreen,
-  green,
 };
 
 // Variants para animar cada figura
 const shapeVariants = {
   hidden: { scale: 0, opacity: 0 },
-  show: {
+  visible: (i) => ({
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.6, ease: 'easeInOut' },
-  },
+    transition: { duration: 0.6, ease: 'easeInOut', delay: i * 0.05 },
+  }),
 };
 
-// Variants para el contenedor (stagger)
+// Variant para el contenedor (stagger sutil)
 const containerVariants = {
   hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+  visible: { transition: { staggerChildren: 0.05 } },
 };
 
 export default function Hero() {
   const isMobile = useIsMobile();
-
-  // Definimos las columnas y la cantidad de figuras según el dispositivo
   const columns = isMobile ? 3 : 6;
-  // 3 filas en móvil => 3 x 3 = 9 figuras
-  // 3 filas en escritorio => 3 x 6 = 18 figuras
   const totalShapes = isMobile ? 9 : 18;
 
-  // Generamos el array de figuras aleatorias
+  // Array de figuras aleatorias
   const [shapes] = useState(() =>
     Array.from({ length: totalShapes }, () => randomShape())
   );
 
-  // Calculamos la clase de ancho según columnas
-  const widthClass = `w-1/${columns}`;
+  // Ancho de cada figura en porcentaje
+  const shapeWidth = `${100 / columns}%`;
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-lightGreen">
-      {/* Contenedor flex que aloja las figuras */}
+      {/* Fondo animado de figuras */}
       <motion.div
         className="absolute inset-0 flex flex-wrap"
         variants={containerVariants}
         initial="hidden"
-        animate="show"
+        animate="visible"
       >
         {shapes.map((shape, i) => (
           <motion.div
             key={i}
-            className={`relative ${widthClass}`}
+            style={{ width: shapeWidth }}
+            className="relative"
+            custom={i}
             variants={shapeVariants}
           >
-            {/* Fuerza la altura a ser igual al ancho (cuadrado) */}
             <div className="pb-[100%]" />
-            {/* Contenedor para la forma */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
               {renderShape(shape)}
             </div>
@@ -103,45 +91,43 @@ export default function Hero() {
         <p className="mb-8 text-lg md:text-xl leading-relaxed">
           By implementing agroecological land use and management.
         </p>
-        <button className="px-6 py-3 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-base md:text-lg hover:bg-opacity-90">
+        <Link
+          to="/about#about-section"
+          className="inline-block px-6 py-3 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-base md:text-lg hover:bg-opacity-90"
+        >
           Learn More About The Project
-        </button>
+        </Link>
       </div>
     </div>
   );
 }
 
-// Renderiza la forma correspondiente
+// Renderiza la forma según su tipo y color
 function renderShape({ shapeType, color }) {
-  const bgColor = colorMap[color];
-
   if (shapeType === "circle") {
-    // Círculo perfecto que rellena el cuadrado
     return (
       <div
         className="absolute w-full h-full rounded-full"
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: color }}
       />
     );
   } else if (shapeType === "left") {
-    // Semicírculo anclado a la izquierda
     return (
       <div
         className="absolute w-[200%] h-full rounded-full"
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: color,
           clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
         }}
       />
     );
   } else {
     // shapeType === "right"
-    // Semicírculo anclado a la derecha
     return (
       <div
         className="absolute w-[200%] h-full rounded-full"
         style={{
-          backgroundColor: bgColor,
+          backgroundColor: color,
           left: "-100%",
           clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
         }}

@@ -73,7 +73,7 @@ export default function LivingLabs() {
       </h1>
 
       {/* Introduction / Simulated Text */}
-      <div className="max-w-3xl mx-auto text-center mb-12">
+      <div className="max-w-3xl mx-auto  mb-12">
         <p className="text-gray-700 leading-relaxed mb-4">
           Welcome to our Living Labs section! Here, we explore different regions 
           and their unique environmental, agricultural, and cultural 
