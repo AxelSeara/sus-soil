@@ -1,177 +1,159 @@
 // src/components/Navbar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
-import { AnimatePresence, motion } from 'framer-motion';
+import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg';
 
-function CaretDownIcon() {
-  return (
-    <svg
-      className="ml-1 w-3 h-3 stroke-current fill-none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-    >
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}
-
-const regionIDs = [
-  'Boreal', 'Atlantic', 'Continental', 'Alpine',
-  'Pannonian', 'Mediterranean', 'BlackSea', 'Anatolian',
-];
-
 const Navbar = () => {
-  const [open, setOpen] = React.useState(false);
-  const [activeSubmenu, setActiveSubmenu] = React.useState(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileResourcesOpen, setMobileResourcesOpen] = useState(false);
 
-  const subMenus = {
-    About: [
-      { to: '/about#about-section', label: 'About' },
-      { to: '/about#work-packages', label: 'Work Packages' },
-      { to: '/about#partners', label: 'Partners' },
-    ],
-    'Living Labs': [
-      { to: '/living-labs', label: 'All Living Labs' },
-      ...regionIDs.map(id => ({ to: `/living-labs/${id}`, label: id })),
-    ],
-    Resources: [
-      { to: '/resources', label: 'Overview' },
-      { to: '/resources/materials', label: 'Materials' },
-      { to: '/resources/practice-abstracts', label: 'Practice Abstracts' },
-      { to: '/resources/newsletter', label: 'Newsletter' },
-    ],
-  };
+  const resourcesItems = [
+    { to: '/resources', label: 'Overview' },
+    { to: '/resources/materials', label: 'Materials' },
+    { to: '/resources/practice-abstracts', label: 'Practice Abstracts' },
+    { to: '/resources/newsletter', label: 'Newsletter' },
+  ];
 
-  // Efecto hover base para menú de escritorio
-  const baseClass = "text-boreal p-2 rounded-lg transition-colors cursor-pointer";
-  const hoverClass = "hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown";
-
-  const handleMouseEnter = menuName => setActiveSubmenu(menuName);
-  const handleClearSubmenu = () => setActiveSubmenu(null);
+  // Clase base para los enlaces del navbar
+  const navLinkClass =
+    "text-brown text-sm lg:text-base font-medium hover:text-darkGreen transition-colors";
+  
+  // Contenedor de dropdown con ancho mínimo ajustado y padding extra
+  const dropdownContainerClass =
+    "absolute left-0 mt-2 bg-lightGreen text-brown rounded shadow-lg z-[1000] min-w-[300px] p-2";
+  
+  // Clase para cada opción del dropdown
+  const dropdownItemClass =
+    "block px-4 py-3 hover:bg-green hover:text-white transition-colors";
 
   return (
-    <nav className="fixed w-full z-50 bg-white shadow-md backdrop-blur-md transition-all duration-300" onMouseLeave={handleClearSubmenu}>
-      <div className="max-w-screen-xl mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo: duplica tamaño si hay submenú activo */}
-        <Link to="/" className="flex items-center">
-          <img src={logo} alt="SUS-SOIL Logo" className={`transition-all duration-300 ${activeSubmenu ? 'h-32' : 'h-16'}`} />
-        </Link>
-        {/* Botón móvil */}
-        <button className="md:hidden text-boreal p-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-darkGreen rounded-lg" onClick={() => setOpen(!open)}>
-          {open ? <FiX size={24} /> : <FiMenu size={24} />}
-        </button>
-        {/* Menú escritorio */}
-        <div className="hidden md:block">
-          <ul className="flex items-center space-x-6">
-            <li onMouseEnter={handleClearSubmenu}>
-              <Link to="/" className={`${baseClass} ${hoverClass}`}>Home</Link>
-            </li>
-            {Object.keys(subMenus).map(menu => (
-              <li key={menu} onMouseEnter={() => handleMouseEnter(menu)}>
-                <span className={`${baseClass} ${hoverClass} inline-flex items-center`}>
-                  {menu} <CaretDownIcon />
-                </span>
+    <nav className="fixed z-[1000] border-b border-solid border-prime-gray-200 w-full py-3 bg-white">
+      <div className="container mx-auto">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-14">
+          <div className="flex justify-between w-full">
+            <Link to="/" className="flex items-center">
+              {/* Logo aumentado en aproximadamente un 20% */}
+              <img src={logo} alt="Logo" className="h-12" />
+            </Link>
+            <button 
+              type="button"
+              className="inline-flex items-center p-2 ml-3 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+            </button>
+          </div>
+          {/* Desktop Menu */}
+          <div className="hidden w-full lg:flex lg:pl-11" id="navbar-default">
+            <ul className="flex lg:items-center flex-col lg:flex-row mt-4 lg:mt-0 gap-4 lg:gap-0">
+              <li>
+                <Link to="/" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  Home
+                </Link>
               </li>
-            ))}
-            <li onMouseEnter={handleClearSubmenu}>
-              <Link to="/news" className={`${baseClass} ${hoverClass}`}>News</Link>
-            </li>
-            {/*
-              // Knowledge Cloud temporalmente comentado
-              <li onMouseEnter={handleClearSubmenu}>
-                <Link to="/knowledge-cloud" className={`${baseClass} ${hoverClass}`}>Knowledge Cloud</Link>
+              <li>
+                <Link to="/about" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  About Us
+                </Link>
               </li>
-            */}
-            <li onMouseEnter={handleClearSubmenu}>
-              <Link to="/contact" className={`${baseClass} ${hoverClass}`}>Contact</Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-      {/* Submenú escritorio alineado a la derecha */}
-      <AnimatePresence>
-        {activeSubmenu && (
-          <motion.div key="sub-navbar"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:block bg-gray-50 shadow-inner overflow-hidden border-t border-gray-200"
-          >
-            <ul className="max-w-screen-xl mx-auto px-4 py-4 flex justify-end items-center space-x-4">
-              {subMenus[activeSubmenu].map(link => (
-                <li key={link.to}>
-                  <Link to={link.to} className="text-boreal p-2 rounded-lg transition-colors hover:bg-gray-200 hover:text-brown hover:underline decoration-brown">
-                    {link.label}
+              <li>
+                <Link to="/living-labs" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  Living Labs
+                </Link>
+              </li>
+              {/* Resources Dropdown using group hover */}
+              <li className="relative group">
+                <button className={`${navLinkClass} flex items-center justify-between mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  Resources <FiChevronDown className="w-3 h-3 ml-1.5" />
+                </button>
+                <div
+                  className={`${dropdownContainerClass} opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200`}
+                >
+                  <ul>
+                    {resourcesItems.map((item, index) => (
+                      <li key={index}>
+                        <Link to={item.to} className={dropdownItemClass}>
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+              <li>
+                <Link to="/news" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  News
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+          {/* Mobile Menu */}
+          {mobileOpen && (
+            <div className="w-full lg:hidden mt-4" id="navbar-default">
+              <ul className="flex flex-col gap-4">
+                <li>
+                  <Link to="/" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+                    Home
                   </Link>
                 </li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      {/* Menú móvil */}
-      <AnimatePresence>
-        {open && (
-          <motion.div key="mobile-menu"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-white shadow-inner overflow-hidden"
-          >
-            <ul className="flex flex-col space-y-4 p-4">
-              <li>
-                <Link to="/" className="block text-boreal p-2 rounded-lg hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown transition-colors" onClick={() => setOpen(false)}>Home</Link>
-              </li>
-              <MobileSubmenu title="About" links={subMenus.About} onClose={() => setOpen(false)} />
-              <li>
-                <Link to="/news" className="block text-boreal p-2 rounded-lg hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown transition-colors" onClick={() => setOpen(false)}>News</Link>
-              </li>
-              <MobileSubmenu title="Living Labs" links={subMenus['Living Labs']} onClose={() => setOpen(false)} />
-              <MobileSubmenu title="Resources" links={subMenus.Resources} onClose={() => setOpen(false)} />
-              {/*
-                // Knowledge Cloud temporalmente comentado
                 <li>
-                  <Link to="/knowledge-cloud" className="block text-boreal p-2 rounded-lg hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown transition-colors" onClick={() => setOpen(false)}>Knowledge Cloud</Link>
+                  <Link to="/about" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+                    About Us
+                  </Link>
                 </li>
-              */}
-              <li>
-                <Link to="/contact" className="block text-boreal p-2 rounded-lg hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown transition-colors" onClick={() => setOpen(false)}>Contact</Link>
-              </li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <li>
+                  <Link to="/living-labs" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+                    Living Labs
+                  </Link>
+                </li>
+                <li className="relative">
+                  <button 
+                    className={`${navLinkClass} flex items-center justify-between w-full`} 
+                    onClick={() => setMobileResourcesOpen(!mobileResourcesOpen)}
+                  >
+                    Resources <FiChevronDown className="w-3 h-3 ml-1.5" />
+                  </button>
+                  {mobileResourcesOpen && (
+                    <div className="bg-lightGreen rounded shadow-lg mt-2 min-w-[300px] p-2">
+                      <ul className="py-2">
+                        {resourcesItems.map((item, index) => (
+                          <li key={index}>
+                            <Link 
+                              to={item.to} 
+                              className={dropdownItemClass}
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </li>
+                <li>
+                  <Link to="/news" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+                    News
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className={navLinkClass} onClick={() => setMobileOpen(false)}>
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
     </nav>
   );
 };
-
-function MobileSubmenu({ title, links, onClose }) {
-  const [submenuOpen, setSubmenuOpen] = React.useState(false);
-  return (
-    <li>
-      <button
-        onClick={() => setSubmenuOpen(!submenuOpen)}
-        className="block w-full text-left text-boreal p-2 rounded-lg hover:bg-gray-100 hover:border-b-2 hover:border-brown hover:text-brown transition-colors"
-      >
-        {title} <CaretDownIcon />
-      </button>
-      {submenuOpen && (
-        <ul className="mt-2 ml-4 space-y-2">
-          {links.map(link => (
-            <li key={link.to}>
-              <Link to={link.to} className="block text-boreal p-2 rounded-lg hover:bg-gray-200 hover:text-brown hover:underline decoration-brown transition-colors" onClick={onClose}>
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  );
-}
 
 export default Navbar;

@@ -81,7 +81,7 @@ const Colaboradores = () => {
       </div>
 
       {/* Sección de Contacto Simplificada */}
-      <div className="mt-12 text-center">
+      {/* <div className="mt-12 text-center">
         <h3 className="text-2xl font-bold mb-4 text-brown">
           Contact Us
         </h3>
@@ -97,7 +97,7 @@ const Colaboradores = () => {
         <p className="text-gray-700">
           Or call us at <span className="font-semibold">+1 (234) 567-890</span>
         </p>
-      </div>
+      </div> */}
     </section>
   );
 };

@@ -108,7 +108,7 @@ export default function RegionDetail() {
   // Si la región no se encuentra
   if (!region) {
     return (
-      <div className="container mx-auto px-6 py-16 text-center mt-16">
+      <div className="container mx-auto px-6 py-16 text-center ">
         <h2 className="text-2xl font-bold text-red-500">Region not found</h2>
         <Link
           to="/living-labs"
@@ -123,7 +123,7 @@ export default function RegionDetail() {
   return (
     <div className="container mx-auto px-6 py-16">
       {/* Quick Menu with all Regions */}
-      <div className="bg-white p-4 rounded shadow-sm mb-6 mt-16">
+      <div className="bg-white p-4 rounded shadow-sm mb-6 ">
         <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">
           Quick Menu
         </h2>
