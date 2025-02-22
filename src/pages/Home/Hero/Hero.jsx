@@ -4,13 +4,16 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 // Colores originales
-const darkGreen = "#6EBA77"; // Figura: tono oscuro
-const green = "#89C37B";     // Figura: tono medio
+const darkGreen = "#6EBA77"; // Tono oscuro
+const green = "#89C37B";     // Tono medio
 
 // Hook para detectar si es móvil (ancho < 768px)
 const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -21,7 +24,6 @@ const useIsMobile = () => {
 // Función para generar una forma aleatoria (elige entre darkGreen y green)
 const randomShape = () => {
   const shapeTypes = ["circle", "left", "right"];
-  // Selecciona aleatoriamente entre darkGreen y green
   const colors = [darkGreen, green];
   return {
     shapeType: shapeTypes[Math.floor(Math.random() * shapeTypes.length)],
@@ -39,52 +41,72 @@ const shapeVariants = {
   }),
 };
 
-// Variant para el contenedor (stagger sutil)
+// Variant para el contenedor de figuras (stagger sutil)
 const containerVariants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.05 } },
 };
 
+// Variants para el bloque de texto principal
+const textVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.8, ease: 'easeOut', delay: 0.3 }
+  },
+};
+
 export default function Hero() {
   const isMobile = useIsMobile();
-  const columns = isMobile ? 3 : 6;
+  // Tamaño fijo para cada figura
+  const shapeSize = isMobile ? 200 : 250;
   const totalShapes = isMobile ? 9 : 18;
 
-  // Array de figuras aleatorias
+  // Generamos un array de figuras aleatorias al montar
   const [shapes] = useState(() =>
     Array.from({ length: totalShapes }, () => randomShape())
   );
-
-  // Ancho de cada figura en porcentaje
-  const shapeWidth = `${100 / columns}%`;
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-lightGreen">
       {/* Fondo animado de figuras */}
       <motion.div
-        className="absolute inset-0 flex flex-wrap"
+        className="absolute inset-0 flex flex-wrap justify-center items-center gap-2"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {shapes.map((shape, i) => (
-          <motion.div
-            key={i}
-            style={{ width: shapeWidth }}
-            className="relative"
-            custom={i}
-            variants={shapeVariants}
-          >
-            <div className="pb-[100%]" />
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-              {renderShape(shape)}
-            </div>
-          </motion.div>
-        ))}
+        {shapes.map((shape, i) => {
+          // Si la figura actual es "circle" y la anterior fue semicírculo, desplazamos un poco para cerrar hueco
+          let offsetStyle = {};
+          if (i > 0 && shape.shapeType === "circle" && 
+              (shapes[i-1].shapeType === "left" || shapes[i-1].shapeType === "right")) {
+            offsetStyle = { transform: `translateX(-${shapeSize / 2}px)` };
+          }
+          return (
+            <motion.div
+              key={i}
+              style={{ width: shapeSize, height: shapeSize, ...offsetStyle }}
+              className="relative"
+              custom={i}
+              variants={shapeVariants}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                {renderShape(shape, shapeSize)}
+              </div>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
-      {/* Contenido principal */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 text-left text-brown font-serif">
+      {/* Contenido principal con animación */}
+      <motion.div
+        variants={textVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 w-full max-w-3xl mx-auto px-4 text-left text-brown font-serif"
+      >
         <h1 className="text-3xl md:text-4xl font-extrabold mb-6">
           Sustainable Soil and Subsoil Health Promotion
         </h1>
@@ -97,27 +119,33 @@ export default function Hero() {
         >
           Learn More About The Project
         </Link>
-      </div>
+      </motion.div>
     </div>
   );
 }
 
-// Renderiza la forma según su tipo y color
-function renderShape({ shapeType, color }) {
+// Función para renderizar la forma según su tipo y color, utilizando el tamaño fijo.
+function renderShape({ shapeType, color }, shapeSize) {
   if (shapeType === "circle") {
     return (
       <div
-        className="absolute w-full h-full rounded-full"
-        style={{ backgroundColor: color }}
+        style={{
+          backgroundColor: color,
+          width: shapeSize,
+          height: shapeSize,
+          borderRadius: '50%',
+        }}
       />
     );
   } else if (shapeType === "left") {
     return (
       <div
-        className="absolute w-[200%] h-full rounded-full"
         style={{
           backgroundColor: color,
-          clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)",
+          width: shapeSize,
+          height: shapeSize,
+          borderRadius: '50%',
+          clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)',
         }}
       />
     );
@@ -125,11 +153,12 @@ function renderShape({ shapeType, color }) {
     // shapeType === "right"
     return (
       <div
-        className="absolute w-[200%] h-full rounded-full"
         style={{
           backgroundColor: color,
-          left: "-100%",
-          clipPath: "polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
+          width: shapeSize,
+          height: shapeSize,
+          borderRadius: '50%',
+          clipPath: 'polygon(50% 0, 100% 0, 100% 100%, 50% 100%)',
         }}
       />
     );

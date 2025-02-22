@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+// src/components/News.jsx
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 // Componente SkeletonCard: muestra un placeholder mientras se cargan los items
 function SkeletonCard() {
@@ -11,6 +13,37 @@ function SkeletonCard() {
     </div>
   );
 }
+
+// Variants para animar el contenedor del grid
+const gridVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      staggerChildren: 0.15, 
+      when: "beforeChildren",
+      duration: 0.5,
+      ease: 'easeInOut'
+    } 
+  },
+};
+
+// Variants para cada tarjeta
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { 
+      type: 'spring', 
+      stiffness: 100, 
+      damping: 15 
+    },
+  },
+};
+
+import { motion } from 'framer-motion';
 
 const News = () => {
   const [posts, setPosts] = useState([]);
@@ -58,13 +91,19 @@ const News = () => {
         <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
           Latest News
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          variants={gridVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {loadingPosts
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
             : posts.map((post) => (
-                <div
+                <motion.div
                   key={post.id}
                   className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-[0_0_20px_rgba(110,187,120,0.7)] transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col"
+                  variants={cardVariants}
                 >
                   <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
                     {post.title.rendered}
@@ -84,9 +123,9 @@ const News = () => {
                       Read More
                     </a>
                   </div>
-                </div>
+                </motion.div>
               ))}
-        </div>
+        </motion.div>
       </section>
 
       {/* Separador */}
@@ -97,13 +136,19 @@ const News = () => {
         <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
           Latest Events
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          variants={gridVariants}
+          initial="hidden"
+          animate="visible"
+        >
           {loadingEvents
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
             : events.map((event) => (
-                <div
+                <motion.div
                   key={event.id}
                   className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-[0_0_20px_rgba(110,187,120,0.7)] transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col"
+                  variants={cardVariants}
                 >
                   <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
                     {event.title.rendered || event.acf?.title || "Untitled Event"}
@@ -127,9 +172,9 @@ const News = () => {
                       Read More
                     </a>
                   </div>
-                </div>
+                </motion.div>
               ))}
-        </div>
+        </motion.div>
         <div className="text-center mt-12">
           <a
             href="/events"

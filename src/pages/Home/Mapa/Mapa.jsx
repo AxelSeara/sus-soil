@@ -1,18 +1,10 @@
+// src/components/MapaAlternative.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import mapImage from '../../../assets/map.png';
 
-// Variants para animaciones
-const sectionVariants = {
-  hidden: { x: -100, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.8, ease: 'easeOut' },
-  },
-};
-
+// Variants para animaciones de contenedores internos
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -65,15 +57,10 @@ export default function MapaAlternative() {
     : null;
 
   return (
-    <motion.section
-      className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white"
-      variants={sectionVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-    >
+    // Se utiliza <section> sin animación global para evitar que todo se desplace desde la izquierda
+    <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
       <div className="max-w-screen-xl mx-auto">
-        {/* Tarjeta principal */}
+        {/* Tarjeta principal animada */}
         <motion.div
           className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
           initial={{ opacity: 0, y: 30 }}
@@ -90,7 +77,7 @@ export default function MapaAlternative() {
           </p>
         </motion.div>
 
-        {/* Grid de tarjetas */}
+        {/* Grid de tarjetas animado */}
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-8"
           variants={containerVariants}
@@ -216,6 +203,6 @@ export default function MapaAlternative() {
           </Link>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }
