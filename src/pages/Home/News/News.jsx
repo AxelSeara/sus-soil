@@ -89,7 +89,7 @@ const News = () => {
       {/* Sección Latest News */}
       <section className="py-12 px-6 md:px-16 my-8">
         <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
-          Latest News
+        News
         </h2>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
@@ -134,7 +134,7 @@ const News = () => {
       {/* Sección Latest Events */}
       <section className="py-12 px-6 md:px-16 my-8">
         <h2 className="text-4xl font-medium font-serif text-center mb-10 text-brown">
-          Latest Events
+        Events
         </h2>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
