@@ -30,7 +30,7 @@ const Footer = () => {
               alt="Funded by the EU"
               className="h-16 w-auto mb-2"
             />
-            <p className="text-xs text-gray-700 leading-snug max-w-[310px] text-center">
+            <p className="text-xs text-gray-700 leading-snug max-w-[310px] font-sans">
               Views and opinions expressed are however those of the author(s) only and do not necessarily reflect 
               those of the European Union or the European Research Executive Agency – EREA. Neither the European 
               Union nor the granting authority can be held responsible for them. Grant agreement ID: 101061051
@@ -157,17 +157,7 @@ const Footer = () => {
         <p className="text-brown text-sm">
           © {new Date().getFullYear()} SUS-SOIL. All rights reserved.
         </p>
-        <p className="text-brown text-sm mt-2">
-          Website designed by{" "}
-          <a
-            href="https://www.axels.studio"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-darkGreen"
-          >
-            Axel S
-          </a>
-        </p>
+
       </div>
     </footer>
   );

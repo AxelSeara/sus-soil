@@ -56,12 +56,12 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/about" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                <Link to="/about" className={`${navLinkClass} whitespace-nowrap mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/living-labs" className={`${navLinkClass} mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
+                <Link to="/living-labs" className={`${navLinkClass} whitespace-nowrap mb-2 lg:mr-6 md:mb-0 md:mr-3`}>
                   Living Labs
                 </Link>
               </li>

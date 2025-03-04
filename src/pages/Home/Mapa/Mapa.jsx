@@ -71,7 +71,7 @@ export default function MapaAlternative() {
           <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
             Consortium & Living Labs
           </h2>
-          <p className="text-lg md:text-xl text-brown font-sans max-w-4xl mt-4">
+          <p className="text-lg md:text-xl text-brown font-serif max-w-4xl mt-4">
             Explore the different types of ecosystems and areas we work in, as well as
             the overall location of our Living Labs.
           </p>
