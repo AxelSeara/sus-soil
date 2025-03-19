@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
+const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
+
+console.log("YouTube API Key:", API_KEY); //  verificar 
+
 export default function Materials() {
   // Mock data for materials (will later be replaced by API data)
   const materials = [
@@ -16,6 +20,8 @@ export default function Materials() {
       uploadDate: 'March 10, 2025',
     },
   ];
+
+  
 
   // Estado para almacenar los videos de YouTube
   const [videos, setVideos] = useState([]);
