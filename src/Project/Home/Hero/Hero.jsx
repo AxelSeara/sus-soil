@@ -109,7 +109,7 @@ export default function Hero() {
           By implementing agroecological land use and management.
         </p>
         <Link
-          to="/about"
+          to="/project/about"
           className="inline-block px-6 py-3 bg-brown text-white rounded-full font-semibold shadow-lg transition-colors text-base md:text-lg hover:bg-opacity-90"
         >
           Learn More About The Project
