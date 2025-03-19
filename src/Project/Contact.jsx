@@ -1,8 +1,9 @@
-// Contact.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaFacebookF, FaYoutube } from 'react-icons/fa'; // Quitamos FaTwitter
-// Definimos el ícono de X (Twitter) directamente aquí
+import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+import { FiUser, FiMail, FiMessageCircle, FiCheckSquare } from 'react-icons/fi';
+
+// X (Twitter) icon component
 function XIcon({ size = 24 }) {
   return (
     <svg
@@ -12,21 +13,15 @@ function XIcon({ size = 24 }) {
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7
-        c0.4,0.4,0.4,1,0,1.4l-1.3,1.3c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3
-        c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
+      <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7c0.4,0.4,0.4,1,0,1.4l-1.3,1.3c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
     </svg>
   );
 }
 
-// Variants para animar la tarjeta (fade in + leve desplazamiento)
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
+// Animation effect for fade-in
+const fadeInVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
 };
 
 const Contact = () => {
@@ -49,7 +44,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.agree) {
-      console.log(formData); // Aquí tu lógica de envío (por ej. API call)
+      console.log(formData);
       setSubmitted(true);
     } else {
       alert('Please agree to the terms.');
@@ -57,155 +52,156 @@ const Contact = () => {
   };
 
   return (
-    <div
-      className="py-16 px-4"
-      style={{
-        // Fondo degradado (verde -> blanco)
-        background: 'linear-gradient(to bottom, #6eba77 0%, #ffffff 40%)',
-      }}
-    >
-      <div className="max-w-screen-xl mx-auto">
-        {/* Título con Merriweather */}
-        <h1 className="text-4xl font-extrabold font-serif text-center mb-8 mt-16 text-brown">
-          Contact Us
-        </h1>
-        <p className="text-center mb-6 text-brown max-w-2xl mx-auto">
-          If you have any questions, feel free to contact us at{' '}
-          <a
-            href="mailto:contact@example.com"
-            className="text-green-700 hover:underline"
-          >
-            contact@example.com
-          </a>. You can also find us on social media:
-        </p>
+    <div className="py-16 px-4 bg-gradient-to-b from-lightGreen to-white">
+      <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        {/* Left: Contact Information & Socials */}
+        <motion.div 
+          className="text-center lg:text-left" 
+          variants={fadeInVariants} 
+          initial="hidden" 
+          whileInView="visible" 
+          viewport={{ once: true }}
+        >
+          <h1 className="text-4xl md:text-5xl font-extrabold font-serif text-brown mb-6">
+            Contact Us
+          </h1>
+          <p className="text-lg text-brown mb-6 max-w-xl mx-auto lg:mx-0">
+            If you have any questions, feel free to contact us at{' '}
+            <a href="mailto:contact@example.com" className="text-darkGreen hover:underline">
+              contact@example.com
+            </a>. You can also find us on social media:
+          </p>
 
-        {/* Redes sociales */}
-        <div className="flex justify-center space-x-6 mb-8">
-          <a
-            href="https://facebook.com"
-            className="text-green-700 hover:text-green-800 text-2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaFacebookF />
-          </a>
-          <a
-            href="https://x.com"
-            className="text-green-700 hover:text-green-800 text-2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <XIcon size={24} />
-          </a>
-          <a
-            href="https://youtube.com"
-            className="text-green-700 hover:text-green-800 text-2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaYoutube />
-          </a>
-        </div>
+          {/* Social Media Links */}
+          <div className="flex justify-center lg:justify-start space-x-6 mb-8">
+            <a
+              href="https://facebook.com"
+              className="text-brown hover:text-darkGreen text-2xl transition duration-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+            >
+              <FaFacebookF />
+            </a>
+            <a
+              href="https://x.com"
+              className="text-brown hover:text-darkGreen text-2xl transition duration-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Twitter (X)"
+            >
+              <XIcon size={24} />
+            </a>
+            <a
+              href="https://linkedin.com"
+              className="text-brown hover:text-darkGreen text-2xl transition duration-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedinIn />
+            </a>
+            <a
+              href="https://youtube.com"
+              className="text-brown hover:text-darkGreen text-2xl transition duration-300"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="YouTube"
+            >
+              <FaYoutube />
+            </a>
+          </div>
+        </motion.div>
 
-        {/* Formulario animado */}
+        {/* Right: Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
-          className="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg"
-          variants={cardVariants}
+          className="bg-white p-8 mt-16 rounded-lg shadow-lg w-full"
+          variants={fadeInVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
           <div className="mb-6">
-            <label
-              htmlFor="name"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
+            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
               Your Name
             </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-green-700"
-              placeholder="John Doe"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Your Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-green-700"
-              placeholder="name@example.com"
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="message"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Your Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-green-700"
-              rows="4"
-              placeholder="Write your message here..."
-              required
-            ></textarea>
-          </div>
-          <div className="flex items-start mb-6">
-            <div className="flex items-center h-5">
+            <div className="relative">
+              <FiUser className="absolute left-3 top-3 text-gray-400" />
               <input
-                id="agree"
-                name="agree"
-                type="checkbox"
-                checked={formData.agree}
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
-                className="w-4 h-4 border border-gray-300 rounded focus:ring-2 focus:ring-green-700"
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
+                placeholder="John Doe"
+                required
               />
             </div>
-            <label
-              htmlFor="agree"
-              className="ml-2 text-sm font-medium text-gray-900"
-            >
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
+              Your Email
+            </label>
+            <div className="relative">
+              <FiMail className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
+                placeholder="name@example.com"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900">
+              Your Message
+            </label>
+            <div className="relative">
+              <FiMessageCircle className="absolute left-3 top-3 text-gray-400" />
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
+                rows="4"
+                placeholder="Write your message here..."
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <div className="flex items-start mb-6">
+            <input
+              id="agree"
+              name="agree"
+              type="checkbox"
+              checked={formData.agree}
+              onChange={handleChange}
+              className="w-4 h-4 border border-gray-300 rounded focus:ring-2 focus:ring-darkGreen"
+            />
+            <label htmlFor="agree" className="ml-2 text-sm font-medium text-gray-900">
+              <FiCheckSquare className="inline-block mr-1" />
               I agree to the terms and conditions
             </label>
           </div>
+
           <button
             type="submit"
-            className="w-full bg-green-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-800 focus:ring-2 focus:ring-green-700 transition-colors"
+            className="w-full bg-darkGreen text-white py-3 rounded-lg font-bold text-lg hover:bg-green-800 focus:ring-2 focus:ring-darkGreen transition-colors"
           >
             Submit
           </button>
         </motion.form>
-
-        {/* Mensaje de éxito */}
-        {submitted && (
-          <motion.p
-            className="text-center mt-6 text-green-700 font-semibold"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            Your message has been sent successfully!
-          </motion.p>
-        )}
       </div>
     </div>
   );
