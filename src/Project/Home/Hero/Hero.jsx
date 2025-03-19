@@ -21,7 +21,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-// Función para generar una forma aleatoria (elige entre darkGreen y green)
+// Función para generar una forma aleatoria (elige entre circle, left y right)
 const randomShape = () => {
   const shapeTypes = ["circle", "left", "right"];
   const colors = [darkGreen, green];
@@ -63,41 +63,36 @@ export default function Hero() {
   const shapeSize = isMobile ? 200 : 250;
   const totalShapes = isMobile ? 9 : 18;
 
-  // Generamos un array de figuras aleatorias al montar
+  // Generamos un array de figuras aleatorias al montar.
   const [shapes] = useState(() =>
     Array.from({ length: totalShapes }, () => randomShape())
   );
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-lightGreen">
-      {/* Fondo animado de figuras */}
+      {/* Fondo animado de figuras usando grid para evitar espacios vacíos */}
       <motion.div
-        className="absolute inset-0 flex flex-wrap justify-center items-center gap-2"
+        className="absolute inset-0 grid"
+        style={{
+          gridTemplateColumns: `repeat(auto-fit, minmax(${shapeSize}px, 1fr))`,
+        }}
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {shapes.map((shape, i) => {
-          // Si la figura actual es "circle" y la anterior fue semicírculo, desplazamos un poco para cerrar hueco
-          let offsetStyle = {};
-          if (i > 0 && shape.shapeType === "circle" && 
-              (shapes[i-1].shapeType === "left" || shapes[i-1].shapeType === "right")) {
-            offsetStyle = { transform: `translateX(-${shapeSize / 2}px)` };
-          }
-          return (
-            <motion.div
-              key={i}
-              style={{ width: shapeSize, height: shapeSize, ...offsetStyle }}
-              className="relative"
-              custom={i}
-              variants={shapeVariants}
-            >
-              <div className="absolute inset-0 overflow-hidden">
-                {renderShape(shape, shapeSize)}
-              </div>
-            </motion.div>
-          );
-        })}
+        {shapes.map((shape, i) => (
+          <motion.div
+            key={i}
+            style={{ width: shapeSize, height: shapeSize }}
+            className="relative"
+            custom={i}
+            variants={shapeVariants}
+          >
+            <div className="absolute inset-0 overflow-hidden">
+              {renderShape(shape, shapeSize, i)}
+            </div>
+          </motion.div>
+        ))}
       </motion.div>
 
       {/* Contenido principal con animación */}
@@ -124,8 +119,8 @@ export default function Hero() {
   );
 }
 
-// Función para renderizar la forma según su tipo y color, utilizando el tamaño fijo.
-function renderShape({ shapeType, color }, shapeSize) {
+// Función para renderizar la forma según su tipo y color, usando el índice para alternar composiciones
+function renderShape({ shapeType, color }, shapeSize, i) {
   if (shapeType === "circle") {
     return (
       <div
@@ -138,6 +133,8 @@ function renderShape({ shapeType, color }, shapeSize) {
       />
     );
   } else if (shapeType === "left") {
+    // Alterna entre composición vertical y horizontal para semicirculos a la izquierda.
+    const isVertical = i % 2 === 0;
     return (
       <div
         style={{
@@ -145,7 +142,9 @@ function renderShape({ shapeType, color }, shapeSize) {
           width: shapeSize,
           height: shapeSize,
           borderRadius: '50%',
-          clipPath: 'polygon(0 0, 50% 0, 50% 100%, 0 100%)',
+          clipPath: isVertical
+            ? 'polygon(0 0, 50% 0, 50% 100%, 0 100%)'
+            : 'polygon(0 0, 100% 0, 100% 50%, 0 50%)',
         }}
       />
     );
