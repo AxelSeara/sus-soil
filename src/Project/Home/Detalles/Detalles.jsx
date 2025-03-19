@@ -3,26 +3,32 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
+// Importar iconos desde la carpeta assets/icons
+import AwarenessIcon from '../../../assets/icons/Awareness.svg';
+import EcosystemIcon from '../../../assets/icons/Ecosystem.svg';
+import EUIcon from '../../../assets/icons/EU.svg';
+import WaterIcon from '../../../assets/icons/Water.svg';
+
 // Objetivos con títulos e íconos
 const objectives = [
   {
     title: 'Awareness for land managers',
-    emoji: '🌍',
+    icon: AwarenessIcon,
     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
   },
   {
     title: 'Supporting EU transformation',
-    emoji: '🔄',
+    icon: EUIcon,
     text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.'
   },
   {
     title: 'Ecosystem services delivery',
-    emoji: '🌿',
+    icon: EcosystemIcon,
     text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere.'
   },
   {
     title: 'Water security & climate',
-    emoji: '💧',
+    icon: WaterIcon,
     text: 'Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque.'
   },
 ];
@@ -96,12 +102,12 @@ export default function Detalles() {
               className="rounded-xl bg-white/50 backdrop-blur-md shadow-md p-6 text-center cursor-pointer hover:shadow-xl hover:bg-white/70 transition-all duration-300"
               variants={cardVariants}
             >
-              {/* Ícono grande con color darkGreen */}
-              <div className="text-6xl text-darkGreen">{obj.emoji}</div>
+              {/* Icono grande */}
+              <img src={obj.icon} alt={obj.title} className="w-16 h-16 mx-auto" />
               <h3 className="text-brown font-medium font-serif text-lg mt-4">
                 {obj.title}
               </h3>
-              <p className="text-sm text-brown font-serif mt-2">
+              <p className="text-sm text-brown font-serif mt-2 weight-regular">
                 {obj.text}
               </p>
             </motion.div>

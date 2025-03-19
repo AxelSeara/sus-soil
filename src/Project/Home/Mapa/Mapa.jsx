@@ -51,13 +51,12 @@ export default function MapaAlternative() {
     setActiveRegion((prev) => (prev === regionId ? null : regionId));
   };
 
-  // Buscar la región activa para mostrar info
+  // Buscar la región activa para mostrar el botón
   const regionData = activeRegion
     ? regions.find((r) => r.id === activeRegion)
     : null;
 
   return (
-    // Se utiliza <section> sin animación global para evitar que todo se desplace desde la izquierda
     <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
       <div className="max-w-screen-xl mx-auto">
         {/* Tarjeta principal animada */}
@@ -95,50 +94,13 @@ export default function MapaAlternative() {
               alt="Map"
               className="w-full h-full object-cover"
             />
-            {activeRegion && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-              >
-                <div
-                  className="w-64 h-64 rounded-full flex items-center justify-center"
-                  style={{
-                    backgroundColor: regionData?.color,
-                    opacity: 0.8,
-                  }}
-                >
-                  <p className="text-white text-2xl font-semibold">
-                    {regionData?.label}
-                  </p>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
 
           {/* Resumen + Botones de regiones */}
           <motion.div
-            className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 flex flex-col items-center"
+            className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 flex flex-col items-center justify-center"
             variants={itemVariants}
           >
-            {/* Fila de 3 columnas: Partners, Countries, Labs */}
-            <div className="grid grid-cols-3 gap-8 w-full justify-items-center mb-6">
-              <div className="flex flex-col items-center">
-                <motion.div className="text-4xl font-bold text-brown">22</motion.div>
-                <p className="text-sm text-brown mt-1">Partners</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <motion.div className="text-4xl font-bold text-brown">13</motion.div>
-                <p className="text-sm text-brown mt-1">Countries</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <motion.div className="text-4xl font-bold text-brown">15</motion.div>
-                <p className="text-sm text-brown mt-1">Living Labs</p>
-              </div>
-            </div>
-
             {/* Botones de regiones */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
               {regions.map((region) => {
@@ -160,48 +122,25 @@ export default function MapaAlternative() {
               })}
             </div>
 
-            {/* Sección adicional de info cuando se selecciona una región */}
+            {/* Botón de exploración de la región activa */}
             {activeRegion && (
               <motion.div
-                className="mt-8 p-4 bg-white/60 backdrop-blur-md shadow-md rounded w-full"
+                className="mt-8 flex justify-center items-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                <h3 className="text-xl font-bold text-brown mb-2 font-serif">
-                  More Info about {regionData?.label}
-                </h3>
-                <p className="text-sm text-brown mb-4">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                  Phasellus vel enim ut lorem eleifend dictum in ac nisl. 
-                  Aliquam erat volutpat. Vivamus vehicula facilisis sem, 
-                  at consequat metus imperdiet a.
-                </p>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
-                    Partners Placeholder
-                  </div>
-                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
-                    Collaborators
-                  </div>
-                  <div className="bg-gray-200 h-16 flex items-center justify-center rounded shadow-sm text-sm text-gray-700">
-                    More Data
-                  </div>
-                </div>
+                <Link
+                  to={`/living-labs/${activeRegion.toLowerCase()}`}
+                  className="px-6 py-3 font-bold rounded-full shadow-md text-white transition-transform duration-200 transform hover:-translate-y-1 flex items-center justify-center"
+                  style={{ backgroundColor: regionData?.color }}
+                >
+                  Explore more about {regionData?.label}
+                </Link>
               </motion.div>
             )}
           </motion.div>
         </motion.div>
-
-        {/* Botón "View More about Living Labs" */}
-        <div className="text-center mt-12">
-          <Link
-            to="/living-labs"
-            className="px-8 py-4 bg-brown text-white font-bold rounded-full shadow-md hover:bg-opacity-90 transition-transform duration-200 transform hover:-translate-y-1"
-          >
-            View More about Living Labs
-          </Link>
-        </div>
       </div>
     </section>
   );

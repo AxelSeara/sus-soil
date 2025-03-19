@@ -1,12 +1,68 @@
-/* Import Google Font first */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap');
+/* Import Google Font - Todos los pesos necesarios */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;500;600;700&display=swap');
 
 /* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Aplicar la fuente a todo el sitio y definir estilos base */
 @layer base {
-    html {
-      @apply font-serif;
-    }
+  html {
+    @apply font-serif;
   }
+
+  /* Definir pesos y tamaños por jerarquía */
+  h1 {
+    @apply text-5xl font-bold leading-tight;
+  }
+  h2 {
+    @apply text-4xl font-semibold leading-snug;
+  }
+  h3 {
+    @apply text-3xl font-medium leading-normal;
+  }
+  h4 {
+    @apply text-2xl font-medium leading-relaxed;
+  }
+  p, span, blockquote {
+    @apply text-base font-normal leading-loose;
+  }
+  small, .caption {
+    @apply text-sm font-light;
+  }
+
+  /* Variables CSS */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --border: 0 0% 89.8%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --border: 0 0% 14.9%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

@@ -31,9 +31,7 @@ const Footer = () => {
               className="h-16 w-auto mb-2"
             />
             <p className="text-xs text-gray-700 leading-snug max-w-[310px] font-sans">
-              Views and opinions expressed are however those of the author(s) only and do not necessarily reflect 
-              those of the European Union or the European Research Executive Agency – EREA. Neither the European 
-              Union nor the granting authority can be held responsible for them. Grant agreement ID: 101061051
+            This project has received funding from the European Union’s Horizon Europe research and innovation programme under grant agreement No GA 101157560. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them
             </p>
           </div>
         </div>
