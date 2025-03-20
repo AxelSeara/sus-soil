@@ -149,7 +149,7 @@ export default function NewsDetail() {
       </Helmet>
 
       {/* IMPORTANTE: Asegúrate de incluir el CSS de Elementor en tu index.html o importado globalmente */}
-      <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8">
+      <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8 mt-16">
         {/* Columna Izquierda: Información adicional */}
         <div className="md:col-span-1 mb-8 md:mb-0 flex flex-col space-y-6 mt-16">
           <div className="bg-boreal text-white font-bold px-4 py-2 rounded shadow-md">
@@ -199,7 +199,7 @@ export default function NewsDetail() {
         {/* Columna Derecha: Últimas noticias y eventos */}
         <div className="md:col-span-1 flex flex-col space-y-6 md:mt-0 mt-16">
           <div>
-            <h2 className="text-xl font-serif font-medium text-brown mb-4">
+            <h2 className="text-xl font-serif font-medium text-brown mt-16 mb-4">
               Last News
             </h2>
             {loadingRecent ? (
