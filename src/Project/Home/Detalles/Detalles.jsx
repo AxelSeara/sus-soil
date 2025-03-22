@@ -83,7 +83,7 @@ export default function Detalles() {
           <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
             The Project
           </h2>
-          <p className="text-lg md:text-xl text-brown font-serif max-w-3xl mt-4">
+          <p className="text-lg md:text-xl text-brown font-serif mt-4">
             SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil management and land uses and their impacts.
           </p>
         </motion.div>
@@ -103,7 +103,7 @@ export default function Detalles() {
               variants={cardVariants}
             >
               {/* Icono grande */}
-              <img src={obj.icon} alt={obj.title} className="w-16 h-16 mx-auto" />
+              <img src={obj.icon} alt={obj.title} className="w-32 h-32 mx-auto" />
               <h3 className="text-brown font-medium font-serif text-lg mt-4">
                 {obj.title}
               </h3>

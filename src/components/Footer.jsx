@@ -1,21 +1,22 @@
+// Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FaHome, 
-  FaTasks, 
-  FaUsers, 
-  FaNewspaper, 
-  FaFlask, 
-  FaBookOpen, 
-  FaPenFancy, 
-  FaEnvelopeOpenText, 
-  FaEnvelope, 
-  FaFacebookF, 
-  FaLinkedinIn, 
-  FaYoutube 
+import {
+  FaHome,
+  FaTasks,
+  FaUsers,
+  FaNewspaper,
+  FaFlask,
+  FaBookOpen,
+  FaPenFancy,
+  FaEnvelopeOpenText,
+  FaEnvelope,
+  FaFacebookF,
+  FaLinkedinIn,
+  FaYoutube
 } from 'react-icons/fa';
 import { FiChevronRight } from 'react-icons/fi';
-import { XIcon } from './XIcon'; 
+import { XIcon } from './XIcon';
 import susSoilLogo from '../assets/logo.png';
 import euLogo from '../assets/funded-ue-300x61.png';
 
@@ -42,19 +43,15 @@ const Footer = () => {
     <footer className="bg-white border-t border-gray-300">
       {/* Pre-Footer Section */}
       <div className="bg-white py-8 px-4">
-        <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start justify-items-center">
-          {/* SUS-SOIL Logo */}
-          <div className="flex flex-col items-center">
-            <img src={susSoilLogo} alt="SUS-SOIL Logo" className="h-40 w-auto mb-4" />
+        <div className="container mx-auto flex flex-col items-center">
+          {/* Logos en fila */}
+          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-10 mb-4">
+            <img src={susSoilLogo} alt="SUS-SOIL Logo" className="h-36 w-auto" />
+            <img src={euLogo} alt="Funded by the EU" className="h-16 w-auto" />
           </div>
-
-          {/* EU Funding Section */}
-          <div className="flex flex-col items-center text-center">
-            <img src={euLogo} alt="Funded by the EU" className="h-16 w-auto mb-2" />
-            <p className="text-xs text-gray-700 leading-snug max-w-[310px] font-sans">
-              This project has received funding from the European Union’s Horizon Europe research and innovation programme under grant agreement No GA 101157560. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
-            </p>
-          </div>
+          <p className="text-xs text-gray-700 leading-snug max-w-3xl font-sans">
+            This project has received funding from the European Union’s Horizon Europe research and innovation programme under grant agreement No GA 101157560. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union. Neither the European Union nor the granting authority can be held responsible for them.
+          </p>
         </div>
       </div>
 
@@ -81,10 +78,10 @@ const Footer = () => {
           <ul className="flex space-x-4 mb-6">
             {socialLinks.map((social, index) => (
               <li key={index}>
-                <a 
-                  href={social.href} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-brown hover:text-darkGreen transition duration-300"
                 >
                   <social.Icon className="w-5 h-5" />

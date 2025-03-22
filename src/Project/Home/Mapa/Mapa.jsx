@@ -1,10 +1,9 @@
-// src/components/MapaAlternative.jsx
+// src/components/Mapa.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import mapImage from '../../../assets/map.png';
 
-// Variants para animaciones de contenedores internos
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -44,14 +43,13 @@ const regions = [
   { id: 'Anatolian', label: 'Anatolian', color: '#a02b16' },
 ];
 
-export default function MapaAlternative() {
+export default function Mapa() {
   const [activeRegion, setActiveRegion] = useState(null);
 
   const handleRegionClick = (regionId) => {
     setActiveRegion((prev) => (prev === regionId ? null : regionId));
   };
 
-  // Buscar la región activa para mostrar el botón
   const regionData = activeRegion
     ? regions.find((r) => r.id === activeRegion)
     : null;
@@ -59,62 +57,43 @@ export default function MapaAlternative() {
   return (
     <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
       <div className="max-w-screen-xl mx-auto">
-        {/* Tarjeta principal animada */}
         <motion.div
-          className="w-full mb-12 p-6 md:p-10 rounded-xl bg-white/70 backdrop-blur-lg shadow-xl text-left"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        >
-          <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
-            Consortium & Living Labs
-          </h2>
-          <p className="text-lg md:text-xl text-brown font-serif max-w-4xl mt-4">
-            Explore the different types of ecosystems and areas we work in, as well as
-            the overall location of our Living Labs.
-          </p>
-        </motion.div>
-
-        {/* Grid de tarjetas animado */}
-        <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {/* Mapa */}
+          {/* Texto y botones */}
           <motion.div
-            className="relative w-80 h-80 rounded-full overflow-hidden shadow-sm mx-auto"
+            className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 md:p-10"
             variants={itemVariants}
           >
-            <img
-              src={mapImage}
-              alt="Map"
-              className="w-full h-full object-cover"
-            />
-          </motion.div>
+            <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown mb-4">
+              Consortium & Living Labs
+            </h2>
+            <p className="text-lg md:text-xl text-brown font-serif mb-8">
+              Explore the different types of ecosystems and areas we work in, as well as
+              the overall location of our Living Labs.
+            </p>
 
-          {/* Resumen + Botones de regiones */}
-          <motion.div
-            className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 flex flex-col items-center justify-center"
-            variants={itemVariants}
-          >
-            {/* Botones de regiones */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+            {/* Botones de región animados */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {regions.map((region) => {
                 const isActive = activeRegion === region.id;
                 return (
                   <motion.button
                     key={region.id}
                     onClick={() => handleRegionClick(region.id)}
-                    className={`block w-full text-center py-2 rounded-full shadow-md font-semibold text-xs md:text-sm whitespace-nowrap transition-transform duration-200 ${
+                    className={`w-full text-center py-2 rounded-full shadow-md font-semibold text-xs md:text-sm transition-all ${
                       isActive ? 'text-white scale-105' : 'text-brown'
                     }`}
                     style={{
                       backgroundColor: isActive ? region.color : '#f8f8f8',
                     }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   >
                     {region.label}
                   </motion.button>
@@ -122,23 +101,37 @@ export default function MapaAlternative() {
               })}
             </div>
 
-            {/* Botón de exploración de la región activa */}
+            {/* Botón de acceso */}
             {activeRegion && (
               <motion.div
-                className="mt-8 flex justify-center items-center"
+                className="mt-8 flex justify-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 <Link
                   to={`/living-labs/${activeRegion.toLowerCase()}`}
-                  className="px-6 py-3 font-bold rounded-full shadow-md text-white transition-transform duration-200 transform hover:-translate-y-1 flex items-center justify-center"
+                  className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-1 transition-transform"
                   style={{ backgroundColor: regionData?.color }}
                 >
                   Explore more about {regionData?.label}
                 </Link>
               </motion.div>
             )}
+          </motion.div>
+
+          {/* Imagen del mapa */}
+          <motion.div
+            className="w-full max-w-lg mx-auto lg:mx-0"
+            variants={itemVariants}
+          >
+            <div className="w-full rounded-xl overflow-hidden ">
+              <img
+                src={mapImage}
+                alt="Map"
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </motion.div>
         </motion.div>
       </div>
