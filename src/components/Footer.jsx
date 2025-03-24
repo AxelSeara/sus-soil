@@ -46,7 +46,7 @@ const Footer = () => {
       <div className="bg-white py-8 px-4">
         <div className="container mx-auto flex flex-col items-center">
           {/* Logos en fila */}
-          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-10 mb-4">
+          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-16 mb-4">
             <img src={susSoilLogo} alt="SUS-SOIL Logo" className="h-36 w-auto" />
             <img src={euLogo} alt="Funded by the EU" className="h-16 w-auto" />
           </div>
