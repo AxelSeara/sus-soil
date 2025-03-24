@@ -1,14 +1,24 @@
-// src/components/Mapa.jsx
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import mapImage from '../../../assets/map.png';
 
+/* Imágenes */
+import mapBase from '../../../assets/regions/Nomap.png';     // Mapa base visible siempre
+import noMap from '../../../assets/regions/map.png';     // 
+import borealImage from '../../../assets/regions/Boreal.png';
+import atlanticImage from '../../../assets/regions/Atlantic.png';
+import continentalImage from '../../../assets/regions/Continental.png';
+import alpineImage from '../../../assets/regions/Alpine.png';
+import pannonianImage from '../../../assets/regions/Pannonian.png';
+import mediterraneanImage from '../../../assets/regions/Mediterranean.png';
+import blackSeaImage from '../../../assets/regions/BlackSea.png';
+import anatolianImage from '../../../assets/regions/Anatolian.png';
+
+/* Variants del contenedor principal */
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1,
-    y: 0,
+    opacity: 1, y: 0,
     transition: {
       when: 'beforeChildren',
       staggerChildren: 0.2,
@@ -18,41 +28,45 @@ const containerVariants = {
   },
 };
 
+/* Variants de items (texto/botones) */
 const itemVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 70,
-      damping: 15,
-    },
+    opacity: 1, scale: 1,
+    transition: { type: 'spring', stiffness: 70, damping: 15 },
   },
 };
 
-// Regiones de Living Labs
+/* Lista de regiones */
 const regions = [
-  { id: 'Boreal', label: 'Boreal', color: '#284b55' },
-  { id: 'Atlantic', label: 'Atlantic', color: '#2e8479' },
-  { id: 'Continental', label: 'Continental', color: '#b7543d' },
-  { id: 'Alpine', label: 'Alpine', color: '#775786' },
-  { id: 'Pannonian', label: 'Pannonian', color: '#86884c' },
-  { id: 'Mediterranean', label: 'Mediterranean', color: '#ee9c39' },
-  { id: 'BlackSea', label: 'Black Sea', color: '#5c81b5' },
-  { id: 'Anatolian', label: 'Anatolian', color: '#a02b16' },
+  { id: 'Boreal', label: 'Boreal', color: '#284b55', img: borealImage },
+  { id: 'Atlantic', label: 'Atlantic', color: '#2e8479', img: atlanticImage },
+  { id: 'Continental', label: 'Continental', color: '#b7543d', img: continentalImage },
+  { id: 'Alpine', label: 'Alpine', color: '#775786', img: alpineImage },
+  { id: 'Pannonian', label: 'Pannonian', color: '#86884c', img: pannonianImage },
+  { id: 'Mediterranean', label: 'Mediterranean', color: '#ee9c39', img: mediterraneanImage },
+  { id: 'BlackSea', label: 'Black Sea', color: '#5c81b5', img: blackSeaImage },
+  { id: 'Anatolian', label: 'Anatolian', color: '#a02b16', img: anatolianImage },
 ];
 
 export default function Mapa() {
-  const [activeRegion, setActiveRegion] = useState(null);
+  // Región seleccionada
+  const [highlightRegion, setHighlightRegion] = useState(null);
 
+  // Manejo de clicks en la región
   const handleRegionClick = (regionId) => {
-    setActiveRegion((prev) => (prev === regionId ? null : regionId));
+    setHighlightRegion((prev) => (prev === regionId ? null : regionId));
   };
 
-  const regionData = activeRegion
-    ? regions.find((r) => r.id === activeRegion)
+  // Datos de la región activa
+  const regionData = highlightRegion
+    ? regions.find((r) => r.id === highlightRegion)
     : null;
+
+  // Determina qué imagen usar como overlay
+  // Si no hay región activa, mostramos Nomap por defecto
+  const overlayImg = regionData?.img || noMap;
+  const overlayKey = highlightRegion || 'noMap'; // Para AnimatePresence
 
   return (
     <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
@@ -64,7 +78,7 @@ export default function Mapa() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          {/* Texto y botones */}
+          {/* Texto y botones de regiones */}
           <motion.div
             className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 md:p-10"
             variants={itemVariants}
@@ -77,10 +91,9 @@ export default function Mapa() {
               the overall location of our Living Labs.
             </p>
 
-            {/* Botones de región animados */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {regions.map((region) => {
-                const isActive = activeRegion === region.id;
+                const isActive = highlightRegion === region.id;
                 return (
                   <motion.button
                     key={region.id}
@@ -101,8 +114,7 @@ export default function Mapa() {
               })}
             </div>
 
-            {/* Botón de acceso */}
-            {activeRegion && (
+            {highlightRegion && (
               <motion.div
                 className="mt-8 flex justify-center"
                 initial={{ opacity: 0, y: 20 }}
@@ -110,7 +122,7 @@ export default function Mapa() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 <Link
-                  to={`/living-labs/${activeRegion.toLowerCase()}`}
+                  to={`/living-labs/${highlightRegion.toLowerCase()}`}
                   className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-1 transition-transform"
                   style={{ backgroundColor: regionData?.color }}
                 >
@@ -120,17 +132,32 @@ export default function Mapa() {
             )}
           </motion.div>
 
-          {/* Imagen del mapa */}
-          <motion.div
-            className="w-full max-w-lg mx-auto lg:mx-0"
-            variants={itemVariants}
-          >
-            <div className="w-full rounded-xl overflow-hidden ">
+          {/* Mapa base + overlay */}
+          <motion.div className="w-full max-w-lg mx-auto lg:mx-0" variants={itemVariants}>
+            {/* Contenedor circular */}
+            <div className="relative w-full aspect-square rounded-full overflow-hidden">
+              {/* Mapa base (siempre visible) */}
               <img
-                src={mapImage}
-                alt="Map"
-                className="w-full h-auto object-cover"
+                src={mapBase}
+                alt="Base Map"
+                className="absolute inset-0 w-full h-full object-cover"
               />
+
+              {/* Overlay con AnimatePresence */}
+              <AnimatePresence mode="wait">
+                {overlayImg && (
+                  <motion.img
+                    key={overlayKey}
+                    src={overlayImg}
+                    alt="Region Overlay"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                  />
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </motion.div>

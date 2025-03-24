@@ -19,6 +19,7 @@ import { FiChevronRight } from 'react-icons/fi';
 import { XIcon } from './XIcon';
 import susSoilLogo from '../assets/logo.png';
 import euLogo from '../assets/funded-ue-300x61.png';
+import { FaXTwitter } from 'react-icons/fa6'; // Twitter/X icon
 
 // Quick Links matching Navbar order
 const quickLinks = [
@@ -33,7 +34,7 @@ const quickLinks = [
 // Social media links
 const socialLinks = [
   { href: 'https://facebook.com', Icon: FaFacebookF },
-  { href: 'https://x.com', Icon: XIcon },
+  { href: 'https://x.com', Icon: FaXTwitter },
   { href: 'https://linkedin.com', Icon: FaLinkedinIn },
   { href: 'https://youtube.com', Icon: FaYoutube },
 ];
