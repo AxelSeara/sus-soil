@@ -10,18 +10,115 @@ import {
   SkeletonEventCard,
 } from './Skeletons';
 
-// Extraer la primera imagen del contenido si no hay featured
+/**
+ * Parsea lat/lng del script de Leaflet 
+ * (el plugin pone algo como: '"latitude":"41.xxxx","longitude":"2.xxxx"')
+ */
+function parseLeafletScriptForCoords(scriptText) {
+  const latMatch = scriptText.match(/\"latitude\":\"([0-9.\-]+)\"/);
+  const lngMatch = scriptText.match(/\"longitude\":\"([0-9.\-]+)\"/);
+  if (!latMatch || !lngMatch) return null;
+  return { lat: latMatch[1], lng: lngMatch[1] };
+}
+
+/**
+ * Reemplaza en el HTML el bloque .wp-block-themeisle-blocks-leaflet-map
+ * con un iframe de Google Maps, usando las coords del script inline.
+ */
+function replaceLeafletWithGoogleMaps(doc) {
+  const containers = doc.querySelectorAll('.wp-block-themeisle-blocks-leaflet-map');
+  containers.forEach((div) => {
+    // Buscamos un <script> con la info de lat/lng
+    const parent = div.closest('.wp-block-group, .wp-block-themeisle-blocks-leaflet-map') || doc;
+    const scripts = parent.querySelectorAll('script');
+    let coords = null;
+
+    scripts.forEach((sc) => {
+      const text = sc.innerHTML;
+      if (
+        text.includes('window.themeisleLeafletMaps.push') &&
+        text.includes('"latitude"')
+      ) {
+        coords = parseLeafletScriptForCoords(text);
+      }
+    });
+
+    if (coords) {
+      // Creamos <iframe> de Google Maps con esas coords
+      const iframe = doc.createElement('iframe');
+      iframe.width = '100%';
+      iframe.height = '400';
+      iframe.style.border = '0';
+      iframe.loading = 'lazy';
+      iframe.allowFullscreen = true;
+      iframe.src = `https://maps.google.com/maps?q=${coords.lat},${coords.lng}&z=15&output=embed`;
+
+      // Limpiamos el contenedor y metemos el iframe
+      while (div.firstChild) {
+        div.removeChild(div.firstChild);
+      }
+      div.appendChild(iframe);
+    } else {
+      // Si no hay coords, podrías quitar el div
+      // div.remove();
+    }
+  });
+}
+
+/**
+ * Ajusta lazy load: data-src->src, remove class="lazyload"
+ * Reemplaza <noscript><img/></noscript> con la img real
+ * Aplica replaceLeafletWithGoogleMaps para mostrar Google Maps
+ */
+function fixLazyLoadAndNoscript(html) {
+  let cleaned = html
+    .replace(/data-src=/g, 'src=')
+    .replace(/\sclass="lazyload"/g, '');
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(cleaned, 'text/html');
+
+  // Reemplazar img del <noscript>
+  const noScripts = doc.querySelectorAll('noscript');
+  noScripts.forEach((ns) => {
+    const realImg = ns.querySelector('img');
+    if (realImg) {
+      const figure = ns.closest('figure, .wp-block-image, .wp-block-gallery, .wp-block-group');
+      if (figure) {
+        const figcaption = figure.querySelector('figcaption');
+        // Vaciar figure
+        while (figure.firstChild) {
+          figure.removeChild(figure.firstChild);
+        }
+        figure.appendChild(realImg.cloneNode(true));
+        if (figcaption) {
+          figure.appendChild(figcaption);
+        }
+      }
+    }
+  });
+
+  // Reemplazar Leaflet con Google Maps
+  replaceLeafletWithGoogleMaps(doc);
+
+  return doc.body.innerHTML;
+}
+
+/** Extrae la primera imagen del HTML si no hay featured */
 function extractFirstImageFromHTML(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const img = doc.querySelector('img');
   return img?.getAttribute('src') || null;
 }
 
-// Generar slug SEO
+/** Genera un slug SEO: id-slugifiedTitle-YYYY-MM-DD */
 const generateNewsSlug = (id, title, date) => {
   const d = new Date(date);
   const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10);
-  const slugifiedTitle = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const slugifiedTitle = title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
   return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
@@ -31,11 +128,14 @@ export default function NewsDetail() {
 
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
+
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
+
   const [recentEvents, setRecentEvents] = useState([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
 
+  // Botón nativo de compartir
   const handleShare = async () => {
     if (!navigator.share) return;
     try {
@@ -49,7 +149,6 @@ export default function NewsDetail() {
     }
   };
 
-  // Carga del post
   useEffect(() => {
     const fetchPost = async () => {
       setLoadingPost(true);
@@ -67,7 +166,6 @@ export default function NewsDetail() {
       }
     };
 
-    // Últimas 3 noticias
     const fetchRecentPosts = async () => {
       setLoadingRecent(true);
       try {
@@ -83,12 +181,13 @@ export default function NewsDetail() {
       }
     };
 
-    // Últimos eventos (tag=event)
+    // Ajusta este ID según tu etiqueta 'event'
+    const EVENT_TAG_ID = 7;
     const fetchRecentEvents = async () => {
       setLoadingEvents(true);
       try {
         const resp = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=event&per_page=3&order=desc&orderby=date&_embed&_=${Date.now()}`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=${EVENT_TAG_ID}&per_page=3&order=desc&orderby=date&_embed&_=${Date.now()}`
         );
         const data = await resp.json();
         setRecentEvents(data);
@@ -104,7 +203,6 @@ export default function NewsDetail() {
     fetchRecentEvents();
   }, [numericId]);
 
-  // Loading
   if (loadingPost && !post) {
     return (
       <div className="container mx-auto px-4 py-6">
@@ -112,6 +210,7 @@ export default function NewsDetail() {
       </div>
     );
   }
+
   if (!post) {
     return (
       <div className="container mx-auto px-4 py-6">
@@ -123,18 +222,26 @@ export default function NewsDetail() {
     );
   }
 
-  // Título e imagen
+  // Título
   const title = post.title?.rendered || 'No Title';
+
+  // Corrige lazy load y leaflet->gMaps
   const rawContent = post.content?.rendered || '<p>No content available.</p>';
-  const sanitized = DOMPurify.sanitize(rawContent);
+  const fixedContent = fixLazyLoadAndNoscript(rawContent);
+
+  // Permitir iframes en DOMPurify
+  const sanitized = DOMPurify.sanitize(fixedContent, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src'],
+  });
+
+  // Imagen destacada o fallback
   const featured = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-  const fallback = extractFirstImageFromHTML(rawContent);
+  const fallback = extractFirstImageFromHTML(fixedContent);
   const imageUrl = featured || fallback || null;
 
-  // Tags
-  const tags = post._embedded?.['wp:term']?.[1] || [];
-  // Fecha
   const dateFormatted = new Date(post.date).toLocaleDateString();
+  const tags = post._embedded?.['wp:term']?.[1] || [];
 
   return (
     <div className="bg-white min-h-screen">
@@ -142,17 +249,17 @@ export default function NewsDetail() {
         <title>{title} | SUS-SOIL News</title>
         <meta
           name="description"
-          content={post.excerpt?.rendered.replace(/<[^>]+>/g, '') || 'News article'}
+          content={post.excerpt?.rendered?.replace(/<[^>]+>/g, '') || 'News article'}
         />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8">
-        {/* Sidebar */}
+        {/* Barra lateral */}
         <div className="md:col-span-1 flex flex-col space-y-6 mt-16">
           <div className="text-sm text-gray-600">
             Published on: <span className="font-medium">{dateFormatted}</span>
           </div>
-          {tags.length > 0 && (
+          {!!tags.length && (
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => (
                 <span
@@ -173,7 +280,7 @@ export default function NewsDetail() {
           </button>
         </div>
 
-        {/* Main content */}
+        {/* Contenido principal */}
         <div className="md:col-span-2 mt-16">
           <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4">
             {title}
@@ -191,11 +298,13 @@ export default function NewsDetail() {
           />
         </div>
 
-        {/* Right column: last news + last events */}
+        {/* Últimas noticias y eventos */}
         <div className="md:col-span-1 flex flex-col space-y-6 mt-16">
           {/* Last News */}
           <div>
-            <h2 className="text-xl font-serif font-medium text-brown mb-4">Last News</h2>
+            <h2 className="text-xl font-serif font-medium text-brown mb-4">
+              Last News
+            </h2>
             {loadingRecent ? (
               <div className="grid grid-cols-1 gap-4">
                 {[...Array(3)].map((_, idx) => (
@@ -207,7 +316,8 @@ export default function NewsDetail() {
                 {recentPosts.map((rp) => {
                   const rpTitle = rp.title?.rendered || 'No Title';
                   const rpDate = new Date(rp.date).toLocaleDateString();
-                  const rpImg = rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                  const rpImg =
+                    rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
                   return (
                     <Link
                       key={rp.id}
@@ -227,7 +337,9 @@ export default function NewsDetail() {
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold">{rpTitle}</div>
-                        <div className="text-xs text-gray-500">{rpDate}</div>
+                        <div className="text-xs text-gray-500">
+                          {rpDate}
+                        </div>
                       </div>
                     </Link>
                   );
@@ -236,7 +348,7 @@ export default function NewsDetail() {
             )}
           </div>
 
-          {/* Last events */}
+          {/* Last Events */}
           {recentEvents.length > 0 && (
             <div>
               <h2 className="text-xl font-serif font-medium text-brown mb-4">
@@ -253,11 +365,16 @@ export default function NewsDetail() {
                   {recentEvents.map((ev) => {
                     const evTitle = ev.title?.rendered || 'Untitled';
                     const evDate = new Date(ev.date).toLocaleDateString();
-                    const evImg = ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const evImg =
+                      ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
                     return (
                       <Link
                         key={ev.id}
-                        to={`/news/${generateNewsSlug(ev.id, evTitle, ev.date)}`}
+                        to={`/news/${generateNewsSlug(
+                          ev.id,
+                          evTitle,
+                          ev.date
+                        )}`}
                         className="flex items-center space-x-3 hover:bg-lightGreen/20 rounded p-2 transition"
                       >
                         {evImg ? (
@@ -273,7 +390,9 @@ export default function NewsDetail() {
                         )}
                         <div className="text-sm text-brown">
                           <div className="font-semibold">{evTitle}</div>
-                          <div className="text-xs text-gray-500">{evDate}</div>
+                          <div className="text-xs text-gray-500">
+                            {evDate}
+                          </div>
                         </div>
                       </Link>
                     );
