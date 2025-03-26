@@ -1,41 +1,43 @@
 // src/Project/Project1/WorkPackages.jsx
 import React from 'react';
+import { motion } from 'framer-motion';
 
+// Data de los WP
 const workPackages = [
   {
     title: "WP1 - Networking: the Agroecological Subsoil Management Network",
     ledBy: "Centro Internazionale di Altistudi Agronomici Mediterranei (CIHEAM-IAMB)",
     objectives: [
       "To establish 15 Living Labs (LLs) in pedoclimatic relevant areas for Europe and to organize all LL activities.",
-      "To establish the Agroecological Subsoil Management Network (ASMN) to foster synergies between the SUS-SOIL project and other infrastructures, networks, projects and Living Labs (LLs) of Europe.",
+      "To establish the Agroecological Subsoil Management Network (ASMN) to foster synergies...",
       "To support the rest of SUS-SOIL Work Packages, from WP2 to WP8."
     ]
   },
   {
-    title: "WP2 - Subsoil Database collection and harmonization from synergistic infrastructures",
+    title: "WP2 - Subsoil Database collection and harmonization...",
     ledBy: "E-Science European Infrastructure (LifeWatch ERIC)",
     objectives: [
-      "To map current subsoil/soil fertility projects, initiatives, databases and infrastructures, in order to gather subsoil data in collaboration with the ASMN (T1.3) and assess the main subsoil and topsoil fertility interactions and their respective land use and management practices in rural and urban areas.",
+      "To map current subsoil/soil fertility projects, initiatives, databases...",
       "To develop a protocol for subsoil sampling and data gathering.",
-      "To develop the SUS-SOIL template database (S-DB) to harmonize the database population of external and SUS-SOIL data."
+      "To develop the SUS-SOIL template database (S-DB)..."
     ]
   },
   {
     title: "WP3 – Soil health, land use and management experiments",
     ledBy: "Agricultural University of Athens (AUA)",
     objectives: [
-      "To identify the long-term land use LUCAS points in order to be sampled as a way to understand the long-term soil use and management on soil and subsoil organic matter, water and nutrient dynamics.",
+      "To identify the long-term land use LUCAS points in order to be sampled...",
       "To gather harmonized data from the selected agricultural, forest and urban soils.",
-      "To analyse the topsoil/subsoil dynamics and plant production by evaluating organic matter additions into soils with mineral or organic subsoil."
+      "To analyse the topsoil/subsoil dynamics and plant production..."
     ]
   },
   {
-    title: "WP4 - Subsoil /soil interactions, land use, management practices, climate change and biodiversity modelling",
+    title: "WP4 - Subsoil /soil interactions...",
     ledBy: "Università di Pisa (UNIPI)",
     objectives: [
       "To provide a framework for the new models development.",
-      "To model the topsoil/subsoil traits at various depths and the interdependencies of each trait between the upper and lower layers considering land use and management (i.e. tillage) and water movements in the soil.",
-      "To identify main LL farm ideotypes linked to LULUC and management practices for farms.",
+      "To model the topsoil/subsoil traits at various depths...",
+      "To identify main LL farm ideotypes...",
       "To develop aboveground indicators to provide subsoil health indicators."
     ]
   },
@@ -43,26 +45,25 @@ const workPackages = [
     title: "WP5 - Subsoil ecosystem services sustainability assessment",
     ledBy: "Universidade de Coimbra (UC)",
     objectives: [
-      "To develop an integrated assessment framework for transparently evaluating ASM land use and management impact LL scenarios on subsoil sustainability and the respective ecosystem services.",
+      "To develop an integrated assessment framework...",
       "To quantify the cost of implementing the alternative farm and urban infrastructure ideotypes.",
-      "To quantify the contributions of the ASM land use and management to climate goals and biodiversity while assessing their effects.",
-      "To evaluate the willingness to implement the subsoil sustainable practices in each LL region and social benefits delivery."
+      "To evaluate the willingness to implement the subsoil sustainable practices..."
     ]
   },
   {
     title: "WP6 - Bioeconomic and Macroenconomic MODAM-CGE Model",
     ledBy: "Leibniz Centre for Agricultural Landscape Research (ZALF)",
     objectives: [
-      "To develop robust business plans and innovative business models of the baseline and alternative mix of relevant farm idiotypes.",
-      "To develop and optimize a DST based on MODAM modelling for macroeconomic impact assessment.",
-      "To develop policy alternatives for addressing subsoil health challenges across diverse contexts (i.e.soil degradation) including agriculture, forestry, urban areas, conservation, and sensitive landscapes by combining the results for the different farm and urban ideotypes."
+      "To develop robust business plans and innovative business models...",
+      "To develop and optimize a DST based on MODAM modelling...",
+      "To develop policy alternatives for addressing subsoil health challenges..."
     ]
   },
   {
     title: "WP7 - Sub-soil database platform development",
     ledBy: "Agricultural University of Athens (AUA)",
     objectives: [
-      "To develop digital tools to present the aggregated knowledge in an easy to access format, including:",
+      "To develop digital tools to present the aggregated knowledge...",
       "A Subsoil Database.",
       "A Subsoil Knowledge Cloud (S-KC).",
       "A Subsoil Decision Support Tool (DST).",
@@ -73,20 +74,20 @@ const workPackages = [
     title: "WP8 - Communication, Dissemination and Exploitation",
     ledBy: "Fundación Empresa Universidad Gallega (FEUGA)",
     objectives: [
-      "To communicate project results and its relevance making them all well known to relevant stakeholders, maximising the expected impacts and contributing to Mission Soil objectives.",
-      "To facilitate active dissemination and demonstration of sustainable management practices, involving relevant stakeholders.",
-      "To design and develop a methodological framework to define effective exploitation of results, protect the innovations generated and propose activities to ensure sustainability of SUS-SOIL ASMN."
+      "To communicate project results and its relevance...",
+      "To facilitate active dissemination and demonstration...",
+      "To design and develop a methodological framework..."
     ]
   },
   {
     title: "WP9 – Project Management",
     ledBy: "Universidade de Santiago de Compostela (USC)",
     objectives: [
-      "To implement project infrastructure for efficient reporting and internal communication.",
+      "To implement project infrastructure for efficient reporting...",
       "To administer and transfer payments from the European Commission.",
-      "To consolidate and submit periodic progress reports and the final report including financial reports.",
+      "To consolidate and submit periodic progress reports...",
       "To organize the kick-off meeting and the international conference.",
-      "To address all financial, ethical, legal, intellectual property and administrative matters related to the consortium/ project, as well as manage gender equality issues, in terms of EU procedures and rules.",
+      "To address all financial, ethical, legal, intellectual property...",
       "To create a project database."
     ]
   },
@@ -99,27 +100,61 @@ const workPackages = [
   }
 ];
 
+// Variants para el contenedor principal (stagger)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      when: 'beforeChildren',
+      // Aplica un retardo para cada hijo
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+// Variants para cada tarjeta (fade + slide in + scale)
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut'
+    }
+  }
+};
+
 export default function WorkPackages() {
   return (
-    <div className="max-w-screen-xl mx-auto py-16 px-4 text-brown">
+    <section className="max-w-screen-xl mx-auto py-16 px-4 text-brown">
       {/* Título de la sección */}
-      <h1 className="text-5xl font-bold text-center mb-10">
+      <h1 className="text-4xl md:text-5xl font-bold text-center mb-10">
         Work Packages
       </h1>
-
       {/* Subtítulo breve */}
       <p className="text-lg leading-relaxed text-center max-w-3xl mx-auto mb-10">
-        To facilitate achieving its different goals, the project activities are structured 
-        across ten Work Packages.
+        To facilitate achieving its different goals, the project activities are 
+        structured across ten Work Packages.
       </p>
 
-      {/* Contenedor de WP cards */}
-      <div className="space-y-10">
+      {/* Contenedor animado con framer-motion */}
+      <motion.div
+        className="space-y-10"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+      >
         {workPackages.map((wp, index) => (
-          <div
+          // Cada tarjeta se envuelve con motion.div
+          <motion.div 
             key={index}
             className="bg-white shadow-md p-6 rounded-lg transition-transform duration-300
                        hover:shadow-lg hover:-translate-y-1"
+            variants={cardVariants}
           >
             {/* Título WP */}
             <h2 className="text-2xl md:text-3xl font-semibold mb-3">
@@ -135,9 +170,9 @@ export default function WorkPackages() {
                 <li key={objIndex}>{objective}</li>
               ))}
             </ul>
-          </div>
+          </motion.div>
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </section>
   );
 }

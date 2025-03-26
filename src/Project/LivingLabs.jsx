@@ -1,65 +1,76 @@
-// LivingLabs.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-// Array con la información de cada región
+// Variants para animar el contenedor (stagger)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      when: 'beforeChildren',
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+// Variants para cada tarjeta
+const cardVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.4, ease: 'easeOut' },
+  },
+};
+
 const regions = [
   {
     id: 'Boreal',
+    info: 'Northern latitudes with extensive forests',
+    // Gradiente start y end (puedes cambiar los colores o usar un array [colorStart, colorEnd])
     color: ['#284b55', '#EAF4F1'],
-    info: 'Boreal',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel justo ligula. Fusce vitae ipsum et justo vestibulum efficitur. Cras in mauris tincidunt, pulvinar lorem nec, tincidunt metus. Praesent laoreet nibh nec libero interdum, in mollis nisl convallis...',
-    image: 'https://source.unsplash.com/r0aq9pYIadI/600x400',
+    image: 'https://source.unsplash.com/r0aq9pYIadI/600x400', // Cambia a tu URL
   },
   {
     id: 'Atlantic',
-    color: ['#2e8479', '#E2F1EE'],
-    info: 'Atlantic',
-    description: 'Description for Atlantic',
+    info: 'Coastal climates with mild temperatures',
+    color: ['#2e8479', '#F1FBFA'],
     image: 'https://source.unsplash.com/hkjsfuyxK10/600x400',
   },
   {
     id: 'Continental',
-    color: ['#b7543d', '#F4E6E3'],
-    info: 'Continental',
-    description: 'Description for Continental',
+    info: 'More extreme climates and deeper soils',
+    color: ['#b7543d', '#FCECE9'],
     image: 'https://source.unsplash.com/TRhGEGdw-YY/600x400',
   },
   {
     id: 'Alpine',
-    color: ['#775786', '#F1EAF3'],
-    info: 'Alpine',
-    description: 'Description for Alpine',
+    info: 'Mountainous areas with fragile ecosystems',
+    color: ['#775786', '#F6F1FA'],
     image: 'https://source.unsplash.com/ZEVkLRWmnX4/600x400',
   },
   {
     id: 'Pannonian',
-    color: ['#86884c', '#F4F4E5'],
-    info: 'Pannonian',
-    description: 'Description for Pannonian',
+    info: 'Plains and fertile soils',
+    color: ['#86884c', '#FCFCE9'],
     image: 'https://source.unsplash.com/2cddwbyhTsY/600x400',
   },
   {
     id: 'Mediterranean',
-    color: ['#ee9c39', '#FDF3E5'],
-    info: 'Mediterranean',
-    description: 'Description for Mediterranean',
+    info: 'Dry summers and calcareous soils',
+    color: ['#ee9c39', '#FEF8EE'],
     image: 'https://source.unsplash.com/mDa8FAg782c/600x400',
   },
   {
     id: 'BlackSea',
-    color: ['#5c81b5', '#E6EDF5'],
-    info: 'Black Sea',
-    description: 'Description for Black Sea',
+    info: 'Coasts and fertile valleys',
+    color: ['#5c81b5', '#EEF3FA'],
     image: 'https://source.unsplash.com/5UhayavS2d4/600x400',
   },
   {
     id: 'Anatolian',
-    color: ['#a02b16', '#F4E4E1'],
-    info: 'Anatolian',
-    description: 'Description for Anatolian',
+    info: 'Varied climates in ancient soils',
+    color: ['#a02b16', '#FAEEEB'],
     image: 'https://source.unsplash.com/LSKmkJGog64/600x400',
   },
 ];
@@ -67,52 +78,66 @@ const regions = [
 export default function LivingLabs() {
   return (
     <div className="container mx-auto px-6 py-16">
-      {/* Main Heading */}
       <h1 className="text-4xl font-bold text-center mb-8 text-brown font-serif">
         Living Labs
       </h1>
 
-      {/* Introduction / Simulated Text */}
-      <div className="max-w-3xl mx-auto  mb-12">
-        <p className="text-gray-700 leading-relaxed mb-4">
-          Welcome to our Living Labs section! Here, we explore different regions 
-          and their unique environmental, agricultural, and cultural 
-          characteristics. Each lab is a hub for innovation, research, and 
-          hands-on collaboration.
-        </p>
-        <p className="text-gray-700 leading-relaxed">
-          Discover the special attributes of each area, the projects taking 
-          place, and the partnerships driving sustainable soil health solutions. 
-          Dive into the region that interests you the most!
+      <div className="max-w-3xl mx-auto mb-12 text-gray-700 leading-relaxed">
+        <p className="mb-4">
+          Welcome to our Living Labs section! Each region below represents a unique 
+          ecosystem and set of challenges for soil management. Explore and discover 
+          the local partnerships and projects focusing on sustainable subsoil practices.
         </p>
       </div>
 
-      {/* Grid of Regions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      {/* Contenedor animado con framer-motion */}
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         {regions.map((region) => (
-          <Link
-            key={region.id}
-            to={`/living-labs/${region.id}`}
-            className="w-full h-64 flex items-center justify-center text-center text-white border border-gray-300 rounded-lg shadow-lg cursor-pointer overflow-hidden"
+          <motion.div 
+            key={region.id} 
+            variants={cardVariants}
           >
-            <motion.div
-              className="w-full h-full flex items-center justify-center"
-              whileHover={{ scale: 1.05, backgroundSize: 'cover' }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.4 }}
-              style={{
-                backgroundImage: `linear-gradient(to bottom, ${region.color[0]} 50%, ${region.color[1]} 100%), url(${region.image})`,
-                backgroundSize: 'cover, cover',
-                backgroundPosition: 'center',
-              }}
+            <Link
+              to={`/living-labs/${region.id}`}
+              aria-label={`View details of ${region.id} region`}
+              className="relative w-full h-56 sm:h-64 flex items-center justify-center 
+                         text-center text-white border border-gray-300 
+                         rounded-lg shadow-lg cursor-pointer overflow-hidden group
+                         transition-transform transform hover:scale-105"
             >
-              <h2 className="text-xl font-bold drop-shadow-lg font-serif">
-                {region.id}
-              </h2>
-            </motion.div>
-          </Link>
+              {/* Imagen de fondo + gradiente */}
+              <div 
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to bottom, ${region.color[0]} 50%, ${region.color[1]} 100%), 
+                    url(${region.image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              />
+              
+              {/* Overlay al hover (más oscura) */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
+
+              {/* Contenido textual */}
+              <div className="relative z-10 flex flex-col items-center px-4">
+                <h2 className="text-lg sm:text-xl font-bold drop-shadow-md font-serif">
+                  {region.id}
+                </h2>
+                <p className="text-xs sm:text-sm mt-1 drop-shadow-md font-serif">
+                  {region.info}
+                </p>
+              </div>
+            </Link>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

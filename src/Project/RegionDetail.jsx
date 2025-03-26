@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
 
-// Lista completa de regiones con textos personalizados
 const regions = [
   {
     id: 'Boreal',
     info: 'Boreal',
+    color: '#284b55',
     image: 'https://source.unsplash.com/r0aq9pYIadI/600x400',
     description: `
       El Boreal abarca áreas con climas fríos y bosques extensos. 
@@ -24,6 +24,7 @@ const regions = [
   {
     id: 'Atlantic',
     info: 'Atlantic',
+    color: '#2e8479',
     image: 'https://source.unsplash.com/hkjsfuyxK10/600x400',
     description: `
       El Atlantic se caracteriza por costas húmedas y temperaturas suaves. 
@@ -34,6 +35,7 @@ const regions = [
   {
     id: 'Continental',
     info: 'Continental',
+    color: '#b7543d',
     image: 'https://source.unsplash.com/TRhGEGdw-YY/600x400',
     description: `
       El Continental cuenta con climas más extremos y suelos profundos. 
@@ -44,6 +46,7 @@ const regions = [
   {
     id: 'Alpine',
     info: 'Alpine',
+    color: '#775786',
     image: 'https://source.unsplash.com/ZEVkLRWmnX4/600x400',
     description: `
       Las zonas Alpine destacan por sus montañas elevadas y ecosistemas frágiles. 
@@ -54,6 +57,7 @@ const regions = [
   {
     id: 'Pannonian',
     info: 'Pannonian',
+    color: '#86884c',
     image: 'https://source.unsplash.com/2cddwbyhTsY/600x400',
     description: `
       La región Pannonian es rica en llanuras y suelos fértiles. 
@@ -63,6 +67,7 @@ const regions = [
   {
     id: 'Mediterranean',
     info: 'Mediterranean',
+    color: '#ee9c39',
     image: 'https://source.unsplash.com/mDa8FAg782c/600x400',
     description: `
       El Mediterranean es famoso por sus veranos secos y suelos calcáreos. 
@@ -72,6 +77,7 @@ const regions = [
   {
     id: 'BlackSea',
     info: 'Black Sea',
+    color: '#5c81b5',
     image: 'https://source.unsplash.com/5UhayavS2d4/600x400',
     description: `
       La región Black Sea combina costas y valles fértiles. 
@@ -82,6 +88,7 @@ const regions = [
   {
     id: 'Anatolian',
     info: 'Anatolian',
+    color: '#a02b16',
     image: 'https://source.unsplash.com/LSKmkJGog64/600x400',
     description: `
       Anatolian se ubica en la península de Anatolia, con climas variados y suelos antiguos. 
@@ -92,20 +99,17 @@ const regions = [
 ];
 
 export default function RegionDetail() {
-  const { id } = useParams(); // id de la región (Boreal, Atlantic, etc.)
+  const { id } = useParams(); // Region ID from URL
   const [region, setRegion] = useState(null);
   const [loadingImg, setLoadingImg] = useState(true);
 
   useEffect(() => {
-    // Buscar la región ignorando mayúsculas/minúsculas
-    const found = regions.find(
-      (r) => r.id.toLowerCase() === id.toLowerCase()
-    );
+    // Buscar la región sin distinción de mayúsculas
+    const found = regions.find(r => r.id.toLowerCase() === id.toLowerCase());
     setRegion(found || null);
     setLoadingImg(true);
   }, [id]);
 
-  // Si la región no se encuentra
   if (!region) {
     return (
       <div className="container mx-auto px-6 py-16 text-center ">
@@ -123,7 +127,7 @@ export default function RegionDetail() {
   return (
     <div className="container mx-auto px-6 py-16">
       {/* Quick Menu with all Regions */}
-      <div className="bg-white p-4 rounded shadow-sm mb-6 ">
+      <div className="bg-white p-4 rounded shadow-sm mb-6">
         <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">
           Quick Menu
         </h2>
@@ -131,20 +135,32 @@ export default function RegionDetail() {
           {/* Link to All Living Labs */}
           <Link
             to="/living-labs"
-            className="bg-white border border-brown text-brown px-4 py-2 rounded-lg font-semibold hover:bg-darkGreen hover:text-white transition-colors shadow-sm"
+            className="px-4 py-2 rounded-lg font-semibold shadow-sm 
+                       hover:scale-105 transform transition 
+                       bg-white border border-brown text-brown 
+                       hover:bg-darkGreen hover:text-white"
           >
             All Living Labs
           </Link>
-          {/* Links to each region */}
-          {regions.map((reg) => (
-            <Link
-              key={reg.id}
-              to={`/living-labs/${reg.id}`}
-              className="bg-white border border-brown text-brown px-4 py-2 rounded-lg font-semibold hover:bg-darkGreen hover:text-white transition-colors shadow-sm"
-            >
-              {reg.id}
-            </Link>
-          ))}
+
+          {/* Button to each region with color highlight if it's the current region */}
+          {regions.map(reg => {
+            const isActive = reg.id.toLowerCase() === region.id.toLowerCase();
+            return (
+              <Link
+                key={reg.id}
+                to={`/living-labs/${reg.id}`}
+                className={`px-4 py-2 rounded-lg font-semibold shadow-sm transform transition 
+                            hover:scale-105
+                            ${isActive ? 'text-white' : 'text-brown'}`}
+                style={{
+                  backgroundColor: isActive ? reg.color : '#f8f8f8'
+                }}
+              >
+                {reg.id}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
@@ -153,11 +169,9 @@ export default function RegionDetail() {
         {region.info}
       </h1>
 
-      {/* Imagen */}
+      {/* Imagen principal */}
       <div className="w-full max-w-3xl mx-auto h-64 rounded-lg mb-6 overflow-hidden relative">
-        {loadingImg && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
-        )}
+        {loadingImg && <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>}
         <img
           src={region.image}
           alt={region.info}
@@ -178,54 +192,64 @@ export default function RegionDetail() {
 
       <hr className="my-8 border-brown border" />
 
-      {/* Sección: News related */}
-      <div className="max-w-3xl mx-auto mb-6">
+      {/* Sección: Related News */}
+      <div className="max-w-3xl mx-auto mb-8">
         <h3 className="text-xl font-bold font-serif text-brown mb-2">
-          News related with {region.info}
+          Related News
         </h3>
-        <div className="grid grid-cols-3 gap-4">
-          {Array(3)
-            .fill(0)
-            .map((_, i) => (
-              <div
-                key={i}
-                className="w-full h-20 bg-gray-200 flex items-center justify-center rounded shadow-sm"
-              >
-                <span className="text-sm text-gray-700">
-                  News Placeholder {i + 1}
-                </span>
-              </div>
-            ))}
+        {/* Aquí 3 placeholders; en el futuro, fetch real data */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {Array(3).fill(0).map((_, i) => (
+            <div key={i} className="bg-gray-200 h-20 rounded shadow-sm flex items-center justify-center">
+              <span className="text-sm text-gray-700">
+                News Placeholder {i + 1}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <hr className="my-8 border-brown border" />
+
+      {/* Sección: Related Events */}
+      <div className="max-w-3xl mx-auto mb-8">
+        <h3 className="text-xl font-bold font-serif text-brown mb-2">
+          Related Events
+        </h3>
+        {/* Igual, 3 placeholders */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {Array(3).fill(0).map((_, i) => (
+            <div key={i} className="bg-gray-200 h-20 rounded shadow-sm flex items-center justify-center">
+              <span className="text-sm text-gray-700">
+                Event Placeholder {i + 1}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
       <hr className="my-8 border-brown border" />
 
       {/* Sección: Colaboradores */}
-      <div className="max-w-3xl mx-auto mb-6">
+      <div className="max-w-3xl mx-auto mb-8">
         <h3 className="text-xl font-bold font-serif text-brown mb-2">
           Collaborators
         </h3>
-        <div className="grid grid-cols-3 gap-4">
-          {Array(3)
-            .fill(0)
-            .map((_, i) => (
-              <div
-                key={i}
-                className="w-full h-16 bg-gray-200 flex items-center justify-center rounded shadow-sm"
-              >
-                <span className="text-sm text-gray-700">
-                  Logo {i + 1}
-                </span>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {Array(3).fill(0).map((_, i) => (
+            <div key={i} className="bg-gray-200 h-16 rounded shadow-sm flex items-center justify-center">
+              <span className="text-sm text-gray-700">
+                Logo {i + 1}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
       <hr className="my-8 border-brown border" />
 
       {/* Sección: Area Responsible */}
-      <div className="max-w-3xl mx-auto mb-6">
+      <div className="max-w-3xl mx-auto mb-8">
         <h3 className="text-xl font-bold font-serif text-brown mb-2">
           Area Responsible
         </h3>
