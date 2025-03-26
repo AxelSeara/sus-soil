@@ -1,6 +1,7 @@
 // src/components/Hero.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
+import bgImage from '../../../assets/bg2.svg';
 
 export default function Hero() {
   return (
@@ -12,7 +13,7 @@ export default function Hero() {
 
       // Parallax mediante background-attachment: fixed
       style={{
-        backgroundImage: "url('/src/assets/bg2.svg')", // Ajusta la ruta
+        backgroundImage: `url(${bgImage})`,
         backgroundAttachment: 'fixed',
         backgroundPosition: 'center',
         backgroundSize: 'cover',

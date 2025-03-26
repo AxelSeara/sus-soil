@@ -16,6 +16,8 @@ import {
 import { FaXTwitter } from 'react-icons/fa6'; // Icono Twitter/X
 import susSoilLogo from '../assets/logo.png';
 import euLogo from '../assets/funded-ue-300x61.png';
+import bgImage from '../assets/bg2.svg';
+
 
 const quickLinks = [
   { to: '/', label: 'Home', Icon: FaHome },
@@ -65,7 +67,7 @@ export default function Footer() {
       <div
         className="bg-cover bg-center bg-no-repeat px-6 py-12"
         style={{
-          backgroundImage: "url('/src/assets/bg2.svg')",
+          backgroundImage: `url(${bgImage})`,
         }}
       >
         <div className="container mx-auto">
