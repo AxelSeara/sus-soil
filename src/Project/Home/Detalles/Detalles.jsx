@@ -36,7 +36,11 @@ const objectives = [
 // Variants para animar el contenedor principal de la tarjeta principal
 const mainCardVariants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: 'easeOut' },
+  },
 };
 
 // Variants para el contenedor del grid (stagger)
@@ -70,7 +74,7 @@ const cardVariants = {
 
 export default function Detalles() {
   return (
-    <div className="relative py-24 px-4 bg-lightGreen">
+    <div className="relative py-16 px-4 bg-lightGreen">
       <div className="max-w-screen-xl mx-auto">
         {/* Tarjeta principal animada */}
         <motion.div
@@ -84,7 +88,9 @@ export default function Detalles() {
             The Project
           </h2>
           <p className="text-lg md:text-xl text-brown font-serif mt-4">
-            SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark different agroecology subsoil management and land uses and their impacts.
+            SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will 
+            develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark 
+            different agroecology subsoil management and land uses and their impacts.
           </p>
         </motion.div>
 
@@ -99,15 +105,22 @@ export default function Detalles() {
           {objectives.map((obj, index) => (
             <motion.div
               key={index}
-              className="rounded-xl bg-white/50 backdrop-blur-md shadow-md p-6 text-center cursor-pointer hover:shadow-xl hover:bg-white/70 transition-all duration-300"
+              className="rounded-xl bg-white shadow-md p-6 text-center cursor-pointer 
+                         hover:shadow-xl transition-all duration-300"
               variants={cardVariants}
+              whileHover={{ y: -3 }} // pequeña elevación en hover
             >
-              {/* Icono grande */}
-              <img src={obj.icon} alt={obj.title} className="w-32 h-32 mx-auto" />
+              {/* Icono grande (responsive) con animación leve */}
+              <motion.img
+                src={obj.icon}
+                alt={obj.title}
+                className="w-20 h-20 md:w-32 md:h-32 mx-auto transition-transform duration-300"
+                whileHover={{ scale: 1.05 }}
+              />
               <h3 className="text-brown font-medium font-serif text-lg mt-4">
                 {obj.title}
               </h3>
-              <p className="text-sm text-brown font-serif mt-2 weight-regular">
+              <p className="text-sm text-brown font-serif mt-2">
                 {obj.text}
               </p>
             </motion.div>

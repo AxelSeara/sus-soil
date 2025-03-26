@@ -68,7 +68,7 @@ export default function LivingLabs() {
   return (
     <div className="container mx-auto px-6 py-16">
       {/* Main Heading */}
-      <h1 className="text-4xl font-bold text-center mt-16 mb-8 text-brown font-serif">
+      <h1 className="text-4xl font-bold text-center mb-8 text-brown font-serif">
         Living Labs
       </h1>
 

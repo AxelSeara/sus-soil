@@ -253,7 +253,7 @@ export default function NewsDetail() {
 
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-3 md:gap-8">
         {/* MAIN CONTENT (2/3) */}
-        <div className="md:col-span-2 mt-16">
+        <div className="md:col-span-2 ">
           {/* Title */}
           <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4">
             {title}
@@ -316,7 +316,7 @@ export default function NewsDetail() {
         </div>
 
         {/* RIGHT COLUMN (1/3) */}
-        <div className="md:col-span-1 md:mt-16 flex flex-col space-y-8 mt-16">
+        <div className="md:col-span-1  flex flex-col space-y-8 ">
           {/* Last News */}
           {loadingRecent ? (
             <div>

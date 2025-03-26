@@ -65,7 +65,7 @@ const associatedPartners = [
 export default function Partners() {
   return (
     <div className="max-w-screen-xl mx-auto py-16 px-4 text-brown">
-      <h1 className="text-5xl mt-16 font-bold text-center mb-10">Project Partners</h1>
+      <h1 className="text-5xl font-bold text-center mb-10">Project Partners</h1>
       <p className="text-lg leading-relaxed text-center max-w-3xl mx-auto mb-10">
         SUS-SOIL is coordinated by the University of Santiago de Compostela (USC) from Spain, 
         and concentrates 22 partners from 13 countries across Europe and North Africa.

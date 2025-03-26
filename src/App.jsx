@@ -26,6 +26,7 @@ const App = () => {
     <Router>
        <ScrollToTop />
       <Navbar />
+      <div className="pt-16">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/news" element={<News />} />
@@ -44,6 +45,8 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </div>
+
       <Footer />
     </Router>
   );

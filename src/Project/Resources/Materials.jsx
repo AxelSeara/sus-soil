@@ -44,7 +44,7 @@ export default function Materials() {
 
   return (
     <div className="container mx-auto px-4 py-16">
-      <h1 className="text-4xl md:text-5xl font-bold text-brown font-serif mt-16 mb-8">
+      <h1 className="text-4xl md:text-5xl font-bold text-brown font-serif mb-8">
         Materials
       </h1>
 

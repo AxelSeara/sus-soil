@@ -117,7 +117,7 @@ const Contact = () => {
         {/* Right: Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
-          className="bg-white p-8 mt-16 rounded-lg shadow-lg w-full"
+          className="bg-white p-8 rounded-lg shadow-lg w-full"
           variants={fadeInVariants}
           initial="hidden"
           whileInView="visible"

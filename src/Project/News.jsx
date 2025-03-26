@@ -140,7 +140,7 @@ const NewsPage = () => {
   return (
     <div className="bg-white min-h-screen">
       <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-medium font-serif mb-8 mt-16 text-center text-brown">
+        <h2 className="text-3xl font-medium font-serif mb-8 text-center text-brown">
           Latest News & Events
         </h2>
         <div className="flex justify-center items-center space-x-4 mb-8">

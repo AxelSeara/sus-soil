@@ -1,193 +1,370 @@
+// src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  FiMenu, 
-  FiX, 
-  FiChevronDown 
-} from 'react-icons/fi';
-import { 
-  FaHome, 
-  FaUserGraduate, 
-  FaTasks, 
-  FaUsers, 
-  FaNewspaper, 
-  FaFlask, 
-  FaBookOpen, 
-  FaPenFancy, 
-  FaEnvelopeOpenText, 
-  FaFacebookF, 
-  FaLinkedinIn, 
-  FaYoutube 
-} from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6'; // Twitter/X icon
-import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg';
-
-// Opciones del submenú de 'Project' con íconos
-const projectItems = [
-  { to: '/project/about', label: 'About', Icon: FaUserGraduate },
-  { to: '/project/work-packages', label: 'Work Packages', Icon: FaTasks },
-  { to: '/project/partners', label: 'Partners', Icon: FaUsers },
-];
-
-// Opciones del submenú de 'Resources' con íconos
-const resourcesItems = [
-  // { to: '/resources', label: 'Overview', Icon: FaBookOpen },
-  { to: '/resources/materials', label: 'Materials', Icon: FaFlask },
-  { to: '/resources/practice-abstracts', label: 'Practice Abstracts', Icon: FaPenFancy },
-  { to: '/resources/newsletter', label: 'Newsletter', Icon: FaEnvelopeOpenText },
-];
+import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+// OJO: si usas react-icons/fa6, cambia la import
+import { FaXTwitter } from 'react-icons/fa6'; 
+import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg'; // Ajusta la ruta real
 
 export default function Navbar() {
-  // Estado para el menú móvil
+  // Menú móvil
   const [mobileOpen, setMobileOpen] = useState(false);
-  // Estado para los dropdowns (solo uno abierto a la vez)
-  const [openDropdown, setOpenDropdown] = useState(null);
 
-  // Referencia para detectar clics fuera
-  const menuRef = useRef(null);
+  // Dropdowns en desktop
+  const [projectOpen, setProjectOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
 
-  // Manejo de clics fuera del menú para cerrar dropdowns
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const projectRef = useRef(null);
+  const resourcesRef = useRef(null);
 
-  // Evita el scroll en dispositivos móviles cuando el menú está abierto
+  // Overflow hidden si el menú móvil está abierto
   useEffect(() => {
     if (mobileOpen) {
-      document.body.classList.add("overflow-hidden");
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove("overflow-hidden");
+      document.body.style.overflow = 'auto';
     }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, [mobileOpen]);
 
-  // Función para abrir/cerrar dropdowns
-  const toggleDropdown = (menuName) => {
-    setOpenDropdown(prev => (prev === menuName ? null : menuName));
-  };
+  // Cerrar dropdowns si clic afuera
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (projectRef.current && !projectRef.current.contains(e.target)) {
+        setProjectOpen(false);
+      }
+      if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
+        setResourcesOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-  // Cierra todo al hacer clic en un enlace
-  const closeAll = () => {
-    setMobileOpen(false);
-    setOpenDropdown(null);
-  };
+  // Items dropdown
+  const projectItems = [
+    { to: '/project/about', label: 'About' },
+    { to: '/project/work-packages', label: 'Work Packages' },
+    { to: '/project/partners', label: 'Partners' },
+  ];
+  const resourcesItems = [
+    { to: '/resources', label: 'Overview' },
+    { to: '/resources/materials', label: 'Materials' },
+    { to: '/resources/practice-abstracts', label: 'Practice Abstracts' },
+    { to: '/resources/newsletter', label: 'Newsletter' },
+  ];
 
-  // Clases de estilo
-  const navLinkClass = "text-brown text-sm lg:text-base font-medium hover:text-darkGreen transition-colors";
-  const dropdownContainerClass = "absolute left-0 top-full mt-2 bg-lightGreen text-brown rounded shadow-lg z-[1000] min-w-[280px] p-2";
-  const dropdownItemClass = "flex items-center px-4 py-2 gap-2 hover:bg-green hover:text-white transition-colors";
+  // Clases base
+  const navLinkClass =
+    "text-brown text-sm lg:text-base font-medium hover:text-darkGreen transition-colors";
+
+  // Contenedor dropdown (desktop)
+  const dropdownContainerClass =
+    "absolute left-0 top-full mt-2 bg-white text-brown rounded-md shadow-lg border border-gray-200 z-[1000] min-w-[200px] p-2";
+
+  // Item dropdown (desktop)
+  const dropdownItemClass =
+    "block px-4 py-2 hover:bg-green hover:text-white transition-colors rounded-md";
 
   return (
-    <nav className="fixed z-[1000] border-b border-solid border-prime-gray-200 w-full py-3 bg-white px-4">
-      <div className="container mx-auto" ref={menuRef}>
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-14">
-          
-          {/* Branding + Botón móvil */}
-          <div className="flex justify-between w-full">
-            <Link to="/" className="flex items-center">
-              <img src={logo} alt="Logo" className="h-12" />
-            </Link>
-            <button
-              type="button"
-              className="inline-flex items-center p-2 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-controls="navbar-mobile"
-              aria-expanded={mobileOpen}
-            >
-              {mobileOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
-            </button>
-          </div>
-          
-          {/* Menú Desktop y Móvil */}
-          <div className={`${mobileOpen ? "block" : "hidden"} w-full lg:flex lg:pl-11`} id="navbar-desktop">
-            <ul className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-0 mt-4 lg:mt-0 w-full lg:w-auto">
-              
-              {/* HOME */}
-              <li>
-                <Link to="/" className={`${navLinkClass} lg:mr-6 flex items-center gap-1`} onClick={closeAll}>
-                  Home
-                </Link>
-              </li>
+    <nav className="fixed top-0 left-0 w-full h-16 z-[1000] bg-white border-b border-gray-300 shadow-md px-4">
+      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between h-full">
+        {/* Logo + Botón Menú Móvil */}
+        <div className="flex justify-between w-full lg:w-auto">
+          {/* LOGO local */}
+          <Link to="/" className="flex items-center">
+            <img src={logo} alt="Logo" className="h-10 w-auto mr-2" />
+          </Link>
+          {/* Botón Menú móvil */}
+          <button
+            type="button"
+            className="lg:hidden p-2 text-gray-500 rounded-md hover:bg-gray-100 
+                       focus:outline-none focus:ring-2 focus:ring-gray-200 
+                       transition-colors duration-300"
+            onClick={() => setMobileOpen(!mobileOpen)}
+          >
+            {mobileOpen ? <FiX className="w-6 h-6" /> : <FiMenu className="w-6 h-6" />}
+          </button>
+        </div>
 
-              {/* PROJECT (Dropdown) */}
-              <li className="relative">
-                <button onClick={() => toggleDropdown("project")} className={`${navLinkClass} flex items-center lg:mr-6`} aria-expanded={openDropdown === "project"}>
-                  Project <FiChevronDown className="w-3 h-3 ml-1.5" />
-                </button>
-                {openDropdown === "project" && (
-                  <div className={dropdownContainerClass}>
-                    <ul>
-                      {projectItems.map((item, index) => (
-                        <li key={index}>
-                          <Link to={item.to} className={dropdownItemClass} onClick={closeAll}>
-                            <item.Icon />
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
+        {/* Menú Desktop */}
+        <div className="hidden lg:flex lg:pl-8">
+          <ul className="flex items-center gap-6">
+            {/* Home */}
+            <li>
+              <Link to="/" className={navLinkClass}>
+                Home
+              </Link>
+            </li>
 
-              {/* NEWS */}
-              <li>
-                <Link to="/news" className={`${navLinkClass} lg:mr-6`} onClick={closeAll}>
-                  News
-                </Link>
-              </li>
+            {/* Project (dropdown) */}
+            <li className="relative" ref={projectRef}>
+              <button
+                onClick={() => setProjectOpen(!projectOpen)}
+                className={`${navLinkClass} flex items-center`}
+              >
+                Project
+                <FiChevronDown className="ml-1.5 w-4 h-4" />
+              </button>
+              {projectOpen && (
+                <div className={dropdownContainerClass}>
+                  {projectItems.map((item, i) => (
+                    <Link
+                      key={i}
+                      to={item.to}
+                      className={dropdownItemClass}
+                      onClick={() => setProjectOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
 
-              {/* LIVING LABS */}
-              <li>
-                <Link to="/living-labs" className={`${navLinkClass} text-nowrap
- lg:mr-6`} onClick={closeAll}>
-                  Living Labs
-                </Link>
-              </li>
+            {/* Living labs */}
+            <li>
+              <Link to="/living-labs" className={navLinkClass}>
+                Living Labs
+              </Link>
+            </li>
 
-              {/* RESOURCES (Dropdown) */}
-              <li className="relative">
-                <button onClick={() => toggleDropdown("resources")} className={`${navLinkClass} flex items-center lg:mr-6`} aria-expanded={openDropdown === "resources"}>
-                  Resources <FiChevronDown className="w-3 h-3 ml-1.5" />
-                </button>
-                {openDropdown === "resources" && (
-                  <div className={dropdownContainerClass}>
-                    <ul>
-                      {resourcesItems.map((item, index) => (
-                        <li key={index}>
-                          <Link to={item.to} className={dropdownItemClass} onClick={closeAll}>
-                            <item.Icon />
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
+            {/* Resources (dropdown) */}
+            <li className="relative" ref={resourcesRef}>
+              <button
+                onClick={() => setResourcesOpen(!resourcesOpen)}
+                className={`${navLinkClass} flex items-center`}
+              >
+                Resources
+                <FiChevronDown className="ml-1.5 w-4 h-4" />
+              </button>
+              {resourcesOpen && (
+                <div className={dropdownContainerClass}>
+                  {resourcesItems.map((item, i) => (
+                    <Link
+                      key={i}
+                      to={item.to}
+                      className={dropdownItemClass}
+                      onClick={() => setResourcesOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </li>
 
-              {/* CONTACT */}
-              <li><Link to="/contact" className={`${navLinkClass} lg:mr-6`} onClick={closeAll}>Contact</Link></li>
+            {/* News */}
+            <li>
+              <Link to="/news" className={navLinkClass}>
+                News
+              </Link>
+            </li>
 
-              {/* Social Media */}
-              <li className="flex items-center space-x-4 lg:ml-4">
-                <a href="#" className="text-brown hover:text-darkGreen"><FaFacebookF /></a>
-                <a href="#" className="text-brown hover:text-darkGreen"><FaXTwitter /></a>
-                <a href="#" className="text-brown hover:text-darkGreen"><FaLinkedinIn /></a>
-                <a href="#" className="text-brown hover:text-darkGreen"><FaYoutube /></a>
-              </li>
+            {/* Contact */}
+            <li>
+              <Link to="/contact" className={navLinkClass}>
+                Contact
+              </Link>
+            </li>
 
-            </ul>
-          </div>
+            {/* Social Icons */}
+            <li className="flex items-center space-x-4 ml-4">
+              <a
+                href="https://facebook.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaFacebookF />
+              </a>
+              <a
+                href="https://x.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaXTwitter />
+              </a>
+              <a
+                href="https://linkedin.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaLinkedinIn />
+              </a>
+              <a
+                href="https://youtube.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaYoutube />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
+
+      {/* Menú Móvil */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden absolute top-16 left-0 w-full bg-white border-t border-gray-200 shadow-md
+                     flex flex-col z-50"
+        >
+          <ul className="flex flex-col gap-4 p-4">
+            {/* HOME */}
+            <li>
+              <Link
+                to="/"
+                className={navLinkClass}
+                onClick={() => setMobileOpen(false)}
+              >
+                Home
+              </Link>
+            </li>
+
+            {/* Project - dropdown en móvil */}
+            <li>
+              <button
+                onClick={() => setProjectOpen(!projectOpen)}
+                className={`${navLinkClass} flex items-center justify-between w-full`}
+              >
+                <span>Project</span>
+                <FiChevronDown className="ml-1.5 w-4 h-4" />
+              </button>
+              {projectOpen && (
+                <div className="mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <ul className="flex flex-col">
+                    {projectItems.map((item, i) => (
+                      <li key={i}>
+                        <Link
+                          to={item.to}
+                          className="block px-4 py-2 text-brown hover:bg-green hover:text-white transition-colors"
+                          onClick={() => {
+                            setProjectOpen(false);
+                            setMobileOpen(false);
+                          }}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* Living Labs */}
+            <li>
+              <Link
+                to="/living-labs"
+                className={navLinkClass}
+                onClick={() => setMobileOpen(false)}
+              >
+                Living Labs
+              </Link>
+            </li>
+
+            {/* Resources - dropdown en móvil */}
+            <li>
+              <button
+                onClick={() => setResourcesOpen(!resourcesOpen)}
+                className={`${navLinkClass} flex items-center justify-between w-full`}
+              >
+                <span>Resources</span>
+                <FiChevronDown className="ml-1.5 w-4 h-4" />
+              </button>
+              {resourcesOpen && (
+                <div className="mt-2 bg-white border border-gray-200 rounded-md shadow-lg">
+                  <ul className="flex flex-col">
+                    {resourcesItems.map((item, i) => (
+                      <li key={i}>
+                        <Link
+                          to={item.to}
+                          className="block px-4 py-2 text-brown hover:bg-green hover:text-white transition-colors"
+                          onClick={() => {
+                            setResourcesOpen(false);
+                            setMobileOpen(false);
+                          }}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </li>
+
+            {/* News */}
+            <li>
+              <Link
+                to="/news"
+                className={navLinkClass}
+                onClick={() => setMobileOpen(false)}
+              >
+                News
+              </Link>
+            </li>
+
+            {/* Contact */}
+            <li>
+              <Link
+                to="/contact"
+                className={navLinkClass}
+                onClick={() => setMobileOpen(false)}
+              >
+                Contact
+              </Link>
+            </li>
+
+            {/* Social Icons */}
+            <li className="flex items-center space-x-4">
+              <a
+                href="https://facebook.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+              >
+                <FaFacebookF />
+              </a>
+              <a
+                href="https://x.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+              >
+                <FaXTwitter />
+              </a>
+              <a
+                href="https://linkedin.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+              >
+                <FaLinkedinIn />
+              </a>
+              <a
+                href="https://youtube.com"
+                className="text-brown hover:text-darkGreen transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMobileOpen(false)}
+              >
+                <FaYoutube />
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 }
