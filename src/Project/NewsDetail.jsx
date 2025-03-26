@@ -295,7 +295,7 @@ export default function NewsDetail() {
           />
 
           {/* Buttons (Share + Back to News) */}
-          <div className="flex items-center gap-4 mt-8">
+          <div className="flex items-center gap-4 mt-8 mb-8">
             <button
               onClick={handleShare}
               className="bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 inline-flex items-center space-x-2"

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-// OJO: si usas react-icons/fa6, cambia la import
 import { FaXTwitter } from 'react-icons/fa6'; 
 import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg'; // Ajusta la ruta real
 
@@ -50,8 +49,10 @@ export default function Navbar() {
     { to: '/project/work-packages', label: 'Work Packages' },
     { to: '/project/partners', label: 'Partners' },
   ];
+
+  // Nota: Se comenta la línea de 'Overview'
   const resourcesItems = [
-    { to: '/resources', label: 'Overview' },
+    // { to: '/resources', label: 'Overview' }, 
     { to: '/resources/materials', label: 'Materials' },
     { to: '/resources/practice-abstracts', label: 'Practice Abstracts' },
     { to: '/resources/newsletter', label: 'Newsletter' },
