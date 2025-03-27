@@ -24,7 +24,7 @@ const quickLinks = [
   { to: '/project/work-packages', label: 'Project', Icon: FaTasks },
   { to: '/news', label: 'News', Icon: FaNewspaper },
   { to: '/living-labs', label: 'Living Labs', Icon: FaFlask },
-  { to: '/resources', label: 'Resources', Icon: FaBookOpen },
+  // { to: '/resources', label: 'Resources', Icon: FaBookOpen },
   { to: '/contact', label: 'Contact', Icon: FaEnvelope },
 ];
 
