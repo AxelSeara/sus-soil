@@ -1,33 +1,35 @@
 // src/components/Hero.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import bgImage from '../../../assets/bg2.svg';
 
 export default function Hero() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Función para determinar si la pantalla es móvil
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <motion.div
-      // Fade-in al montar
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: 'easeOut' }}
-
-      // Parallax mediante background-attachment: fixed
       style={{
         backgroundImage: `url(${bgImage})`,
-        backgroundAttachment: 'fixed',
+        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
-      className="
-        relative
-        min-h-screen
-        flex 
-        flex-col
-        items-center
-        justify-center
-        px-4
-      "
+      className="relative min-h-screen flex flex-col items-center justify-center px-4"
     >
       {/* Contenido centrado */}
       <div className="text-center max-w-xl">
@@ -38,25 +40,13 @@ export default function Hero() {
           Join us in preserving and improving the soils for a greener future.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          {/* Botón 1 */}
           <motion.a
             whileHover={{ scale: 1.05 }}
             href="/project/about"
-            className="px-6 py-3 bg-brown text-white font-bold rounded-full 
-                       hover:bg-opacity-80 transition-all duration-300"
+            className="px-6 py-3 bg-brown text-white font-bold rounded-full hover:bg-opacity-80 transition-all duration-300"
           >
             Learn More
           </motion.a>
-          {/* Botón 2 */}
-          {/* <motion.a
-            whileHover={{ scale: 1.05 }}
-            href="/contact"
-            className="px-6 py-3 bg-transparent border border-brown text-brown 
-                       font-bold rounded-full hover:bg-brown hover:text-white 
-                       transition-all duration-300"
-          >
-            Contact Us
-          </motion.a> */}
         </div>
       </div>
     </motion.div>
