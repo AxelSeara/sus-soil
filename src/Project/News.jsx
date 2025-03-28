@@ -1,17 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
-function SkeletonCard() {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-lg animate-pulse flex flex-col space-y-4">
-      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
-      <div className="h-40 bg-gray-200 rounded"></div>
-      <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-      <div className="h-10 bg-gray-300 rounded w-full mt-auto"></div>
-    </div>
-  );
-}
+const CATEGORY_ID = 12; // News & Events
 
 const cardVariants = {
   initial: { opacity: 0, y: 20 },
@@ -29,113 +22,65 @@ const generateNewsSlug = (id, title, date) => {
   return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
+// Función auxiliar para extraer de todos los grupos de términos los tags que no sean categorías
+const getPostTags = (post) => {
+  let tags = [];
+  if (post._embedded?.['wp:term']) {
+    post._embedded['wp:term'].forEach((termArray) => {
+      // Filtramos para que solo se incluyan aquellos términos cuyo taxonomy no sea 'category'
+      tags = tags.concat(termArray.filter((t) => t.taxonomy !== 'category'));
+    });
+  }
+  return tags;
+};
+
 const NewsPage = () => {
   const [posts, setPosts] = useState([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
-  const [filterType, setFilterType] = useState('all');
-  const [showSkeleton, setShowSkeleton] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [filterTag, setFilterTag] = useState('all');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        setLoadingPosts(true);
-        const response = await fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?_embed&_=${Date.now()}`);
-        const data = await response.json();
+        const res = await fetch(
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed`
+        );
+        if (!res.ok) throw new Error('Error fetching posts');
+        const data = await res.json();
         setPosts(data);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        setError(err.message);
       } finally {
-        setLoadingPosts(false);
+        setLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    setShowSkeleton(true);
-    const timer = setTimeout(() => {
-      setShowSkeleton(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [filterType]);
+  // Extraer todos los tags (no categorías) que aparecen en los posts de la categoría
+  const allTags = useMemo(() => {
+    const tagsSet = new Set();
+    posts.forEach((post) => {
+      const postTags = getPostTags(post);
+      postTags.forEach((tag) => tagsSet.add(tag.name));
+    });
+    return ['all', ...Array.from(tagsSet)];
+  }, [posts]);
 
-  const renderCards = () => {
-    const filtered =
-      filterType === 'all'
-        ? posts
-        : posts.filter((p) => {
-            const tags = p._embedded?.['wp:term']?.[1] || [];
-            return filterType === 'news'
-              ? !tags.find((t) => t.name.toLowerCase() === 'event')
-              : tags.find((t) => t.name.toLowerCase() === 'event');
-          });
-
-    if (loadingPosts || showSkeleton) {
-      return [...Array(3)].map((_, i) => (
-        <motion.div key={`skel-${i}`} variants={cardVariants} initial="initial" animate="animate" exit="exit">
-          <SkeletonCard />
-        </motion.div>
-      ));
-    }
-
-    return filtered.map((post) => {
-      const image = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-      const tags = post._embedded?.['wp:term']?.[1] || [];
-      const tagNames = tags.map((tag) => tag.name);
-      const isEvent = tagNames.includes('Event');
-
-      return (
-        <motion.div
-          key={post.id}
-          variants={cardVariants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="flex flex-col"
-        >
-          <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-            <div className="relative mb-4">
-              {image ? (
-                <img
-                  src={image}
-                  alt={post.title.rendered || 'Post image'}
-                  className="rounded-lg object-cover w-full h-40"
-                />
-              ) : (
-                <div className="w-full h-40 bg-gray-200 rounded-lg" />
-              )}
-              <div className="absolute top-2 left-2 flex gap-2">
-                {tagNames.map((tag) => (
-                  <span
-                    key={tag}
-                    className={`text-xs px-3 py-1 rounded-full font-semibold shadow ${
-                      tag === 'Event' ? 'bg-green-600 text-white' : 'bg-brown text-white'
-                    }`}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <h3 className="text-2xl font-medium font-serif mb-4 text-brown">{post.title.rendered}</h3>
-            <div
-              className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
-              dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-            />
-            <Link
-              to={`/news/${generateNewsSlug(post.id, post.title.rendered, post.date)}`}
-              className={`px-4 py-2 rounded-full transition-colors text-center font-semibold ${
-                isEvent ? 'bg-green-600 text-white' : 'bg-brown text-white'
-              }`}
-            >
-              {isEvent ? 'See Event' : 'Read More'}
-            </Link>
-          </div>
-        </motion.div>
+  // Si el filtro es "all", se muestran todos los posts; si no, se filtran por el tag seleccionado
+  const filteredPosts = useMemo(() => {
+    if (filterTag === 'all') return posts;
+    return posts.filter((post) => {
+      const postTags = getPostTags(post);
+      return postTags.some(
+        (tag) => tag.name.toLowerCase() === filterTag.toLowerCase()
       );
     });
-  };
+  }, [posts, filterTag]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -143,25 +88,113 @@ const NewsPage = () => {
         <h2 className="text-3xl font-medium font-serif mb-8 text-center text-brown">
           Latest News & Events
         </h2>
-        <div className="flex justify-center items-center space-x-4 mb-8">
-          {['all', 'news', 'events'].map((type) => (
+
+        {/* Menú superior para filtrar por tag */}
+        <div className="flex justify-center items-center flex-wrap gap-4 mb-8">
+          {allTags.map((tag) => (
             <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-6 py-2 rounded-full font-semibold transition-colors ${
-                filterType === type
-                  ? type === 'events'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-brown text-white'
-                  : 'bg-gray-100 text-brown'
+              key={tag}
+              onClick={() => setFilterTag(tag)}
+              className={`px-6 py-2 rounded-full font-semibold transition-colors focus:outline-none ${
+                filterTag.toLowerCase() === tag.toLowerCase()
+                  ? 'bg-brown text-white'
+                  : 'bg-gray-100 text-brown hover:bg-brown hover:text-white'
               }`}
             >
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+              {tag}
             </button>
           ))}
         </div>
+
+        {error && (
+          <div className="text-center text-red-500 mb-4">{error}</div>
+        )}
+
+        {!loading && filteredPosts.length === 0 && (
+          <div className="text-center text-gray-500">
+            No posts found for the selected tag.
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>{renderCards()}</AnimatePresence>
+          <AnimatePresence>
+            {loading
+              ? [...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    variants={cardVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
+                    <div className="bg-white p-6 rounded-xl shadow-lg">
+                      <Skeleton height={24} width="75%" className="mb-4" />
+                      <Skeleton height={160} className="mb-4" />
+                      <Skeleton count={2} height={10} className="mb-4" />
+                      <Skeleton height={36} width={120} />
+                    </div>
+                  </motion.div>
+                ))
+              : filteredPosts.map((post) => {
+                  const image =
+                    post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+                  const postTags = getPostTags(post);
+                  const tagNames = postTags.map((tag) => tag.name);
+
+                  return (
+                    <motion.div
+                      key={post.id}
+                      variants={cardVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                    >
+                      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
+                        <div className="relative mb-4">
+                          {image ? (
+                            <img
+                              src={image}
+                              alt={post.title.rendered}
+                              className="rounded-lg object-cover w-full h-40"
+                            />
+                          ) : (
+                            <div className="w-full h-40 bg-gray-200 rounded-lg" />
+                          )}
+                          <div className="absolute top-2 left-2 flex gap-2">
+                            {tagNames.map((tag) => (
+                              <span
+                                key={tag}
+                                className="text-xs px-3 py-1 rounded-full font-semibold shadow bg-brown text-white"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
+                          {post.title.rendered}
+                        </h3>
+                        <div
+                          className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
+                          dangerouslySetInnerHTML={{
+                            __html: post.excerpt.rendered,
+                          }}
+                        />
+                        <Link
+                          to={`/news/${generateNewsSlug(
+                            post.id,
+                            post.title.rendered,
+                            post.date
+                          )}`}
+                          className="px-4 py-2 rounded-full bg-brown text-white text-center font-semibold hover:bg-darkGreen transition-colors"
+                        >
+                          Read More
+                        </Link>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+          </AnimatePresence>
         </div>
       </section>
     </div>

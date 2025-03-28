@@ -18,7 +18,6 @@ import susSoilLogo from '../assets/logo.png';
 import euLogo from '../assets/funded-ue-300x61.png';
 import bgImage from '../assets/bg2.svg';
 
-
 const quickLinks = [
   { to: '/', label: 'Home', Icon: FaHome },
   { to: '/project/work-packages', label: 'Project', Icon: FaTasks },
@@ -29,16 +28,16 @@ const quickLinks = [
 ];
 
 const socialLinks = [
-  { href: 'https://facebook.com', Icon: FaFacebookF },
-  { href: 'https://x.com', Icon: FaXTwitter },
-  { href: 'https://linkedin.com', Icon: FaLinkedinIn },
-  { href: 'https://youtube.com', Icon: FaYoutube },
+  { href: 'https://www.facebook.com/SUSSOIL/', Icon: FaFacebookF },
+  { href: 'https://x.com/SUSSOIL', Icon: FaXTwitter },
+  { href: 'https://www.linkedin.com/company/sus-soil', Icon: FaLinkedinIn },
+  { href: 'https://www.youtube.com/@sus-soil', Icon: FaYoutube },
 ];
 
 export default function Footer() {
   return (
     <footer className="border-t border-gray-300">
-      {/* Pre-Footer: blanco con logos + disclaimer */}
+      {/* Pre-Footer: Logos y disclaimer */}
       <div className="bg-white py-8 px-4">
         <div className="container mx-auto flex flex-col items-center">
           <div className="w-full flex flex-col md:flex-row justify-center items-center gap-16 mb-4">
@@ -63,28 +62,26 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Footer inferior con bg2.svg */}
+      {/* Footer inferior con fondo (bg2.svg) */}
       <div
         className="bg-cover bg-center bg-no-repeat px-6 py-12"
-        style={{
-          backgroundImage: `url(${bgImage})`,
-        }}
+        style={{ backgroundImage: `url(${bgImage})` }}
       >
         <div className="container mx-auto">
-          {/* 3 columnas en desktop, 1 columna en móvil */}
+          {/* Distribución en 3 columnas en desktop, 1 en móvil */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Quick Links */}
             <div>
               <h3 className="text-brown text-lg font-semibold mb-4">
                 Quick Links
               </h3>
-              {/* Se dividen en 2 columnas las quicklinks */}
-              <div className="grid grid-cols-2 gap-y-2">
+              {/* Mejor distribución: 2 columnas en móvil, 3 columnas en pantallas medianas */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2">
                 {quickLinks.map((link, index) => (
                   <Link
                     key={index}
                     to={link.to}
-                    className="flex items-center gap-2 text-brown hover:text-darkGreen transition duration-300"
+                    className="flex items-center gap-2 text-brown hover:text-white transition duration-300"
                   >
                     <link.Icon className="w-4 h-4" />
                     {link.label}
@@ -102,13 +99,11 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="Enter your email"
-                  className="px-4 py-2 border border-brown rounded-lg text-brown 
-                             focus:outline-none focus:ring-2 focus:ring-darkGreen"
+                  className="px-4 py-2 border border-brown rounded-lg text-brown focus:outline-none focus:ring-2 focus:ring-darkGreen"
                 />
                 <button
                   type="submit"
-                  className="bg-brown text-white px-6 py-2 rounded-lg 
-                             hover:bg-opacity-80 transition duration-300"
+                  className="bg-brown text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition duration-300"
                 >
                   Subscribe
                 </button>
@@ -127,8 +122,7 @@ export default function Footer() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-brown hover:text-darkGreen 
-                                 transition duration-300"
+                      className="text-brown hover:text-white transition duration-300"
                     >
                       <social.Icon className="w-5 h-5" />
                     </a>
@@ -138,7 +132,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Pie de todo */}
+          {/* Pie de página */}
           <div className="text-center mt-8 border-t border-brown pt-4 pb-2">
             <p className="text-brown text-sm">
               © {new Date().getFullYear()} SUS-SOIL. All rights reserved.

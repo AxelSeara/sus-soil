@@ -34,36 +34,20 @@ export default function Materials() {
         );
         const posts = await res.json();
 
-        const enriched = await Promise.all(
-          posts.map(async (post) => {
-            const fileId = post.acf?.file;
-            let fileData = null;
-
-            if (fileId) {
-              try {
-                const fileRes = await fetch(
-                  `https://admin.sus-soil.eu/wp-json/wp/v2/media/${fileId}`
-                );
-                fileData = await fileRes.json();
-              } catch (err) {
-                console.error('Error fetching file media:', err);
-              }
-            }
-
-            return {
-              id: post.id,
-              title: post.title.rendered,
-              content: post.content.rendered,
-              date: new Date(post.date).toLocaleDateString(),
-              file: {
-                url: fileData?.source_url || '',
-                mime: fileData?.mime_type || '',
-              },
-              featured:
-                post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-            };
-          })
-        );
+        const enriched = posts.map((post) => {
+          const file = post.acf?.file || {};
+          return {
+            id: post.id,
+            title: post.title.rendered,
+            content: post.content.rendered,
+            date: new Date(post.date).toLocaleDateString(),
+            file: {
+              url: file.url || '',
+              mime: file.mime_type || '',
+            },
+            featured: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+          };
+        });
 
         setMaterials(enriched);
       } catch (err) {

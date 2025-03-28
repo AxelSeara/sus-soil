@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 import { FiUser, FiMail, FiMessageCircle, FiCheckSquare } from 'react-icons/fi';
-import { FaXTwitter } from 'react-icons/fa6'; // Twitter/X icon de react-icons
+import { FaXTwitter } from 'react-icons/fa6'; // Twitter/X icon
 
-// Animación fade-in
+// Fade-in animation variants
 const fadeInVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
@@ -41,8 +41,7 @@ export default function Contact() {
   return (
     <div className="py-16 px-4 bg-gradient-to-b from-lightGreen to-white">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        
-        {/* Columna Izquierda: Info de Contacto y Redes */}
+        {/* Left Column: Contact Info & Social Links */}
         <motion.div 
           className="text-center lg:text-left" 
           variants={fadeInVariants} 
@@ -60,10 +59,10 @@ export default function Contact() {
             </a>. You can also find us on social media:
           </p>
 
-          {/* Redes Sociales */}
+          {/* Social Links */}
           <div className="flex justify-center lg:justify-start space-x-6 mb-8">
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/SUSSOIL/"
               className="text-brown hover:text-darkGreen text-2xl transition duration-300"
               target="_blank"
               rel="noopener noreferrer"
@@ -72,7 +71,7 @@ export default function Contact() {
               <FaFacebookF />
             </a>
             <a
-              href="https://x.com"
+              href="https://x.com/SUSSOIL"
               className="text-brown hover:text-darkGreen text-2xl transition duration-300"
               target="_blank"
               rel="noopener noreferrer"
@@ -81,7 +80,7 @@ export default function Contact() {
               <FaXTwitter />
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/company/sus-soil"
               className="text-brown hover:text-darkGreen text-2xl transition duration-300"
               target="_blank"
               rel="noopener noreferrer"
@@ -90,7 +89,7 @@ export default function Contact() {
               <FaLinkedinIn />
             </a>
             <a
-              href="https://youtube.com"
+              href="https://www.youtube.com/@sus-soil"
               className="text-brown hover:text-darkGreen text-2xl transition duration-300"
               target="_blank"
               rel="noopener noreferrer"
@@ -101,7 +100,7 @@ export default function Contact() {
           </div>
         </motion.div>
 
-        {/* Columna Derecha: Formulario */}
+        {/* Right Column: Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
           className="bg-white p-8 rounded-lg shadow-lg w-full"
@@ -122,8 +121,7 @@ export default function Contact() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 
-                           focus:ring-2 focus:ring-darkGreen"
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
                 placeholder="John Doe"
                 required
               />
@@ -142,8 +140,7 @@ export default function Contact() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 
-                           focus:ring-2 focus:ring-darkGreen"
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
                 placeholder="name@example.com"
                 required
               />
@@ -161,8 +158,7 @@ export default function Contact() {
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 
-                           focus:ring-2 focus:ring-darkGreen"
+                className="w-full p-3 pl-10 border border-gray-300 rounded-lg text-gray-900 focus:ring-2 focus:ring-darkGreen"
                 rows="4"
                 placeholder="Write your message here..."
                 required
@@ -177,8 +173,7 @@ export default function Contact() {
               type="checkbox"
               checked={formData.agree}
               onChange={handleChange}
-              className="w-4 h-4 border border-gray-300 rounded 
-                         focus:ring-2 focus:ring-darkGreen mt-1"
+              className="w-4 h-4 border border-gray-300 rounded focus:ring-2 focus:ring-darkGreen mt-1"
             />
             <label 
               htmlFor="agree" 
@@ -191,9 +186,7 @@ export default function Contact() {
 
           <button
             type="submit"
-            className="w-full bg-darkGreen text-white py-3 rounded-lg 
-                       font-bold text-lg hover:bg-green-800 focus:ring-2 
-                       focus:ring-darkGreen transition-colors"
+            className="w-full bg-darkGreen text-white py-3 rounded-lg font-bold text-lg hover:bg-green-800 focus:ring-2 focus:ring-darkGreen transition-colors"
           >
             Submit
           </button>
