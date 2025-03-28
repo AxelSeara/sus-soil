@@ -48,7 +48,7 @@ export default function Hero() {
             Learn More
           </motion.a>
           {/* Botón 2 */}
-          <motion.a
+          {/* <motion.a
             whileHover={{ scale: 1.05 }}
             href="/contact"
             className="px-6 py-3 bg-transparent border border-brown text-brown 
@@ -56,7 +56,7 @@ export default function Hero() {
                        transition-all duration-300"
           >
             Contact Us
-          </motion.a>
+          </motion.a> */}
         </div>
       </div>
     </motion.div>

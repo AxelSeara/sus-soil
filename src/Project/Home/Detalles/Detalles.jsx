@@ -87,11 +87,11 @@ export default function Detalles() {
           <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown">
             The Project
           </h2>
-          <p className="text-lg md:text-xl text-brown font-serif mt-4">
+          {/* <p className="text-lg md:text-xl text-brown font-serif mt-4">
             SUS-SOIL is a 4-year project adopting a multidisciplinary approach that will 
             develop a set of 15 Subsoil-Living Labs to inventory, analyse and benchmark 
             different agroecology subsoil management and land uses and their impacts.
-          </p>
+          </p> */}
         </motion.div>
 
         {/* Grid de tarjetas animado */}
