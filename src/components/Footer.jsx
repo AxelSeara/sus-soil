@@ -65,7 +65,9 @@ export default function Footer() {
       {/* Footer inferior con fondo (bg2.svg) */}
       <div
         className="bg-cover bg-center bg-no-repeat px-6 py-12"
-        style={{ backgroundImage: `url(${bgImage})` }}
+        style={{
+          backgroundImage: `url(${bgImage})`,
+        }}
       >
         <div className="container mx-auto">
           {/* Distribución en 3 columnas en desktop, 1 en móvil */}
@@ -75,7 +77,6 @@ export default function Footer() {
               <h3 className="text-brown text-lg font-semibold mb-4">
                 Quick Links
               </h3>
-              {/* Mejor distribución: 2 columnas en móvil, 3 columnas en pantallas medianas */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2">
                 {quickLinks.map((link, index) => (
                   <Link
@@ -90,28 +91,23 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Newsletter */}
-            <div>
+            {/* Newsletter - Columna centrada */}
+            <div className="flex flex-col items-center">
               <h3 className="text-brown text-lg font-semibold mb-4">
                 Join Our Newsletter
               </h3>
-              <form className="flex flex-col space-y-3 max-w-sm">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="px-4 py-2 border border-brown rounded-lg text-brown focus:outline-none focus:ring-2 focus:ring-darkGreen"
-                />
-                <button
-                  type="submit"
-                  className="bg-brown text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition duration-300"
-                >
-                  Subscribe
-                </button>
-              </form>
+              <a
+                href="https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-brown text-white px-6 py-2 rounded-lg hover:bg-opacity-80 transition duration-300"
+              >
+                Subscribe
+              </a>
             </div>
 
-            {/* Follow Us */}
-            <div>
+            {/* Follow Us - Columna centrada */}
+            <div className="flex flex-col items-center">
               <h3 className="text-brown text-lg font-semibold mb-4">
                 Follow Us
               </h3>
