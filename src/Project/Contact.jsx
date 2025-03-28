@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-import { FiUser, FiMail, FiMessageCircle, FiCheckSquare } from 'react-icons/fi';
+import { FiUser, FiMail, FiMessageCircle } from 'react-icons/fi';
 import { FaXTwitter } from 'react-icons/fa6'; // Twitter/X icon
 
 // Fade-in animation variants
@@ -16,26 +16,26 @@ export default function Contact() {
     name: '',
     email: '',
     message: '',
-    agree: false,
   });
   const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.agree) {
-      console.log(formData);
-      setSubmitted(true);
-    } else {
-      alert('Please agree to the terms.');
-    }
+    // Construir el enlace mailto con subject y body
+    const subject = encodeURIComponent("Contact Form Submission");
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.message}`
+    );
+    window.location.href = `mailto:mrosa.mosquera.losada@usc.es?subject=${subject}&body=${body}`;
+    setSubmitted(true);
   };
 
   return (
@@ -54,8 +54,11 @@ export default function Contact() {
           </h1>
           <p className="text-lg text-brown mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed">
             If you have any questions, feel free to contact us at{' '}
-            <a href="mailto:contact@example.com" className="text-darkGreen hover:underline">
-              contact@example.com
+            <a 
+              href="mailto:mrosa.mosquera.losada@usc.es" 
+              className="text-darkGreen hover:underline"
+            >
+              mrosa.mosquera.losada@usc.es
             </a>. You can also find us on social media:
           </p>
 
@@ -164,24 +167,6 @@ export default function Contact() {
                 required
               ></textarea>
             </div>
-          </div>
-
-          <div className="flex items-start mb-6">
-            <input
-              id="agree"
-              name="agree"
-              type="checkbox"
-              checked={formData.agree}
-              onChange={handleChange}
-              className="w-4 h-4 border border-gray-300 rounded focus:ring-2 focus:ring-darkGreen mt-1"
-            />
-            <label 
-              htmlFor="agree" 
-              className="ml-2 text-sm font-medium text-gray-900"
-            >
-              <FiCheckSquare className="inline-block mr-1 text-gray-600" />
-              I agree to the terms and conditions
-            </label>
           </div>
 
           <button

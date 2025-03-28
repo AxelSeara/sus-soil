@@ -1,12 +1,10 @@
-// src/components/Navbar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6'; 
-import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg'; // Ajusta la ruta real
+import { FaXTwitter } from 'react-icons/fa6';
+import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg';
 
-// Items para los dropdowns
 const projectItems = [
   { to: '/project/about', label: 'About' },
   { to: '/project/work-packages', label: 'Work Packages' },
@@ -35,14 +33,16 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  // Cerrar dropdowns si se hace clic fuera
+  // Manejar click fuera SOLO en desktop
   useEffect(() => {
     function handleClickOutside(e) {
-      if (projectRef.current && !projectRef.current.contains(e.target)) {
-        setProjectOpen(false);
-      }
-      if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
-        setResourcesOpen(false);
+      if (window.innerWidth >= 1024) {
+        if (projectRef.current && !projectRef.current.contains(e.target)) {
+          setProjectOpen(false);
+        }
+        if (resourcesRef.current && !resourcesRef.current.contains(e.target)) {
+          setResourcesOpen(false);
+        }
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -51,10 +51,8 @@ export default function Navbar() {
 
   const navLinkClass =
     "text-brown text-sm lg:text-base font-medium hover:text-darkGreen transition-colors";
-
   const dropdownContainerClass =
     "absolute left-0 top-full mt-2 bg-white text-brown rounded-md shadow-lg border border-gray-200 z-[1000] min-w-[200px] p-2";
-
   const dropdownItemClass =
     "block px-4 py-2 hover:bg-green hover:text-white transition-colors rounded-md";
 
@@ -86,8 +84,7 @@ export default function Navbar() {
                 onClick={() => setProjectOpen(!projectOpen)}
                 className={`${navLinkClass} flex items-center`}
               >
-                Project
-                <FiChevronDown className="ml-1.5 w-4 h-4" />
+                Project <FiChevronDown className="ml-1.5 w-4 h-4" />
               </button>
               {projectOpen && (
                 <div className={dropdownContainerClass}>
@@ -112,8 +109,7 @@ export default function Navbar() {
                 onClick={() => setResourcesOpen(!resourcesOpen)}
                 className={`${navLinkClass} flex items-center`}
               >
-                Resources
-                <FiChevronDown className="ml-1.5 w-4 h-4" />
+                Resources <FiChevronDown className="ml-1.5 w-4 h-4" />
               </button>
               {resourcesOpen && (
                 <div className={dropdownContainerClass}>
@@ -273,7 +269,6 @@ export default function Navbar() {
                 Contact
               </Link>
             </li>
-            {/* Social Icons en Móvil */}
             <li className="flex items-center space-x-4">
               <a
                 href="https://www.facebook.com/SUSSOIL/"
