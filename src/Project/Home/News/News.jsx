@@ -147,10 +147,10 @@ export default function News() {
         {!loading && items.length > 0 && title === 'Events' && (
           <div className="text-center mt-12">
             <a
-              href="/events"
+              href="/news"
               className="px-8 py-4 bg-brown hover:bg-opacity-80 text-white font-bold rounded-full shadow-lg transition-colors"
             >
-              Visit All Events
+              Visit all news & events
             </a>
           </div>
         )}
