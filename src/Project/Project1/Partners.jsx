@@ -29,37 +29,35 @@ import p24 from '../../../src/assets/partners/24.png'; // Asociación Forestal d
 const coordinator = {
   title: "Universidade de Santiago de Compostela",
   subtitle: "Spain",
-  img: p1 // USC => 1.png
+  img: p1,
+  url: "https://www.usc.gal/en"
 };
 
-/* Actualizamos beneficiaries y associatedPartners agregando cada img */
 const beneficiaries = [
-  { title: "Región de Murcia", subtitle: "Spain", img: p2 },
-  { title: "Leibniz-Zentrum Fuer Agrarlandschaftsforschung (ZALF)", subtitle: "Germany", img: p3 },
-  { title: "Universidade de Coimbra", subtitle: "Portugal", img: p4 },
-  { title: "Università di Pisa", subtitle: "Italy", img: p5 },
-  { title: "Université de Tunis El Manar", subtitle: "Tunisia", img: p6 },
-  { title: "Geoponiko Panepistimion Athinon", subtitle: "Greece", img: p7 },
-  { title: "Univerzitet u Sarajevu", subtitle: "Bosnia and Herzegovina", img: p8 },
-  { title: "Universidade da Coruña", subtitle: "Spain", img: p9 },
-  { title: "Universidad Politécnica de Madrid", subtitle: "Spain", img: p10 },
-  { title: "E-Science European Infrastructure for Biodiversity and Ecosystem Research (Lifewatch)", subtitle: "Spain", img: p11 },
-  { title: "Narodne Lesnicke Centrum", subtitle: "Slovakia", img: p12 },
-  { title: "Ver de Terre Production", subtitle: "France", img: p13 },
-  { title: "Venetian Cluster", subtitle: "Italy", img: p14 },
-  { title: "Luonnonvarakeskus", subtitle: "Finland", img: p15 },
-  { title: "Programme for the Endorsement of Forest Certification Schemes Italia", subtitle: "Italy", img: p16 },
-  { title: "Fundación Empresa Universidad Gallega (FEUGA)", subtitle: "Spain", img: p17 },
-  { title: "Centro Internazionale di Altistudi Agronomici Mediterranei (CIHEAM)", subtitle: "Italy", img: p18 },
-  { title: "University of Çukurova", subtitle: "Turkey", img: p19 },
-  // { title: "senseen", subtitle: "", img: p20 },  // Descomenta si lo necesitas
-  // { title: "wetsus", subtitle: "", img: p21 },   // Descomenta si lo necesitas
-  { title: "Heliopolis University Association", subtitle: "Egypt", img: p22 },
+  { title: "Región de Murcia", subtitle: "Spain", img: p2, url: "https://www.carm.es/" },
+  { title: "Leibniz-Zentrum Fuer Agrarlandschaftsforschung (ZALF)", subtitle: "Germany", img: p3, url: "https://www.zalf.de/en/Pages/ZALF.aspx" },
+  { title: "Universidade de Coimbra", subtitle: "Portugal", img: p4, url: "https://www.uc.pt/en/" },
+  { title: "Università di Pisa", subtitle: "Italy", img: p5, url: "https://www.unipi.it/index.php/english" },
+  { title: "Université de Tunis El Manar", subtitle: "Tunisia", img: p6, url: "https://utm.rnu.tn/utm/fr/" },
+  { title: "Geoponiko Panepistimion Athinon", subtitle: "Greece", img: p7, url: "https://www2.aua.gr/en" },
+  { title: "Univerzitet u Sarajevu", subtitle: "Bosnia and Herzegovina", img: p8, url: "https://www.unsa.ba/en" },
+  { title: "Universidade da Coruña", subtitle: "Spain", img: p9, url: "https://www.udc.es/en/" },
+  { title: "Universidad Politécnica de Madrid", subtitle: "Spain", img: p10, url: "https://www.upm.es/internacional" },
+  { title: "E-Science European Infrastructure for Biodiversity and Ecosystem Research (Lifewatch)", subtitle: "Spain", img: p11, url: "https://www.lifewatch.eu/" },
+  { title: "Narodne Lesnicke Centrum", subtitle: "Slovakia", img: p12, url: "https://web.nlcsk.org/en/home-en/" },
+  { title: "Ver de Terre Production", subtitle: "France", img: p13, url: "https://www.verdeterreprod.fr/" },
+  { title: "Venetian Cluster", subtitle: "Italy", img: p14, url: "https://www.venetiancluster.eu/en/" },
+  { title: "Luonnonvarakeskus", subtitle: "Finland", img: p15, url: "https://www.luke.fi/en" },
+  { title: "Programme for the Endorsement of Forest Certification Schemes Italia", subtitle: "Italy", img: p16, url: "https://www.pefc.it/" },
+  { title: "Fundación Empresa Universidad Gallega (FEUGA)", subtitle: "Spain", img: p17, url: "https://www.feuga.es/en/" },
+  { title: "Centro Internazionale di Altistudi Agronomici Mediterranei (CIHEAM)", subtitle: "Italy", img: p18, url: "https://www.iamb.ciheam.org/" },
+  { title: "University of Çukurova", subtitle: "Turkey", img: p19, url: "https://www.cu.edu.tr/en/" },
+  { title: "Heliopolis University Association", subtitle: "Egypt", img: p22, url: "https://hu.edu.eg/" },
 ];
 
 const associatedPartners = [
-  { title: "A Carqueixa", subtitle: "Spain", img: p23 },
-  { title: "Asociación Forestal de Galicia (AFG)", subtitle: "Spain", img: p24 }
+  { title: "A Carqueixa", subtitle: "Spain", img: p23, url: "https://www.osabordosancares.com/" },
+  { title: "Asociación Forestal de Galicia (AFG)", subtitle: "Spain", img: p24, url: "https://asociacionforestal.gal/en/" }
 ];
 
 export default function Partners() {
@@ -74,19 +72,19 @@ export default function Partners() {
       {/* Coordinator Section */}
       <div className="mb-12">
         <h2 className="text-3xl font-semibold mb-6">Coordinator</h2>
-        <div className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4">
-          {/* Logo */}
-          <img
-            src={coordinator.img}
-            alt={coordinator.title}
-            className="w-16 h-auto object-contain"
-          />
-          {/* Info */}
-          <div>
-            <h3 className="text-xl font-bold">{coordinator.title}</h3>
-            <p className="text-lg text-darkGreen">{coordinator.subtitle}</p>
+        <a href={coordinator.url} target="_blank" rel="noopener noreferrer">
+          <div className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4 hover:bg-lightGreen/10 transition-colors">
+            <img
+              src={coordinator.img}
+              alt={coordinator.title}
+              className="w-16 h-auto object-contain"
+            />
+            <div>
+              <h3 className="text-xl font-bold">{coordinator.title}</h3>
+              <p className="text-lg text-darkGreen">{coordinator.subtitle}</p>
+            </div>
           </div>
-        </div>
+        </a>
       </div>
 
       {/* Beneficiaries Section */}
@@ -94,7 +92,13 @@ export default function Partners() {
         <h2 className="text-3xl font-semibold mb-6">Beneficiaries</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {beneficiaries.map((partner, index) => (
-            <div key={index} className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4">
+            <a
+              key={index}
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4 hover:bg-lightGreen/10 transition-colors"
+            >
               <img
                 src={partner.img}
                 alt={partner.title}
@@ -104,7 +108,7 @@ export default function Partners() {
                 <h3 className="text-xl font-bold">{partner.title}</h3>
                 <p className="text-lg text-darkGreen">{partner.subtitle}</p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -114,7 +118,13 @@ export default function Partners() {
         <h2 className="text-3xl font-semibold mb-6">Associated Partners</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {associatedPartners.map((partner, index) => (
-            <div key={index} className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4">
+            <a
+              key={index}
+              href={partner.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white shadow-md p-6 rounded-lg flex items-center space-x-4 hover:bg-lightGreen/10 transition-colors"
+            >
               <img
                 src={partner.img}
                 alt={partner.title}
@@ -124,7 +134,7 @@ export default function Partners() {
                 <h3 className="text-xl font-bold">{partner.title}</h3>
                 <p className="text-lg text-darkGreen">{partner.subtitle}</p>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
