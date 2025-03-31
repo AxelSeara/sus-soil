@@ -6,7 +6,46 @@ import { FaShareAlt, FaArrowLeft } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
-// Parse lat/lng from Leaflet script, then replace with Google Maps
+// Importa html-react-parser y componentes de Swiper, usando módulos desde "swiper/modules"
+import parse from 'html-react-parser';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+// ------------------------------
+// Funciones de ayuda para búsqueda recursiva
+// ------------------------------
+function findElementByClass(node, className) {
+  if (node.type === 'tag' && node.attribs && node.attribs.class && node.attribs.class.includes(className)) {
+    return node;
+  }
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findElementByClass(child, className);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function findFirstTag(node, tagName) {
+  if (node.type === 'tag' && node.name === tagName) {
+    return node;
+  }
+  if (node.children) {
+    for (const child of node.children) {
+      const found = findFirstTag(child, tagName);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+// ------------------------------
+// Funciones de procesamiento de HTML
+// ------------------------------
 function parseLeafletScriptForCoords(scriptText) {
   const latMatch = scriptText.match(/"latitude":"([0-9.\-]+)"/);
   const lngMatch = scriptText.match(/"longitude":"([0-9.\-]+)"/);
@@ -42,7 +81,22 @@ function replaceLeafletWithGoogleMaps(doc) {
   });
 }
 
-// Fix lazy load images & Leaflet
+function transformGalleries(doc) {
+  const galleries = doc.querySelectorAll('.wp-block-gallery');
+  galleries.forEach((gallery) => {
+    const sliderContainer = doc.createElement('div');
+    sliderContainer.className = 'gallery-slider';
+    const imgs = gallery.querySelectorAll('img');
+    imgs.forEach((img) => {
+      const slide = doc.createElement('div');
+      slide.className = 'slide';
+      slide.appendChild(img.cloneNode(true));
+      sliderContainer.appendChild(slide);
+    });
+    gallery.parentNode.replaceChild(sliderContainer, gallery);
+  });
+}
+
 function fixLazyLoadAndNoscript(html) {
   let cleaned = html
     .replace(/data-src=/g, 'src=')
@@ -67,17 +121,28 @@ function fixLazyLoadAndNoscript(html) {
     }
   });
   replaceLeafletWithGoogleMaps(doc);
+
+  // Envuelve iframes de YouTube en contenedor responsivo
+  const youtubeIframes = doc.querySelectorAll('iframe[src*="youtube.com"]');
+  youtubeIframes.forEach((iframe) => {
+    const wrapper = doc.createElement('div');
+    wrapper.className = 'embed-container';
+    iframe.parentNode.insertBefore(wrapper, iframe);
+    wrapper.appendChild(iframe);
+  });
+
+  // Transforma galerías simples en contenedores slider
+  transformGalleries(doc);
+
   return doc.body.innerHTML;
 }
 
-/** Extract first <img> in HTML if no featured */
 function extractFirstImageFromHTML(html) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const img = doc.querySelector('img');
   return img?.getAttribute('src') || null;
 }
 
-/** Generate SEO-friendly slug: id-title-YYYY-MM-DD */
 function generateNewsSlug(id, title, date) {
   const d = new Date(date);
   const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10);
@@ -88,9 +153,9 @@ function generateNewsSlug(id, title, date) {
   return `${id}-${slugifiedTitle}-${datePart}`;
 }
 
-/* --- Skeletons usando react-loading-skeleton --- */
-
-// Skeleton para el detalle del post
+// ------------------------------
+// Skeletons (sin cambios)
+// ------------------------------
 const PostDetailSkeleton = () => (
   <div className="container mx-auto px-4 py-6">
     <Skeleton height={40} width="60%" className="mb-6" />
@@ -99,7 +164,6 @@ const PostDetailSkeleton = () => (
   </div>
 );
 
-// Skeleton para cada "recent post" o "related post" en el sidebar
 const RecentPostSkeleton = () => (
   <div className="flex items-center space-x-3 p-2">
     <Skeleton circle={true} height={48} width={48} />
@@ -110,7 +174,6 @@ const RecentPostSkeleton = () => (
   </div>
 );
 
-// Skeleton para cada "event" en el sidebar
 const EventSkeleton = () => (
   <div className="flex items-center space-x-3 p-2">
     <Skeleton circle={true} height={48} width={48} />
@@ -121,11 +184,82 @@ const EventSkeleton = () => (
   </div>
 );
 
+// ------------------------------
+// Transformador para html-react-parser (Slider)
+// ------------------------------
+const transform = (node, index) => {
+  // Detecta slider de Themeisle (Glide) por su clase
+  if (
+    node.type === 'tag' &&
+    node.name === 'div' &&
+    node.attribs &&
+    node.attribs.class &&
+    node.attribs.class.includes('wp-block-themeisle-blocks-slider')
+  ) {
+    // Busca de forma recursiva el contenedor de slides
+    const glideSlidesNode = findElementByClass(node, 'glide__slides');
+    if (glideSlidesNode && glideSlidesNode.children) {
+      // Filtra los nodos de slide (con clase "glide__slide")
+      const slideNodes = glideSlidesNode.children.filter(
+        (child) =>
+          child.type === 'tag' &&
+          child.attribs &&
+          child.attribs.class &&
+          child.attribs.class.includes('glide__slide')
+      );
+      // Extrae la imagen de cada slide
+      const images = slideNodes
+        .map((slide, i) => {
+          const imgNode = findFirstTag(slide, 'img');
+          if (imgNode) {
+            // Si el src es placeholder (data:), usa data-src
+            const src =
+              imgNode.attribs.src && imgNode.attribs.src.startsWith('data:')
+                ? imgNode.attribs['data-src']
+                : imgNode.attribs.src;
+            const alt = imgNode.attribs.alt || `Slide ${i + 1}`;
+            return { src, alt };
+          }
+          return null;
+        })
+        .filter(Boolean);
+      if (images.length > 0) {
+        return (
+          // Contenedor con fondo borroso para que las flechas sean visibles
+          <div className="relative bg-gray-200/50 backdrop-blur-md rounded-md p-4">
+            <Swiper
+              key={index}
+              modules={[Navigation, Pagination]}
+              navigation
+              pagination={{ clickable: true }}
+              spaceBetween={10}
+              slidesPerView="auto" // Muestra múltiples slides según el espacio
+              className="w-full h-full"
+            >
+              {images.map((img, i) => (
+                <SwiperSlide key={i} style={{ width: 'auto' }}>
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-full h-64 object-cover"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        );
+      }
+    }
+  }
+};
+
+// ------------------------------
+// Componente NewsDetail
+// ------------------------------
 export default function NewsDetail() {
   const { id: routeId } = useParams();
   const numericId = routeId.split('-')[0];
 
-  // Estados para el post principal y el contenido del sidebar
   const [post, setPost] = useState(null);
   const [loadingPost, setLoadingPost] = useState(true);
 
@@ -138,11 +272,9 @@ export default function NewsDetail() {
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(false);
 
-  // Constantes para categoría y tag de eventos
   const CATEGORY_ID = 12;
   const EVENT_TAG_ID = 7;
 
-  // Función para compartir el post
   const handleShare = async () => {
     if (!navigator.share) return;
     try {
@@ -156,7 +288,6 @@ export default function NewsDetail() {
     }
   };
 
-  // 1) Cargar post individual, 2) cargar "Last News" y 3) cargar "Latest Events"
   useEffect(() => {
     const fetchPost = async () => {
       setLoadingPost(true);
@@ -181,7 +312,6 @@ export default function NewsDetail() {
           `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&per_page=10&order=desc&orderby=date&_embed&_=${Date.now()}`
         );
         const data = await resp.json();
-        // Filtrar para obtener sólo posts que NO tengan el tag "event"
         const postsOnly = data.filter((p) => {
           const tags = p._embedded?.['wp:term']?.[1] || [];
           return !tags.some((t) => t.name.toLowerCase() === 'event');
@@ -214,7 +344,6 @@ export default function NewsDetail() {
     fetchRecentEvents();
   }, [numericId]);
 
-  // 4) Cargar posts relacionados según tags
   useEffect(() => {
     if (!post) return;
     const tagArray = post._embedded?.['wp:term']?.[1] || [];
@@ -273,7 +402,6 @@ export default function NewsDetail() {
           content={post.excerpt?.rendered?.replace(/<[^>]+>/g, '') || 'News article'}
         />
       </Helmet>
-
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-3 md:gap-8">
         {/* MAIN CONTENT (2/3) */}
         <div className="md:col-span-2">
@@ -289,26 +417,22 @@ export default function NewsDetail() {
           )}
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <div className="text-sm text-gray-600">
-              Published on:{' '}
-              <span className="font-medium">{dateFormatted}</span>
+              Published on: <span className="font-medium">{dateFormatted}</span>
             </div>
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {tags.map((t) => (
-                  <span
-                    key={t.id}
-                    className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full"
-                  >
+                  <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                     {t.name}
                   </span>
                 ))}
               </div>
             )}
           </div>
-          <div
-            dangerouslySetInnerHTML={{ __html: sanitized }}
-            className="prose prose-brown text-brown leading-relaxed mb-4"
-          />
+          {/* Parseamos el HTML para transformar sliders y galerías */}
+          <div className="prose prose-brown text-brown leading-relaxed mb-4">
+            {parse(sanitized, { replace: transform })}
+          </div>
           <div className="flex items-center gap-4 mt-8 mb8">
             <button
               onClick={handleShare}
@@ -327,15 +451,11 @@ export default function NewsDetail() {
             </Link>
           </div>
         </div>
-
         {/* RIGHT COLUMN (1/3) */}
         <div className="md:col-span-1 flex flex-col space-y-8">
-          {/* Last News */}
           {loadingRecent ? (
             <div>
-              <h2 className="text-xl font-serif font-medium text-brown mb-4">
-                Last News
-              </h2>
+              <h2 className="text-xl font-serif font-medium text-brown mb-4">Last News</h2>
               <div className="grid grid-cols-1 gap-4">
                 {[...Array(3)].map((_, idx) => (
                   <RecentPostSkeleton key={idx} />
@@ -352,8 +472,7 @@ export default function NewsDetail() {
                   {recentPosts.map((rp) => {
                     const rpTitle = rp.title?.rendered || 'No Title';
                     const rpDate = new Date(rp.date).toLocaleDateString();
-                    const rpImg =
-                      rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const rpImg = rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
                     return (
                       <Link
                         key={rp.id}
@@ -382,13 +501,9 @@ export default function NewsDetail() {
               </div>
             )
           )}
-
-          {/* Latest Events */}
           {loadingEvents ? (
             <div>
-              <h2 className="text-xl font-serif font-medium text-brown mb-4">
-                Latest Events
-              </h2>
+              <h2 className="text-xl font-serif font-medium text-brown mb-4">Latest Events</h2>
               <div className="grid grid-cols-1 gap-4">
                 {[...Array(3)].map((_, idx) => (
                   <EventSkeleton key={idx} />
@@ -405,8 +520,7 @@ export default function NewsDetail() {
                   {recentEvents.map((ev) => {
                     const evTitle = ev.title?.rendered || 'Untitled';
                     const evDate = new Date(ev.date).toLocaleDateString();
-                    const evImg =
-                      ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const evImg = ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
                     return (
                       <Link
                         key={ev.id}
@@ -435,13 +549,9 @@ export default function NewsDetail() {
               </div>
             )
           )}
-
-          {/* Related Posts */}
           {loadingRelated ? (
             <div>
-              <h2 className="text-xl font-serif font-medium text-brown mb-4">
-                Related Posts
-              </h2>
+              <h2 className="text-xl font-serif font-medium text-brown mb-4">Related Posts</h2>
               <div className="grid grid-cols-1 gap-4">
                 {[...Array(3)].map((_, idx) => (
                   <RecentPostSkeleton key={idx} />
@@ -458,8 +568,7 @@ export default function NewsDetail() {
                   {relatedPosts.map((r) => {
                     const rTitle = r.title?.rendered || 'No Title';
                     const rDate = new Date(r.date).toLocaleDateString();
-                    const rImg =
-                      r._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const rImg = r._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
                     return (
                       <Link
                         key={r.id}
