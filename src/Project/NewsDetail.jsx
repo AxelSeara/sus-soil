@@ -122,13 +122,15 @@ function fixLazyLoadAndNoscript(html) {
   });
   replaceLeafletWithGoogleMaps(doc);
 
-  // Envuelve iframes de YouTube en contenedor responsivo
+  // Transforma los iframes de YouTube: recrea el embed con clases de Tailwind
   const youtubeIframes = doc.querySelectorAll('iframe[src*="youtube.com"]');
   youtubeIframes.forEach((iframe) => {
-    const wrapper = doc.createElement('div');
-    wrapper.className = 'embed-container';
-    iframe.parentNode.insertBefore(wrapper, iframe);
-    wrapper.appendChild(iframe);
+    const src = iframe.getAttribute('src');
+    const container = doc.createElement('div');
+    container.innerHTML = `<div class="relative w-full aspect-[16/9] overflow-hidden mb-4">
+      <iframe src="${src}" title="${iframe.getAttribute('title') || 'YouTube video'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute top-0 left-0 w-full h-full"></iframe>
+    </div>`;
+    iframe.parentNode.replaceChild(container, iframe);
   });
 
   // Transforma galerías simples en contenedores slider
@@ -185,10 +187,32 @@ const EventSkeleton = () => (
 );
 
 // ------------------------------
-// Transformador para html-react-parser (Slider)
+// Transformador para html-react-parser (Slider & YouTube)
 // ------------------------------
 const transform = (node, index) => {
-  // Detecta slider de Themeisle (Glide) por su clase
+  // Si es un iframe de YouTube, se recrea el embed usando Tailwind
+  if (
+    node.type === 'tag' &&
+    node.name === 'iframe' &&
+    node.attribs &&
+    node.attribs.src &&
+    node.attribs.src.includes('youtube.com')
+  ) {
+    const src = node.attribs.src;
+    return (
+      <div key={index} className="relative w-full aspect-[16/9] overflow-hidden mb-4">
+        <iframe
+          src={src}
+          title={node.attribs.title || 'YouTube video'}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="absolute top-0 left-0 w-full h-full"
+        />
+      </div>
+    );
+  }
+  // Detecta slider de Themeisle (Glide)
   if (
     node.type === 'tag' &&
     node.name === 'div' &&
@@ -196,10 +220,8 @@ const transform = (node, index) => {
     node.attribs.class &&
     node.attribs.class.includes('wp-block-themeisle-blocks-slider')
   ) {
-    // Busca de forma recursiva el contenedor de slides
     const glideSlidesNode = findElementByClass(node, 'glide__slides');
     if (glideSlidesNode && glideSlidesNode.children) {
-      // Filtra los nodos de slide (con clase "glide__slide")
       const slideNodes = glideSlidesNode.children.filter(
         (child) =>
           child.type === 'tag' &&
@@ -207,12 +229,10 @@ const transform = (node, index) => {
           child.attribs.class &&
           child.attribs.class.includes('glide__slide')
       );
-      // Extrae la imagen de cada slide
       const images = slideNodes
         .map((slide, i) => {
           const imgNode = findFirstTag(slide, 'img');
           if (imgNode) {
-            // Si el src es placeholder (data:), usa data-src
             const src =
               imgNode.attribs.src && imgNode.attribs.src.startsWith('data:')
                 ? imgNode.attribs['data-src']
@@ -225,24 +245,36 @@ const transform = (node, index) => {
         .filter(Boolean);
       if (images.length > 0) {
         return (
-          // Contenedor con fondo borroso para que las flechas sean visibles
-          <div className="relative bg-gray-200/50 backdrop-blur-md rounded-md p-4">
+          <div key={index} className="relative">
             <Swiper
-              key={index}
               modules={[Navigation, Pagination]}
               navigation
               pagination={{ clickable: true }}
               spaceBetween={10}
-              slidesPerView="auto" // Muestra múltiples slides según el espacio
-              className="w-full h-full"
+              slidesPerView={1} // Un slide por vista para forzar el ratio fijo
+              className="w-full"
             >
               {images.map((img, i) => (
-                <SwiperSlide key={i} style={{ width: 'auto' }}>
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    className="w-full h-64 object-cover"
-                  />
+                <SwiperSlide key={i}>
+                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-900">
+                    {/* Fondo con la misma imagen desfeocada */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage: `url(${img.src})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        filter: 'blur(8px)',
+                        transform: 'scale(1.1)',
+                      }}
+                    />
+                    {/* Imagen principal */}
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      className="relative z-10 object-contain w-full h-full"
+                    />
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -429,7 +461,7 @@ export default function NewsDetail() {
               </div>
             )}
           </div>
-          {/* Parseamos el HTML para transformar sliders y galerías */}
+          {/* Parseamos el HTML para transformar sliders, galerías y YouTube embeds */}
           <div className="prose prose-brown text-brown leading-relaxed mb-4">
             {parse(sanitized, { replace: transform })}
           </div>
