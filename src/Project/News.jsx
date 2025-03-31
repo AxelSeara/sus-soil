@@ -22,12 +22,11 @@ const generateNewsSlug = (id, title, date) => {
   return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
-// Función auxiliar para extraer de todos los grupos de términos los tags que no sean categorías
+// Extrae de todos los grupos de términos los tags que no sean categorías
 const getPostTags = (post) => {
   let tags = [];
   if (post._embedded?.['wp:term']) {
     post._embedded['wp:term'].forEach((termArray) => {
-      // Filtramos para que solo se incluyan aquellos términos cuyo taxonomy no sea 'category'
       tags = tags.concat(termArray.filter((t) => t.taxonomy !== 'category'));
     });
   }
@@ -45,8 +44,9 @@ const NewsPage = () => {
       setLoading(true);
       setError(null);
       try {
+        // Añadimos per_page, order y orderby para traer todos los posts y ordenarlos por fecha
         const res = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&per_page=100&order=desc&orderby=date`
         );
         if (!res.ok) throw new Error('Error fetching posts');
         const data = await res.json();
@@ -61,7 +61,7 @@ const NewsPage = () => {
     fetchPosts();
   }, []);
 
-  // Extraer todos los tags (no categorías) que aparecen en los posts de la categoría
+  // Extraer todos los tags (excluyendo categorías)
   const allTags = useMemo(() => {
     const tagsSet = new Set();
     posts.forEach((post) => {
@@ -71,7 +71,7 @@ const NewsPage = () => {
     return ['all', ...Array.from(tagsSet)];
   }, [posts]);
 
-  // Si el filtro es "all", se muestran todos los posts; si no, se filtran por el tag seleccionado
+  // Si el filtro es "all", se muestran todos los posts; si no, se filtran por tag
   const filteredPosts = useMemo(() => {
     if (filterTag === 'all') return posts;
     return posts.filter((post) => {
@@ -86,7 +86,7 @@ const NewsPage = () => {
     <div className="bg-white min-h-screen">
       <section className="container mx-auto px-6 py-12">
         <h2 className="text-3xl font-medium font-serif mb-8 text-center text-brown">
-          Latest News & Events
+          Latest News &amp; Events
         </h2>
 
         {/* Menú superior para filtrar por tag */}
