@@ -29,17 +29,29 @@ export default function Materials() {
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
+        // Agregamos un parámetro extra para evitar caché
         const res = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&acf_format=standard`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&acf_format=standard&_=${Date.now()}`,
+          { cache: 'no-cache' }
         );
-        const posts = await res.json();
-
+        let posts = [];
+        try {
+          posts = await res.json();
+        } catch (jsonErr) {
+          console.error('Error parsing JSON:', jsonErr);
+        }
+        if (!Array.isArray(posts)) {
+          posts = [];
+        }
         const enriched = posts.map((post) => {
           const file = post.acf?.file || {};
           return {
             id: post.id,
             title: post.title.rendered,
-            content: post.content.rendered,
+            // Si el contenido está vacío se asigna un valor por defecto
+            content: post.content.rendered.trim() !== '' 
+                      ? post.content.rendered 
+                      : '<p>No content available.</p>',
             date: new Date(post.date).toLocaleDateString(),
             file: {
               url: file.url || '',
@@ -48,7 +60,7 @@ export default function Materials() {
             featured: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
           };
         });
-
+        console.log('Materials enriched:', enriched);
         setMaterials(enriched);
       } catch (err) {
         console.error('Error fetching materials:', err);
@@ -81,55 +93,59 @@ export default function Materials() {
       <section className="mb-16">
         <h2 className="text-2xl font-bold font-serif mb-6">Available Materials</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {loadingMaterials
-            ? [...Array(2)].map((_, i) => (
-                <div key={i} className="p-4 border rounded-lg bg-white shadow">
-                  <Skeleton height={160} className="mb-4 rounded" />
-                  <Skeleton width={200} height={20} className="mb-2" />
-                  <Skeleton width={120} height={14} className="mb-4" />
-                  <Skeleton count={3} height={10} className="mb-2" />
-                  <Skeleton width={140} height={36} />
-                </div>
-              ))
-            : materials.map((m) => (
-                <div
-                  key={m.id}
-                  className="bg-white p-4 rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300"
-                >
-                  {m.featured ? (
-                    <img
-                      src={m.featured}
-                      alt={m.title}
-                      className="w-full h-40 object-cover rounded mb-4"
-                    />
-                  ) : (
-                    <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded mb-4">
-                      {getIconByMime(m.file.mime)}
-                    </div>
-                  )}
-
-                  <h3 className="text-lg font-semibold mb-1">{m.title}</h3>
-                  <p className="text-sm text-gray-600 mb-3">Uploaded: {m.date}</p>
-
-                  <div
-                    className="text-sm text-gray-700 mb-4"
-                    dangerouslySetInnerHTML={{ __html: m.content }}
+          {loadingMaterials ? (
+            [...Array(2)].map((_, i) => (
+              <div key={i} className="p-4 border rounded-lg bg-white shadow">
+                <Skeleton height={160} className="mb-4 rounded" />
+                <Skeleton width={200} height={20} className="mb-2" />
+                <Skeleton width={120} height={14} className="mb-4" />
+                <Skeleton count={3} height={10} className="mb-2" />
+                <Skeleton width={140} height={36} />
+              </div>
+            ))
+          ) : materials.length > 0 ? (
+            materials.map((m) => (
+              <div
+                key={m.id}
+                className="bg-white p-4 rounded-lg border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300"
+              >
+                {m.featured ? (
+                  <img
+                    src={m.featured}
+                    alt={m.title}
+                    className="w-full h-40 object-cover rounded mb-4"
                   />
+                ) : (
+                  <div className="w-full h-40 flex items-center justify-center bg-gray-100 rounded mb-4">
+                    {getIconByMime(m.file.mime)}
+                  </div>
+                )}
 
-                  {m.file.url && (
-                    <a
-                      href={m.file.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-brown text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition-colors"
-                      download
-                    >
-                      <FaDownload />
-                      Download ({m.file.mime.split('/').pop().toUpperCase()})
-                    </a>
-                  )}
-                </div>
-              ))}
+                <h3 className="text-lg font-semibold mb-1">{m.title}</h3>
+                <p className="text-sm text-gray-600 mb-3">Uploaded: {m.date}</p>
+
+                <div
+                  className="text-sm text-gray-700 mb-4"
+                  dangerouslySetInnerHTML={{ __html: m.content }}
+                />
+
+                {m.file.url && (
+                  <a
+                    href={m.file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-brown text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition-colors"
+                    download
+                  >
+                    <FaDownload />
+                    Download ({m.file.mime.split('/').pop().toUpperCase()})
+                  </a>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">No materials available at the moment.</p>
+          )}
         </div>
       </section>
 
