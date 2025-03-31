@@ -29,30 +29,30 @@ import logo24 from '../../../assets/partners/24.png';
 
 // Array de colaboradores con sus logos, URLs y textos alternativos
 const collaborators = [
-  { logo: logo1, alt: 'Universidad de Santiago de Compostela' },
-  { logo: logo2, alt: 'Región de Murcia' },
-  { logo: logo3, alt: 'Agricultural Landscape Research Zalf' },
-  { logo: logo4, alt: 'Universidade de Coimbra' },
-  { logo: logo5, alt: 'Università di Pisa' },
-  { logo: logo6, alt: 'Université de Tunis El Manar' },
-  { logo: logo7, alt: 'Agricultural University of Athens' },
-  { logo: logo8, alt: 'Universidad de Sarajevo' },
-  { logo: logo9, alt: 'Universidade de Coruña' },
-  { logo: logo10, alt: 'Politécnica de Madrid' },
-  { logo: logo11, alt: 'LifeWatch ERIC' },
-  { logo: logo12, alt: 'National Forest Center' },
-  { logo: logo13, alt: 'Ver de Terre' },
-  { logo: logo14, alt: 'Venetian Cluster' },
-  { logo: logo15, alt: 'Luke National Resource Institute Finland' },
-  { logo: logo16, alt: 'PEFC' },
-  { logo: logo17, alt: 'Feuga Fundación Empresa Universidad Coruña' },
-  { logo: logo18, alt: 'CIHEAM Bari' },
-  { logo: logo19, alt: 'Çukurova University' },
-  { logo: logo20, alt: 'Senseen' },
-  { logo: logo21, alt: 'Wetseus' },
-  { logo: logo22, alt: 'Heliopolis University for Sustainable Development' },
-  { logo: logo23, alt: 'Carqueixa Sabor dos Ancares' },
-  { logo: logo24, alt: 'AFG Asociación Forestal Galicia' },
+  { logo: logo1, alt: 'Universidad de Santiago de Compostela', url: 'https://www.usc.gal/en' },
+  { logo: logo2, alt: 'Región de Murcia', url: 'https://www.carm.es/' },
+  { logo: logo3, alt: 'Agricultural Landscape Research Zalf', url: 'https://www.zalf.de/en/Pages/ZALF.aspx' },
+  { logo: logo4, alt: 'Universidade de Coimbra', url: 'https://www.uc.pt/en/' },
+  { logo: logo5, alt: 'Università di Pisa', url: 'https://www.unipi.it/index.php/english' },
+  { logo: logo6, alt: 'Université de Tunis El Manar', url: 'https://utm.rnu.tn/utm/fr/' },
+  { logo: logo7, alt: 'Agricultural University of Athens', url: 'https://www2.aua.gr/en' },
+  { logo: logo8, alt: 'Universidad de Sarajevo', url: 'https://www.unsa.ba/en' },
+  { logo: logo9, alt: 'Universidade de Coruña', url: 'https://www.udc.es/en/' },
+  { logo: logo10, alt: 'Politécnica de Madrid', url: 'https://www.upm.es/internacional' },
+  { logo: logo11, alt: 'LifeWatch ERIC', url: 'https://www.lifewatch.eu/' },
+  { logo: logo12, alt: 'National Forest Center', url: 'https://web.nlcsk.org/en/home-en/' },
+  { logo: logo13, alt: 'Ver de Terre', url: 'https://www.verdeterreprod.fr/' },
+  { logo: logo14, alt: 'Venetian Cluster', url: 'https://www.venetiancluster.eu/en/' },
+  { logo: logo15, alt: 'Luke National Resource Institute Finland', url: 'https://www.luke.fi/en' },
+  { logo: logo16, alt: 'PEFC', url: 'https://www.pefc.it/' },
+  { logo: logo17, alt: 'Feuga Fundación Empresa Universidad Coruña', url: 'https://www.feuga.es/en/' },
+  { logo: logo18, alt: 'CIHEAM Bari', url: 'https://www.iamb.ciheam.org/' },
+  { logo: logo19, alt: 'Çukurova University', url: 'https://www.cu.edu.tr/en/' },
+  { logo: logo20, alt: 'Senseen', url: 'https://senseen.io/' },
+  { logo: logo21, alt: 'Wetseus', url: 'https://www.wetsus.nl/' },
+  { logo: logo22, alt: 'Heliopolis University for Sustainable Development', url: 'https://hu.edu.eg/' },
+  { logo: logo23, alt: 'Carqueixa Sabor dos Ancares', url: 'https://www.osabordosancares.com/' },
+  { logo: logo24, alt: 'AFG Asociación Forestal Galicia', url: 'https://asociacionforestal.gal/en/' },
 ];
 
 export default function Colaboradores() {
@@ -60,7 +60,7 @@ export default function Colaboradores() {
     <section className="container mx-auto px-6 py-16 bg-white rounded-lg shadow-md mb-16">
       {/* Título */}
       <h2 className="text-3xl font-bold text-center mb-8 text-brown">
-      Consortium
+        Consortium
       </h2>
 
       {/* Grid de logos */}
