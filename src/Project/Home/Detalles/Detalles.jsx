@@ -14,22 +14,22 @@ const objectives = [
   {
     title: 'Awareness for land managers',
     icon: AwarenessIcon,
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    // text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
   },
   {
     title: 'Supporting EU transformation',
     icon: EUIcon,
-    text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.'
+    // text: 'Pellentesque habitant morbi tristique senectus et netus et malesuada.'
   },
   {
     title: 'Ecosystem services delivery',
     icon: EcosystemIcon,
-    text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere.'
+    // text: 'Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere.'
   },
   {
     title: 'Water security & climate',
     icon: WaterIcon,
-    text: 'Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque.'
+    // text: 'Curabitur sit amet magna quam. Praesent in libero vel turpis pellentesque.'
   },
 ];
 
