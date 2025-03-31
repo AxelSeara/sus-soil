@@ -51,7 +51,7 @@ export default function Materials() {
             // Si el contenido está vacío se asigna un valor por defecto
             content: post.content.rendered.trim() !== '' 
                       ? post.content.rendered 
-                      : '<p>No content available.</p>',
+                      : '<p> </p>',
             date: new Date(post.date).toLocaleDateString(),
             file: {
               url: file.url || '',
