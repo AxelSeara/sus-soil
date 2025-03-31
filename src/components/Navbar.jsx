@@ -101,9 +101,12 @@ export default function Navbar() {
                 </div>
               )}
             </li>
-            <li>
+
+            {/* REACTIVATE LATER */}
+
+            {/* <li>
               <Link to="/living-labs" className={navLinkClass}>Living Labs</Link>
-            </li>
+            </li> */}
             <li className="relative" ref={resourcesRef}>
               <button
                 onClick={() => setResourcesOpen(!resourcesOpen)}

@@ -128,13 +128,16 @@ export default function Mapa() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
-                <Link
+
+                {/* REACTIVATE */}
+
+                {/* <Link
                   to={`/living-labs/${activeRegion.toLowerCase()}`}
                   className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-1 transition-transform"
                   style={{ backgroundColor: regionData?.color }}
                 >
                   Explore more about {regionData?.label}
-                </Link>
+                </Link> */}
               </motion.div>
             )}
           </motion.div>
