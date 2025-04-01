@@ -462,8 +462,7 @@ export default function NewsDetail() {
             )}
           </div>
           {/* Parseamos el HTML para transformar sliders, galerías y YouTube embeds */}
-          <div className="prose prose-brown text-brown leading-relaxed mb-4">
-            {parse(sanitized, { replace: transform })}
+          <div className="prose leading-relaxed mb-4 text-brown prose-a:text-darkGreen prose-a:underline prose-strong:font-bold prose-strong:text-brown">            {parse(sanitized, { replace: transform })}
           </div>
           <div className="flex items-center gap-4 mt-8 mb8">
             <button
