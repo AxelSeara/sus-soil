@@ -5,8 +5,6 @@ import DOMPurify from 'dompurify';
 import { FaShareAlt, FaArrowLeft } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-
-// Importa html-react-parser y componentes de Swiper, usando módulos desde "swiper/modules"
 import parse from 'html-react-parser';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -156,7 +154,15 @@ function generateNewsSlug(id, title, date) {
 }
 
 // ------------------------------
-// Skeletons (sin cambios)
+// Formateo de fecha en español
+// ------------------------------
+function formatDate(dateString) {
+  const options = { day: 'numeric', month: 'long', year: 'numeric' };
+  return new Date(dateString).toLocaleDateString('es-ES', options);
+}
+
+// ------------------------------
+// Skeletons
 // ------------------------------
 const PostDetailSkeleton = () => (
   <div className="container mx-auto px-4 py-6">
@@ -190,7 +196,6 @@ const EventSkeleton = () => (
 // Transformador para html-react-parser (Slider & YouTube)
 // ------------------------------
 const transform = (node, index) => {
-  // Si es un iframe de YouTube, se recrea el embed usando Tailwind
   if (
     node.type === 'tag' &&
     node.name === 'iframe' &&
@@ -212,7 +217,6 @@ const transform = (node, index) => {
       </div>
     );
   }
-  // Detecta slider de Themeisle (Glide)
   if (
     node.type === 'tag' &&
     node.name === 'div' &&
@@ -251,13 +255,12 @@ const transform = (node, index) => {
               navigation
               pagination={{ clickable: true }}
               spaceBetween={10}
-              slidesPerView={1} // Un slide por vista para forzar el ratio fijo
+              slidesPerView={1}
               className="w-full"
             >
               {images.map((img, i) => (
                 <SwiperSlide key={i}>
                   <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-900">
-                    {/* Fondo con la misma imagen desfeocada */}
                     <div
                       className="absolute inset-0"
                       style={{
@@ -268,7 +271,6 @@ const transform = (node, index) => {
                         transform: 'scale(1.1)',
                       }}
                     />
-                    {/* Imagen principal */}
                     <img
                       src={img.src}
                       alt={img.alt}
@@ -341,14 +343,10 @@ export default function NewsDetail() {
       setLoadingRecent(true);
       try {
         const resp = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&per_page=10&order=desc&orderby=date&_embed&_=${Date.now()}`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&per_page=5&order=desc&orderby=date&_embed&_=${Date.now()}`
         );
         const data = await resp.json();
-        const postsOnly = data.filter((p) => {
-          const tags = p._embedded?.['wp:term']?.[1] || [];
-          return !tags.some((t) => t.name.toLowerCase() === 'event');
-        });
-        setRecentPosts(postsOnly.slice(0, 3));
+        setRecentPosts(data);
       } catch (err) {
         console.error('Error fetching recent posts:', err);
       } finally {
@@ -417,11 +415,10 @@ export default function NewsDetail() {
     ADD_TAGS: ['iframe'],
     ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src'],
   });
-
   const featured = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
   const fallbackImg = extractFirstImageFromHTML(fixedContent);
   const imageUrl = featured || fallbackImg || null;
-  const dateFormatted = new Date(post.date).toLocaleDateString();
+  const dateFormatted = formatDate(post.date);
   const tags = post._embedded?.['wp:term']?.[1] || [];
   const isEvent = tags.some((t) => t.name.toLowerCase() === 'event');
 
@@ -437,49 +434,54 @@ export default function NewsDetail() {
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-3 md:gap-8">
         {/* MAIN CONTENT (2/3) */}
         <div className="md:col-span-2">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4">
-            {title}
-          </h1>
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt={title}
-              className="w-full max-h-[600px] object-cover rounded-md mb-4 transition-transform duration-300 hover:scale-105"
-            />
-          )}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <div className="text-sm text-gray-600">
-              Published on: <span className="font-medium">{dateFormatted}</span>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map((t) => (
-                  <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
-                    {t.name}
-                  </span>
-                ))}
-              </div>
+          <div className="max-w-prose mx-auto">
+            <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4">
+              {title}
+            </h1>
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt={title}
+                className="w-full max-h-[600px] object-cover rounded-md mb-4 transition-transform duration-300 hover:scale-105"
+              />
             )}
           </div>
-          {/* Parseamos el HTML para transformar sliders, galerías y YouTube embeds */}
-          <div className="prose leading-relaxed mb-4 text-brown prose-a:text-darkGreen prose-a:underline prose-strong:font-bold prose-strong:text-brown">            {parse(sanitized, { replace: transform })}
-          </div>
-          <div className="flex items-center gap-4 mt-8 mb8">
-            <button
-              onClick={handleShare}
-              className="bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 inline-flex items-center space-x-2"
-              title="Share this post"
-            >
-              <span>Share</span>
-              <FaShareAlt />
-            </button>
-            <Link
-              to="/news"
-              className="inline-block bg-brown text-white py-2 px-6 rounded-full hover:bg-opacity-80 font-serif transition-colors duration-300"
-            >
-              <FaArrowLeft className="inline-block mr-2" />
-              Back to News
-            </Link>
+          {/* Contenedor del texto con el mismo ancho que la imagen */}
+          <div className="max-w-prose mx-auto">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <div className="text-sm text-gray-600">
+                Published on: <span className="font-medium">{dateFormatted}</span>
+              </div>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((t) => (
+                    <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
+                      {t.name}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="prose leading-relaxed mb-4 text-brown prose-a:text-darkGreen prose-a:underline prose-strong:font-bold prose-strong:text-brown">
+              {parse(sanitized, { replace: transform })}
+            </div>
+            <div className="flex items-center gap-4 mt-8 mb-8">
+              <button
+                onClick={handleShare}
+                className="bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-80 inline-flex items-center space-x-2"
+                title="Share this post"
+              >
+                <span>Share</span>
+                <FaShareAlt />
+              </button>
+              <Link
+                to="/news"
+                className="inline-block bg-brown text-white py-2 px-6 rounded-full hover:bg-opacity-80 font-serif transition-colors duration-300"
+              >
+                <FaArrowLeft className="inline-block mr-2" />
+                Back to News
+              </Link>
+            </div>
           </div>
         </div>
         {/* RIGHT COLUMN (1/3) */}
@@ -502,8 +504,9 @@ export default function NewsDetail() {
                 <div className="flex flex-col space-y-4">
                   {recentPosts.map((rp) => {
                     const rpTitle = rp.title?.rendered || 'No Title';
-                    const rpDate = new Date(rp.date).toLocaleDateString();
+                    const rpDate = formatDate(rp.date);
                     const rpImg = rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const rpTags = rp._embedded?.['wp:term']?.[1] || [];
                     return (
                       <Link
                         key={rp.id}
@@ -524,6 +527,16 @@ export default function NewsDetail() {
                         <div className="text-sm text-brown">
                           <div className="font-semibold">{rpTitle}</div>
                           <div className="text-xs text-gray-500">{rpDate}</div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {rpTags.map((t) => (
+                              <span
+                                key={t.id}
+                                className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full"
+                              >
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </Link>
                     );
@@ -550,8 +563,9 @@ export default function NewsDetail() {
                 <div className="flex flex-col space-y-4">
                   {recentEvents.map((ev) => {
                     const evTitle = ev.title?.rendered || 'Untitled';
-                    const evDate = new Date(ev.date).toLocaleDateString();
+                    const evDate = formatDate(ev.date);
                     const evImg = ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const evTags = ev._embedded?.['wp:term']?.[1] || [];
                     return (
                       <Link
                         key={ev.id}
@@ -572,6 +586,13 @@ export default function NewsDetail() {
                         <div className="text-sm text-brown">
                           <div className="font-semibold">{evTitle}</div>
                           <div className="text-xs text-gray-500">{evDate}</div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {evTags.map((t) => (
+                              <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </Link>
                     );
@@ -598,8 +619,9 @@ export default function NewsDetail() {
                 <div className="flex flex-col space-y-4">
                   {relatedPosts.map((r) => {
                     const rTitle = r.title?.rendered || 'No Title';
-                    const rDate = new Date(r.date).toLocaleDateString();
+                    const rDate = formatDate(r.date);
                     const rImg = r._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                    const rTags = r._embedded?.['wp:term']?.[1] || [];
                     return (
                       <Link
                         key={r.id}
@@ -620,6 +642,13 @@ export default function NewsDetail() {
                         <div className="text-sm text-brown">
                           <div className="font-semibold">{rTitle}</div>
                           <div className="text-xs text-gray-500">{rDate}</div>
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {rTags.map((t) => (
+                              <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
+                                {t.name}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       </Link>
                     );
