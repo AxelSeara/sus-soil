@@ -78,7 +78,13 @@ export default function Materials() {
       `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=UCuKwnBuVIiaQ2-azC3qjbQw&part=snippet,id&order=date&maxResults=6`
     )
       .then((res) => res.json())
-      .then((data) => setVideos(data.items || []))
+      .then((data) => {
+        // Filtrar para incluir solo resultados de tipo video
+        const validVideos = (data.items || []).filter(
+          (item) => item.id && item.id.kind === 'youtube#video'
+        );
+        setVideos(validVideos);
+      })
       .catch((err) => console.error('YouTube fetch error:', err))
       .finally(() => setLoadingVideos(false));
   }, []);
