@@ -21,10 +21,12 @@ import PracticeAbstracts from './Project/Resources/PracticeAbstracts';
 import Newsletter from './Project/Resources/Newsletter';
 import NotFound from './Project/NotFound';
 import CookieConsent from 'react-cookie-consent';
+import { Analytics } from "@vercel/analytics/react"
 
 const App = () => {
   return (
     <Router>
+      <Analytics />
       <ScrollToTop />
       <Navbar />
       <div className="pt-16">
