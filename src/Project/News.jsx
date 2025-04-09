@@ -1,118 +1,111 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+// src/components/News.jsx
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { FaArrowRight } from 'react-icons/fa';
 
-const CATEGORY_ID = 12; // News & Events
+function SkeletonCard() {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem]">
+      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+      <div className="h-40 bg-gray-200 rounded"></div>
+      <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+      <div className="h-10 bg-gray-300 rounded w-full mt-auto"></div>
+    </div>
+  );
+}
 
-const cardVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: {
+const gridVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: 'easeInOut' },
+    transition: {
+      staggerChildren: 0.15,
+      when: 'beforeChildren',
+      duration: 0.5,
+      ease: 'easeInOut',
+    },
   },
-  exit: {
-    opacity: 0,
-    y: -20,
-    transition: { duration: 0.3, ease: 'easeInOut' },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 15,
+    },
   },
 };
 
-const generateNewsSlug = (id, title, date) => {
-  const d = new Date(date);
-  const datePart = isNaN(d.getTime()) ? 'unknown-date' : d.toISOString().slice(0, 10);
-  const slugifiedTitle = title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-  return `${id}-${slugifiedTitle}-${datePart}`;
-};
-
-const getPostTags = (post) => {
-  let tags = [];
-  if (post._embedded?.['wp:term']) {
-    post._embedded['wp:term'].forEach((termArray) => {
-      tags = tags.concat(termArray.filter((t) => t.taxonomy !== 'category'));
-    });
-  }
-  return tags;
-};
-
-const NewsPage = () => {
+export default function News() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingPosts, setLoadingPosts] = useState(true);
   const [filterTag, setFilterTag] = useState('all');
   const [error, setError] = useState(null);
 
-  // Función para obtener TODOS los posts, paginando según lo devuelto en los headers
-  const fetchAllPosts = async () => {
-    let allPosts = [];
-    let page = 1;
-    let totalPages = 1;
-
-    try {
-      do {
-        const res = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&per_page=100&page=${page}&order=desc&orderby=date&_=${Date.now()}`
-        );
-        if (!res.ok) {
-          throw new Error('Error fetching posts');
-        }
-        const data = await res.json();
-        allPosts = allPosts.concat(data);
-        // Obtenemos el total de páginas desde el header
-        totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
-        page++;
-      } while (page <= totalPages);
-    } catch (err) {
-      console.error('Error fetching posts:', err);
-      throw err;
-    }
-    return allPosts;
-  };
-
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
-      setError(null);
       try {
-        const data = await fetchAllPosts();
-        setPosts(data);
-      } catch (err) {
-        setError(err.message);
+        const response = await fetch(
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&_=${Date.now()}`
+        );
+        if (!response.ok) throw new Error('Error fetching posts');
+        const allPosts = await response.json();
+        setPosts(allPosts);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+        setError(error.message);
       } finally {
-        setLoading(false);
+        setLoadingPosts(false);
       }
     };
+
     fetchPosts();
   }, []);
 
+  // Extrae todos los tags (excluyendo, por ejemplo, los de categoría)
   const allTags = useMemo(() => {
     const tagsSet = new Set();
     posts.forEach((post) => {
-      const postTags = getPostTags(post);
+      const postTags =
+        (post._embedded?.['wp:term'] &&
+          post._embedded['wp:term'].flat().filter((t) => t.taxonomy !== 'category')) ||
+        [];
       postTags.forEach((tag) => tagsSet.add(tag.name));
     });
     return ['all', ...Array.from(tagsSet)];
   }, [posts]);
 
+  // Si el filtro es "all", se muestran todos los posts; si no, se filtran por tag
   const filteredPosts = useMemo(() => {
     if (filterTag === 'all') return posts;
     return posts.filter((post) => {
-      const postTags = getPostTags(post);
-      return postTags.some(
-        (tag) => tag.name.toLowerCase() === filterTag.toLowerCase()
-      );
+      const postTags =
+        (post._embedded?.['wp:term'] &&
+          post._embedded['wp:term'].flat().filter((t) => t.taxonomy !== 'category')) ||
+        [];
+      return postTags.some((tag) => tag.name.toLowerCase() === filterTag.toLowerCase());
     });
   }, [posts, filterTag]);
 
-  return (
-    <div className="bg-white min-h-screen">
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-medium font-serif mb-8 text-center text-brown">
-          Latest News &amp; Events
+  const getExcerptText = (html) => {
+    if (!html) return '';
+    const text = html.replace(/<[^>]+>/g, '');
+    if (text.length > 100) return text.substring(0, 97) + '...';
+    return text;
+  };
+
+  const renderSection = (items, loading, title) => {
+    if (!loading && items.length === 0) return null;
+
+    return (
+      <section className="py-12 px-6 md:px-16 my-8">
+        <h2 className="text-3xl md:text-4xl font-medium font-serif text-center mb-10 text-brown">
+          {title}
         </h2>
 
         {/* Menú superior para filtrar por tag */}
@@ -132,99 +125,65 @@ const NewsPage = () => {
           ))}
         </div>
 
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          variants={gridVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {loading
+            ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
+            : items.map((post) => {
+                const title = post.title?.rendered || 'No Title';
+                const dateFormatted = new Date(post.date).toLocaleDateString();
+                const excerptText = getExcerptText(post.excerpt?.rendered);
+                const imgUrl =
+                  post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+
+                return (
+                  <motion.div
+                    key={post.id}
+                    className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex flex-col min-h-[24rem]"
+                    variants={cardVariants}
+                  >
+                    <h3 className="text-xl font-serif mb-2 text-brown font-semibold leading-tight">
+                      {title}
+                    </h3>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Published on: {dateFormatted}
+                    </p>
+                    {imgUrl ? (
+                      <img
+                        src={imgUrl}
+                        alt={title}
+                        className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
+                        <span className="text-gray-500">No image available</span>
+                      </div>
+                    )}
+                    <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                      {excerptText}
+                    </p>
+                    <div className="mt-auto">
+                      <a
+                        href={`/news/${post.id}`}
+                        className="inline-block px-6 py-3 bg-brown hover:bg-opacity-80 text-white font-bold rounded-full shadow-md transition-transform duration-300 ease-in-out transform hover:-translate-y-1"
+                      >
+                        Read More <FaArrowRight className="inline-block ml-2" />
+                      </a>
+                    </div>
+                  </motion.div>
+                );
+              })}
+        </motion.div>
         {error && (
           <div className="text-center text-red-500 mb-4">{error}</div>
         )}
-
-        {!loading && filteredPosts.length === 0 && (
-          <div className="text-center text-gray-500">
-            No posts found for the selected tag.
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence>
-            {loading
-              ? [...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    variants={cardVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                  >
-                    <div className="bg-white p-6 rounded-xl shadow-lg">
-                      <Skeleton height={24} width="75%" className="mb-4" />
-                      <Skeleton height={160} className="mb-4" />
-                      <Skeleton count={2} height={10} className="mb-4" />
-                      <Skeleton height={36} width={120} />
-                    </div>
-                  </motion.div>
-                ))
-              : filteredPosts.map((post) => {
-                  const image =
-                    post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-                  const postTags = getPostTags(post);
-                  const tagNames = postTags.map((tag) => tag.name);
-
-                  return (
-                    <motion.div
-                      key={post.id}
-                      variants={cardVariants}
-                      initial="initial"
-                      animate="animate"
-                      exit="exit"
-                    >
-                      <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out flex flex-col">
-                        <div className="relative mb-4">
-                          {image ? (
-                            <img
-                              src={image}
-                              alt={post.title.rendered}
-                              className="rounded-lg object-cover w-full h-40"
-                            />
-                          ) : (
-                            <div className="w-full h-40 bg-gray-200 rounded-lg" />
-                          )}
-                          <div className="absolute top-2 left-2 flex gap-2">
-                            {tagNames.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-xs px-3 py-1 rounded-full font-semibold shadow bg-brown text-white"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <h3 className="text-2xl font-medium font-serif mb-4 text-brown">
-                          {post.title.rendered}
-                        </h3>
-                        <div
-                          className="text-brown mb-4 flex-1 line-clamp-2 overflow-hidden text-ellipsis text-sm"
-                          dangerouslySetInnerHTML={{
-                            __html: post.excerpt.rendered,
-                          }}
-                        />
-                        <Link
-                          to={`/news/${generateNewsSlug(
-                            post.id,
-                            post.title.rendered,
-                            post.date
-                          )}`}
-                          className="px-4 py-2 rounded-full bg-brown text-white text-center font-semibold hover:bg-darkGreen transition-colors"
-                        >
-                          Read More
-                        </Link>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-          </AnimatePresence>
-        </div>
       </section>
-    </div>
-  );
-};
+    );
+  };
 
-export default NewsPage;
+  return <>{renderSection(filteredPosts, loadingPosts, 'News & Events')}</>;
+}
