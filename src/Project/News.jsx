@@ -8,8 +8,16 @@ const CATEGORY_ID = 12; // News & Events
 
 const cardVariants = {
   initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeInOut' } },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: 'easeInOut' } },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: 'easeInOut' },
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: { duration: 0.3, ease: 'easeInOut' },
+  },
 };
 
 const generateNewsSlug = (id, title, date) => {
@@ -22,7 +30,6 @@ const generateNewsSlug = (id, title, date) => {
   return `${id}-${slugifiedTitle}-${datePart}`;
 };
 
-// Extrae de todos los grupos de términos los tags que no sean categorías
 const getPostTags = (post) => {
   let tags = [];
   if (post._embedded?.['wp:term']) {
@@ -39,20 +46,41 @@ const NewsPage = () => {
   const [filterTag, setFilterTag] = useState('all');
   const [error, setError] = useState(null);
 
+  // Función para obtener TODOS los posts, paginando según lo devuelto en los headers
+  const fetchAllPosts = async () => {
+    let allPosts = [];
+    let page = 1;
+    let totalPages = 1;
+
+    try {
+      do {
+        const res = await fetch(
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&per_page=100&page=${page}&order=desc&orderby=date&_=${Date.now()}`
+        );
+        if (!res.ok) {
+          throw new Error('Error fetching posts');
+        }
+        const data = await res.json();
+        allPosts = allPosts.concat(data);
+        // Obtenemos el total de páginas desde el header
+        totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
+        page++;
+      } while (page <= totalPages);
+    } catch (err) {
+      console.error('Error fetching posts:', err);
+      throw err;
+    }
+    return allPosts;
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Añadimos per_page, order y orderby para traer todos los posts y ordenarlos por fecha
-        const res = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&per_page=100&order=desc&orderby=date`
-        );
-        if (!res.ok) throw new Error('Error fetching posts');
-        const data = await res.json();
+        const data = await fetchAllPosts();
         setPosts(data);
       } catch (err) {
-        console.error('Error fetching posts:', err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -61,7 +89,6 @@ const NewsPage = () => {
     fetchPosts();
   }, []);
 
-  // Extraer todos los tags (excluyendo categorías)
   const allTags = useMemo(() => {
     const tagsSet = new Set();
     posts.forEach((post) => {
@@ -71,7 +98,6 @@ const NewsPage = () => {
     return ['all', ...Array.from(tagsSet)];
   }, [posts]);
 
-  // Si el filtro es "all", se muestran todos los posts; si no, se filtran por tag
   const filteredPosts = useMemo(() => {
     if (filterTag === 'all') return posts;
     return posts.filter((post) => {
