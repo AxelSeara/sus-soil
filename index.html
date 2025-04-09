@@ -28,6 +28,43 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <style>
+        body {
+          background-color: #e6f4e4;
+          color: #5c3a1a;
+          font-family: 'Merriweather', serif;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          padding: 2rem;
+          text-align: center;
+        }
+        .noscript-message {
+          max-width: 600px;
+          background-color: #ffffff;
+          border: 1px solid #cce3cc;
+          padding: 2rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .noscript-message h1 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+          color: #5c3a1a;
+        }
+        .noscript-message p {
+          font-size: 1rem;
+          color: #5c3a1a;
+        }
+      </style>
+      <div class="noscript-message">
+        <h1>JavaScript is disabled</h1>
+        <p>This website requires JavaScript to function properly. Please enable JavaScript in your browser settings and reload the page.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
