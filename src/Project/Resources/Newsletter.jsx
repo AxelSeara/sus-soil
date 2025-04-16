@@ -9,8 +9,12 @@ export default function Newsletter() {
   // Función para obtener los posts de la API
   const fetchPosts = () => {
     fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100`)
-      .then((res) => res.json())
+      .then((res) => {
+        console.log('Response status:', res.status);
+        return res.json();
+      })
       .then((data) => {
+        console.log('Data received:', data);
         setPosts(data);
         setLoading(false);
       })
