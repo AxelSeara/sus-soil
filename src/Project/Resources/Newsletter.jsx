@@ -6,9 +6,10 @@ export default function Newsletter() {
   const [loading, setLoading] = useState(true);
   const newsletterCategoryId = 14;
 
-  // Función para obtener los posts de la API
+  // Función para obtener los posts de la API evitando caché
   const fetchPosts = () => {
-    fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100`)
+    // Agregamos _embed y un timestamp (para evitar cacheo)
+    fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100&_embed&_=${Date.now()}`)
       .then((res) => {
         console.log('Response status:', res.status);
         return res.json();
