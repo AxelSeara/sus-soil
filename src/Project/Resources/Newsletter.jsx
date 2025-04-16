@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ExternalLink } from 'lucide-react'; // Asegúrate de tener esto instalado
+import { ExternalLink } from 'lucide-react'; // Asegúrate de tenerlo instalado
 
 export default function Newsletter() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const newsletterCategoryId = 14;
 
-  useEffect(() => {
+  // Función para obtener los posts de la API
+  const fetchPosts = () => {
     fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100`)
       .then((res) => res.json())
       .then((data) => {
@@ -17,11 +18,25 @@ export default function Newsletter() {
         console.error('Error fetching newsletter posts:', err);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    // Llamada inicial a la API
+    fetchPosts();
+
+    // Configuramos polling para refrescar cada 60 segundos
+    const interval = setInterval(() => {
+      fetchPosts();
+    }, 60000); // 60000 ms = 1 minuto
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, []);
 
+  // Formatear la fecha usando en-US para mostrarla en inglés
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString("en-US", {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -31,7 +46,7 @@ export default function Newsletter() {
   return (
     <div className="bg-gradient-to-b from-lightGreen to-white py-20 px-4">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-start text-brown">
-        {/* Info section */}
+        {/* Sección de Información */}
         <div>
           <h1 className="text-4xl md:text-5xl font-bold font-serif mb-6">Newsletter</h1>
           <p className="text-lg leading-relaxed mb-10">
@@ -72,18 +87,9 @@ export default function Newsletter() {
               </div>
             )}
           </div>
-
-          {!loading && posts.length === 0 && (
-            <div>
-              <h3 className="text-xl font-semibold font-serif mb-2">Coming Soon</h3>
-              <p className="text-gray-700 leading-relaxed">
-                We will share all SUS-SOIL newsletter issues soon. Stay tuned!
-              </p>
-            </div>
-          )}
         </div>
 
-        {/* Subscription box */}
+        {/* Caja de Suscripción */}
         <div className="bg-white rounded-xl shadow-lg p-8 border border-brown/10">
           <h3 className="text-2xl font-serif font-semibold mb-4">Join Our Mailing List</h3>
           <p className="text-sm text-brown mb-6">
