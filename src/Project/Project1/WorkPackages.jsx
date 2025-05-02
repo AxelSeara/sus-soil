@@ -1,12 +1,22 @@
-// src/Project/Project1/WorkPackages.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Data de los WP
+import WP1 from '../../assets/wp/WP1.png';
+import WP2 from '../../assets/wp/WP2.png';
+import WP3 from '../../assets/wp/WP3.png';
+import WP4 from '../../assets/wp/WP4.png';
+import WP5 from '../../assets/wp/WP5.png';
+import WP6 from '../../assets/wp/WP6.png';
+import WP7 from '../../assets/wp/WP7.png';
+import WP8 from '../../assets/wp/WP8.png';
+import WP9 from '../../assets/wp/WP9.png';
+import WP10 from '../../assets/wp/WP10.png';
+
 const workPackages = [
   {
     title: "WP1 - Networking: the Agroecological Subsoil Management Network",
     ledBy: "Centro Internazionale di Altistudi Agronomici Mediterranei (CIHEAM-IAMB)",
+    image: WP1,
     objectives: [
       "To establish 15 Living Labs (LLs) in pedoclimatic relevant areas for Europe and to organize all LL activities.",
       "To establish the Agroecological Subsoil Management Network (ASMN) to foster synergies between the SUS-SOIL project and other infrastructures, networks, projects and Living Labs (LLs) of Europe.",
@@ -16,6 +26,7 @@ const workPackages = [
   {
     title: "WP2 - Subsoil Database collection and harmonization from synergistic infrastructures",
     ledBy: "E-Science European Infrastructure (LifeWatch ERIC)",
+    image: WP2,
     objectives: [
       "To map current subsoil/soil fertility projects, initiatives, databases and infrastructures, in order to gather subsoil data in collaboration with the ASMN (T1.3) and assess the main subsoil and topsoil fertility interactions and their respective land use and management practices in rural and urban areas.",
       "To develop a protocol for subsoil sampling and data gathering.",
@@ -25,6 +36,7 @@ const workPackages = [
   {
     title: "WP3 – Soil health, land use and management experiments",
     ledBy: "Agricultural University of Athens (AUA)",
+    image: WP3,
     objectives: [
       "To identify the long-term land use LUCAS points in order to be sampled as a way to understand the long-term soil use and management on soil and subsoil organic matter, water and nutrient dynamics.",
       "To gather harmonized data from the selected agricultural, forest and urban soils.",
@@ -34,6 +46,7 @@ const workPackages = [
   {
     title: "WP4 - Subsoil /soil interactions, land use, management practices, climate change and biodiversity modelling",
     ledBy: "Università di Pisa (UNIPI)",
+    image: WP4,
     objectives: [
       "To provide a framework for the new models development.",
       "To model the topsoil/subsoil traits at various depths and the interdependencies of each trait between the upper and lower layers considering land use and management (i.e. tillage) and water movements in the soil.",
@@ -44,6 +57,7 @@ const workPackages = [
   {
     title: "WP5 - Subsoil ecosystem services sustainability assessment",
     ledBy: "Universidade de Coimbra (UC)",
+    image: WP5,
     objectives: [
       "To develop an integrated assessment framework for transparently evaluating ASM land use and management impact LL scenarios on subsoil sustainability and the respective ecosystem services.",
       "To quantify the cost of implementing the alternative farm and urban infrastructure ideotypes.",
@@ -52,8 +66,9 @@ const workPackages = [
     ]
   },
   {
-    title: "WP6 - Bioeconomic and Macroenconomic MODAM-CGE Model",
+    title: "WP6 - Bioeconomic and Macroencomic MODAM-CGE Model",
     ledBy: "Leibniz Centre for Agricultural Landscape Research (ZALF)",
+    image: WP6,
     objectives: [
       "To develop robust business plans and innovative business models of the baseline and alternative mix of relevant farm idiotypes.",
       "To develop and optimize a DST based on MODAM modelling for macroeconomic impact assessment.",
@@ -63,6 +78,7 @@ const workPackages = [
   {
     title: "WP7 - Sub-soil database platform development",
     ledBy: "Agricultural University of Athens (AUA)",
+    image: WP7,
     objectives: [
       "To develop digital tools to present the aggregated knowledge in an easy to access format, including:",
       "A Subsoil Database.",
@@ -74,6 +90,7 @@ const workPackages = [
   {
     title: "WP8 - Communication, Dissemination and Exploitation",
     ledBy: "Fundación Empresa Universidad Gallega (FEUGA)",
+    image: WP8,
     objectives: [
       "To communicate project results and its relevance making them all well known to relevant stakeholders, maximising the expected impacts and contributing to Mission Soil objectives.",
       "To facilitate active dissemination and demonstration of sustainable management practices, involving relevant stakeholders.",
@@ -83,6 +100,7 @@ const workPackages = [
   {
     title: "WP9 – Project Management",
     ledBy: "Universidade de Santiago de Compostela (USC)",
+    image: WP9,
     objectives: [
       "To implement project infrastructure for efficient reporting and internal communication.",
       "To administer and transfer payments from the European Commission.",
@@ -95,85 +113,74 @@ const workPackages = [
   {
     title: "WP10 - Ethics requirements",
     ledBy: "Universidade de Santiago de Compostela (USC)",
+    image: WP10,
     objectives: [
       "To ensure compliance with the 'ethics requirements' set out in this work package."
     ]
   }
 ];
 
-// Variants para el contenedor principal (stagger)
-const containerVariants = {
-  hidden: { opacity: 0 },
+// Slide in variants
+const slideIn = (direction = "left") => ({
+  hidden: { opacity: 0, x: direction === "left" ? -100 : 100 },
   visible: {
     opacity: 1,
+    x: 0,
     transition: {
-      when: 'beforeChildren',
-      // Aplica un retardo para cada hijo
-      staggerChildren: 0.15,
-    },
-  },
-};
-
-// Variants para cada tarjeta (fade + slide in + scale)
-const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.5,
+      duration: 0.7,
       ease: 'easeOut'
     }
   }
-};
+});
 
 export default function WorkPackages() {
   return (
     <section className="max-w-screen-xl mx-auto py-16 px-4 text-brown">
-      {/* Título de la sección */}
-      <h1 className="text-4xl md:text-5xl font-bold text-center mb-10">
-        Work Packages
-      </h1>
-      {/* Subtítulo breve */}
+      <h1 className="text-4xl md:text-5xl font-bold text-center mb-10">Work Packages</h1>
       <p className="text-lg leading-relaxed text-center max-w-3xl mx-auto mb-10">
-        To facilitate achieving its different goals, the project activities are 
-        structured across ten Work Packages.
+        To facilitate achieving its different goals, the project activities are structured across ten Work Packages.
       </p>
 
-      {/* Contenedor animado con framer-motion */}
-      <motion.div
-        className="space-y-10"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-      >
-        {workPackages.map((wp, index) => (
-          // Cada tarjeta se envuelve con motion.div
-          <motion.div 
-            key={index}
-            className="bg-white shadow-md p-6 rounded-lg transition-transform duration-300
-                       hover:shadow-lg hover:-translate-y-1"
-            variants={cardVariants}
-          >
-            {/* Título WP */}
-            <h2 className="text-2xl md:text-3xl font-semibold mb-3">
-              {wp.title}
-            </h2>
-            {/* Led by */}
-            <p className="text-md md:text-lg font-medium text-darkGreen mb-4">
-              Led by: {wp.ledBy}
-            </p>
-            {/* Lista de objetivos */}
-            <ul className="list-disc pl-5 space-y-2 text-md md:text-lg leading-relaxed">
-              {wp.objectives.map((objective, objIndex) => (
-                <li key={objIndex}>{objective}</li>
-              ))}
-            </ul>
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="space-y-16">
+        {workPackages.map((wp, index) => {
+          const isEven = index % 2 === 0;
+          const direction = isEven ? "left" : "right";
+
+          return (
+            <motion.div
+              key={index}
+              className="p-2"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={slideIn(direction)}
+            >
+              <div className={`flex flex-col md:flex-row ${!isEven ? 'md:flex-row-reverse' : ''} items-center gap-6`}>
+                <div className="w-full md:w-1/3 flex-shrink-0">
+                  <div className="aspect-square overflow-hidden rounded-md">
+                    <img
+                      src={wp.image}
+                      alt={wp.title}
+                      className="w-full h-full object-contain"
+                      style={{ backgroundColor: 'transparent' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <h2 className="text-2xl md:text-3xl font-semibold mb-3">{wp.title}</h2>
+                  <p className="text-md md:text-lg font-medium text-darkGreen mb-4">Led by: {wp.ledBy}</p>
+                  <ul className="list-disc pl-5 space-y-2 text-md md:text-lg leading-relaxed">
+                    {wp.objectives.map((obj, i) => (
+                      <li key={i}>{obj}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </section>
   );
 }
