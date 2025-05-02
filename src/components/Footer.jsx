@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6'; // Icono Twitter/X
 import susSoilLogo from '../assets/logo.png';
-import euLogo from '../assets/funded-ue-300x61.png';
+import euLogo from '../assets/EN-Funded by the EU-POS.png';
 import bgImage from '../assets/bg2.svg';
 
 const quickLinks = [
