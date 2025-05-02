@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 export default function Newsletter() {
   const [posts, setPosts] = useState([]);
@@ -63,11 +65,21 @@ export default function Newsletter() {
             </a>
           </div>
 
-          <div className="flex-1 overflow-y-auto max-h-[70vh] pr-2">
+          {/* Lista completa sin scroll interno */}
+          <div className="flex-1 pr-2">
             <h2 className="text-2xl font-bold font-serif mb-4">Newsletter Archive</h2>
 
             {loading ? (
-              <p>Loading newsletter issues...</p>
+              <ul className="space-y-12">
+                {[...Array(3)].map((_, i) => (
+                  <li key={i} className="max-w-md">
+                    <Skeleton height={250} className="rounded-xl mb-4" />
+                    <Skeleton height={20} width={240} className="mb-2" />
+                    <Skeleton height={14} width={100} className="mb-3" />
+                    <Skeleton count={2} />
+                  </li>
+                ))}
+              </ul>
             ) : posts.length ? (
               <ul className="space-y-12">
                 {posts.map((post) => {
@@ -78,7 +90,7 @@ export default function Newsletter() {
                         <img
                           src={thumbnail}
                           alt={post.title.rendered}
-                          className="w-full aspect-square object-cover rounded mb-4"
+                          className="w-full aspect-square object-cover rounded-xl mb-4"
                         />
                       )}
                       <a
