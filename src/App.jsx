@@ -1,27 +1,28 @@
-// src/App.js
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import ScrollToTop from './components/ScrollToTop';
+import Footer from './components/Footer';
 import Home from './Project/Home/Home';
 import News from './Project/News';
 import NewsDetail from './Project/NewsDetail';
 import EventDetail from './Project/EventDetail';
-import LivingLabs from './Project/LivingLabs';
-import Resources from './Project/Resources/Resources';
-import KnowledgeCloud from './Project/KnowledgeCloud';
-import Contact from './Project/Contact';
-import Footer from './components/Footer';
-import ScrollToTop from './components/ScrollToTop';
+import LivingLabs from './Project/Regions';
 import RegionDetail from './Project/RegionDetail';
+import LivingLabDetail from './Project/LivingLabDetail';
 import WorkPackages from './Project/Project1/WorkPackages';
 import Partners from './Project/Project1/Partners';
 import About from './Project/Project1/About';
+import Resources from './Project/Resources/Resources';
 import Materials from './Project/Resources/Materials';
 import PracticeAbstracts from './Project/Resources/PracticeAbstracts';
 import Newsletter from './Project/Resources/Newsletter';
+import KnowledgeCloud from './Project/KnowledgeCloud';
+import Contact from './Project/Contact';
 import NotFound from './Project/NotFound';
 import CookieConsent from 'react-cookie-consent';
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from '@vercel/analytics/react';
 
 const App = () => {
   return (
@@ -36,7 +37,8 @@ const App = () => {
           <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/living-labs" element={<LivingLabs />} />
-          <Route path="/living-labs/:id" element={<RegionDetail />} />
+          <Route path="/living-labs/:regionId/:labId" element={<LivingLabDetail />} />
+          <Route path="/living-labs/:regionId" element={<RegionDetail />} />
           <Route path="/project/work-packages" element={<WorkPackages />} />
           <Route path="/project/about" element={<About />} />
           <Route path="/project/partners" element={<Partners />} />
@@ -56,8 +58,8 @@ const App = () => {
         location="bottom"
         buttonText="I Accept"
         cookieName="siteCookieConsent"
-        style={{ background: "#5e3319" }}
-        buttonStyle={{ background: "#6EBB78", color: "#fff", fontSize: "14px" }}
+        style={{ background: '#5e3319' }}
+        buttonStyle={{ background: '#6EBB78', color: '#fff', fontSize: '14px' }}
         expires={150}
       >
         We use cookies to improve your experience on our site. By continuing to browse, you accept our use of cookies.
