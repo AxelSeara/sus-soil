@@ -1,15 +1,15 @@
-// src/components/News.jsx
-import React, { useState, useEffect } from 'react';
+// src/components/NewsEventsHome.jsx (versión limpia sin secuencias \n en atributos)
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaArrowRight } from 'react-icons/fa';
+import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
 
 function SkeletonCard() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem]">
-      <div className="h-6 bg-gray-300 rounded w-3/4"></div>
-      <div className="h-40 bg-gray-200 rounded"></div>
-      <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-      <div className="h-10 bg-gray-300 rounded w-full mt-auto"></div>
+    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem]" aria-hidden="true">
+      <div className="h-6 bg-gray-300 rounded w-3/4" />
+      <div className="h-40 bg-gray-200 rounded" />
+      <div className="h-4 bg-gray-300 rounded w-1/2" />
+      <div className="h-10 bg-gray-300 rounded w-full mt-auto" />
     </div>
   );
 }
@@ -20,139 +20,165 @@ const gridVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.12,
       when: 'beforeChildren',
-      duration: 0.5,
-      ease: 'easeInOut',
-    },
-  },
+      duration: 0.45,
+      ease: 'easeOut'
+    }
+  }
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
+  hidden: { opacity: 0, scale: 0.96 },
   visible: {
     opacity: 1,
     scale: 1,
     transition: {
       type: 'spring',
-      stiffness: 100,
-      damping: 15,
-    },
-  },
+      stiffness: 120,
+      damping: 18
+    }
+  }
 };
 
-export default function News() {
-  const [posts, setPosts] = useState([]);
-  const [loadingPosts, setLoadingPosts] = useState(true);
+const stripHtml = (html) => (html ? html.replace(/<[^>]+>/g, '') : '');
+const shorten = (txt, n) => (txt.length > n ? txt.slice(0, n - 1).trimEnd() + '…' : txt);
 
+const isEventPost = (post) => {
+  const termGroups = post._embedded?.['wp:term'] || [];
+  const terms = termGroups.flat().filter(Boolean);
+  return terms.some(t => {
+    const name = t.name?.toLowerCase() || '';
+    const slug = t.slug?.toLowerCase() || '';
+    return t.taxonomy !== 'category' && (name === 'event' || name === 'events' || slug === 'event' || slug === 'events');
+  });
+};
+
+export default function NewsEventsHome() {
+  const [news, setNews] = useState([]);
   const [events, setEvents] = useState([]);
+  const [loadingNews, setLoadingNews] = useState(true);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [errorNews, setErrorNews] = useState(null);
+  const [errorEvents, setErrorEvents] = useState(null);
+
+  const perFetch = 12;
+
+  const fetchBatch = useCallback(async () => {
+    const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&per_page=${perFetch}&_=${Date.now()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Network error fetching posts');
+    return res.json();
+  }, [perFetch]);
 
   useEffect(() => {
-    const fetchAllPosts = async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const response = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&_=${Date.now()}`
-        );
-        const all = await response.json();
-
-        const postsOnly = all.filter(
-          (p) => !p._embedded?.['wp:term']?.[1]?.some((t) => t.name.toLowerCase() === 'event')
-        );
-
-        const eventsOnly = all.filter(
-          (p) => p._embedded?.['wp:term']?.[1]?.some((t) => t.name.toLowerCase() === 'event')
-        );
-
-        setPosts(postsOnly.slice(0, 3));
-        setEvents(eventsOnly.slice(0, 3));
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+        const all = await fetchBatch();
+        if (cancelled) return;
+        const eventPosts = [];
+        const newsPosts = [];
+        for (const p of all) {
+          (isEventPost(p) ? eventPosts : newsPosts).push(p);
+        }
+        setEvents(eventPosts.slice(0, 3));
+        setNews(newsPosts.slice(0, 3));
+      } catch (e) {
+        if (!cancelled) {
+          setErrorNews(e.message);
+          setErrorEvents(e.message);
+        }
       } finally {
-        setLoadingPosts(false);
-        setLoadingEvents(false);
+        if (!cancelled) {
+          setLoadingNews(false);
+          setLoadingEvents(false);
+        }
       }
-    };
+    })();
+    return () => { cancelled = true; };
+  }, [fetchBatch]);
 
-    fetchAllPosts();
-  }, []);
-
-  const getExcerptText = (html) => {
-    if (!html) return '';
-    const text = html.replace(/<[^>]+>/g, '');
-    if (text.length > 100) return text.substring(0, 97) + '...';
-    return text;
-  };
-
-  const renderSection = (items, loading, title, routePrefix) => {
-    if (!loading && items.length === 0) return null;
+  const Card = ({ post }) => {
+    const titleHtml = post.title?.rendered || 'Untitled';
+    const titleText = stripHtml(titleHtml);
+    const dateObj = new Date(post.date);
+    const dateFormatted = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+    const excerptText = shorten(stripHtml(post.excerpt?.rendered || ''), 140);
 
     return (
-      <section className="py-12 px-6 md:px-16 my-8">
-        <h2 className="text-3xl md:text-4xl font-medium font-serif text-center mb-10 text-brown">
-          {title}
-        </h2>
+      <motion.article
+        className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem]"
+        variants={cardVariants}
+        aria-labelledby={`post-title-${post.id}`}
+      >
+        <h3
+          id={`post-title-${post.id}`}
+          className="text-xl font-serif mb-2 text-brown font-semibold leading-tight"
+          dangerouslySetInnerHTML={{ __html: titleHtml }}
+        />
+        <p className="text-xs text-gray-500 mb-3">
+          <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
+        </p>
+        {imgUrl ? (
+          <img
+            src={imgUrl}
+            alt=""
+            loading="lazy"
+            className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4" aria-hidden="true">
+            <span className="text-gray-500 text-xs">No image</span>
+          </div>
+        )}
+        <p className="text-sm text-gray-700 mb-4 leading-relaxed">{excerptText}</p>
+        <div className="mt-auto">
+          <a
+            href={`/news/${post.id}`}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brown hover:bg-opacity-90 text-white font-bold rounded-full shadow-md transition-transform duration-300 ease-in-out hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+            aria-label={`Read more: ${titleText}`}
+          >
+            Read More <FaArrowRight aria-hidden="true" />
+          </a>
+        </div>
+      </motion.article>
+    );
+  };
+
+  const Section = ({ title, icon, loading, items, error, seeAllHref }) => {
+    if (!loading && items.length === 0 && !error) return null;
+    return (
+      <section className="py-12 px-6 md:px-16 my-4" aria-labelledby={`${title.toLowerCase()}-heading`}>
+        <div className="flex items-center justify-center md:justify-start gap-3 mb-10">
+          <span className="text-brown text-3xl" aria-hidden="true">{icon}</span>
+          <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown">{title}</h2>
+        </div>
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
           variants={gridVariants}
           initial="hidden"
           animate="visible"
+          aria-live="polite"
         >
           {loading
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
-            : items.map((post) => {
-                const title = post.title?.rendered || 'No Title';
-                const dateFormatted = new Date(post.date).toLocaleDateString();
-                const excerptText = getExcerptText(post.excerpt?.rendered);
-                const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-
-                return (
-                  <motion.div
-                    key={post.id}
-                    className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex flex-col min-h-[24rem]"
-                    variants={cardVariants}
-                  >
-                    <h3 className="text-xl font-serif mb-2 text-brown font-semibold leading-tight">
-                      {title}
-                    </h3>
-                    <p className="text-xs text-gray-500 mb-3">
-                      Published on: {dateFormatted}
-                    </p>
-                    {imgUrl ? (
-                      <img
-                        src={imgUrl}
-                        alt={title}
-                        className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
-                      />
-                    ) : (
-                      <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4">
-                        <span className="text-gray-500">No image available</span>
-                      </div>
-                    )}
-                    <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                      {excerptText}
-                    </p>
-                    <div className="mt-auto">
-                      <a
-                        href={`/news/${post.id}`}
-                        className="inline-block px-6 py-3 bg-brown hover:bg-opacity-80 text-white font-bold rounded-full shadow-md transition-transform duration-300 ease-in-out transform hover:-translate-y-1"
-                      >
-                        Read More <FaArrowRight className="inline-block ml-2" />
-                      </a>
-                    </div>
-                  </motion.div>
-                );
-              })}
+            : items.map(p => <Card key={p.id} post={p} />)}
         </motion.div>
-        {!loading && items.length > 0 && title === 'Events' && (
+        {!loading && items.length > 0 && (
           <div className="text-center mt-12">
             <a
-              href="/news"
-              className="px-8 py-4 bg-brown hover:bg-opacity-80 text-white font-bold rounded-full shadow-lg transition-colors"
+              href={seeAllHref}
+              className="px-8 py-4 bg-brown hover:bg-opacity-90 text-white font-bold rounded-full shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+              aria-label="Visit all news and events"
             >
-              Visit all news & events
+              Visit all news &amp; events
             </a>
           </div>
+        )}
+        {error && (
+          <p className="text-center text-red-600 mt-6" role="alert">{error}</p>
         )}
       </section>
     );
@@ -160,11 +186,24 @@ export default function News() {
 
   return (
     <>
-      {renderSection(posts, loadingPosts, 'News', '/news')}
-      {!loadingPosts && posts.length > 0 && (
-        <div className="w-24 mx-auto border-t-2 border-darkGreen my-16"></div>
-      )}
-      {renderSection(events, loadingEvents, 'Events', '/events')}
+      <Section
+        title="News"
+        icon={<FaNewspaper />}
+        loading={loadingNews}
+        items={news}
+        error={errorNews}
+        seeAllHref="/news"
+      />
+      <div className="w-24 mx-auto border-t-2 border-darkGreen my-8" aria-hidden="true" />
+      <Section
+        title="Events"
+        icon={<FaCalendarAlt />}
+        loading={loadingEvents}
+        items={events}
+        error={errorEvents}
+        seeAllHref="/news?filter=events"
+      />
     </>
   );
 }
+

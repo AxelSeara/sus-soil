@@ -26,6 +26,7 @@ import logo21 from '../../../assets/partners/21.png';
 import logo22 from '../../../assets/partners/22.png';
 import logo23 from '../../../assets/partners/23.png';
 import logo24 from '../../../assets/partners/24.png';
+// import logo25 from '../../../assets/partners/25.png';
 
 // Array de colaboradores con sus logos, URLs y textos alternativos
 const collaborators = [
@@ -53,6 +54,8 @@ const collaborators = [
   { logo: logo22, alt: 'Heliopolis University for Sustainable Development', url: 'https://hu.edu.eg/' },
   { logo: logo23, alt: 'Carqueixa Sabor dos Ancares', url: 'https://www.osabordosancares.com/' },
   { logo: logo24, alt: 'AFG Asociación Forestal Galicia', url: 'https://asociacionforestal.gal/en/' },
+  // { logo: logo25, alt: 'Larenstein University of Applied Sciences – The Netherlands ', url: 'https://www.vhluas.com/' },
+
 ];
 
 export default function Colaboradores() {
