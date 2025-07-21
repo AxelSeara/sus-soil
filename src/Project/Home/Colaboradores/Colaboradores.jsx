@@ -26,7 +26,7 @@ import logo21 from '../../../assets/partners/21.png';
 import logo22 from '../../../assets/partners/22.png';
 import logo23 from '../../../assets/partners/23.png';
 import logo24 from '../../../assets/partners/24.png';
-// import logo25 from '../../../assets/partners/25.png';
+import logo25 from '../../../assets/partners/25.png';
 
 // Array de colaboradores con sus logos, URLs y textos alternativos
 const collaborators = [
@@ -50,11 +50,11 @@ const collaborators = [
   { logo: logo18, alt: 'CIHEAM Bari', url: 'https://www.iamb.ciheam.org/' },
   { logo: logo19, alt: 'Çukurova University', url: 'https://www.cu.edu.tr/en/' },
   { logo: logo20, alt: 'Senseen', url: 'https://senseen.io/' },
-  { logo: logo21, alt: 'Wetseus', url: 'https://www.wetsus.nl/' },
+  // { logo: logo21, alt: 'Wetseus', url: 'https://www.wetsus.nl/' },
   { logo: logo22, alt: 'Heliopolis University for Sustainable Development', url: 'https://hu.edu.eg/' },
   { logo: logo23, alt: 'Carqueixa Sabor dos Ancares', url: 'https://www.osabordosancares.com/' },
   { logo: logo24, alt: 'AFG Asociación Forestal Galicia', url: 'https://asociacionforestal.gal/en/' },
-  // { logo: logo25, alt: 'Larenstein University of Applied Sciences – The Netherlands ', url: 'https://www.vhluas.com/' },
+  { logo: logo25, alt: 'Larenstein University of Applied Sciences – The Netherlands ', url: 'https://www.vhluas.com/' },
 
 ];
 
