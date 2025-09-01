@@ -1,3 +1,4 @@
+// src/components/Mapa.jsx
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -88,7 +89,7 @@ export default function Mapa() {
               the overall location of our Living Labs.
             </p>
 
-            {/* Region chips */}
+            {/* Region chips (mejorados para evitar desborde) */}
             <div
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
               role="toolbar"
@@ -106,9 +107,18 @@ export default function Mapa() {
                     onKeyDown={(e) => handleKey(e, r.id)}
                     aria-pressed={isActive}
                     aria-label={`${isActive ? 'Disable' : 'Enable'} ${r.label} overlay`}
-                    className={`group w-full text-center py-2 rounded-full font-semibold text-xs md:text-sm transition-all
-                      ring-offset-2 focus:outline-none focus-visible:ring-2
-                      ${isActive ? 'text-white scale-[1.03]' : 'text-brown hover:shadow-md'}`}
+                    title={r.label}
+                    className={[
+                      // Layout truncado fiable
+                      'w-full min-w-0 overflow-hidden',
+                      'rounded-full py-2 px-3 min-h-[36px]',
+                      'ring-offset-2 focus:outline-none focus-visible:ring-2',
+                      'transition-all font-semibold',
+                      // Tipografía fluida y compacta
+                      'text-[clamp(11px,2.6vw,14px)] leading-[1.1]',
+                      // Estado visual
+                      isActive ? 'text-white scale-[1.03]' : 'text-brown hover:shadow-md',
+                    ].join(' ')}
                     style={{
                       backgroundColor: isActive ? r.color : '#f6f6f6',
                       boxShadow: isActive ? '0 6px 18px rgba(0,0,0,.12)' : undefined,
@@ -118,13 +128,16 @@ export default function Mapa() {
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                   >
-                    <span className="inline-flex items-center justify-center gap-1.5">
+                    <span className="inline-flex w-full items-center justify-center gap-1.5">
                       <span
-                        className="inline-block w-2.5 h-2.5 rounded-full"
+                        className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: r.color }}
                         aria-hidden="true"
                       />
-                      {r.label}
+                      {/* Contenedor con min-w-0 para hacer efectivo el truncate */}
+                      <span className="min-w-0">
+                        <span className="block truncate max-w-full">{r.label}</span>
+                      </span>
                     </span>
                   </motion.button>
                 );

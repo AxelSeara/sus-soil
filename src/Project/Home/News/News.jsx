@@ -5,11 +5,14 @@ import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
 
 function SkeletonCard() {
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem]" aria-hidden="true">
-      <div className="h-6 bg-gray-300 rounded w-3/4" />
-      <div className="h-40 bg-gray-200 rounded" />
-      <div className="h-4 bg-gray-300 rounded w-1/2" />
-      <div className="h-10 bg-gray-300 rounded w-full mt-auto" />
+    <div
+      className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem] border border-gray-100"
+      aria-hidden="true"
+    >
+      <div className="h-6 bg-gray-200 rounded w-3/4" />
+      <div className="h-40 bg-gray-100 rounded" />
+      <div className="h-4 bg-gray-200 rounded w-1/2" />
+      <div className="h-10 bg-gray-200 rounded w-full mt-auto" />
     </div>
   );
 }
@@ -93,8 +96,7 @@ export default function NewsEventsHome() {
       const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${catId}&_embed&per_page=${perPage}&page=${page}&_=${Date.now()}`;
       const res = await fetch(url);
       if (!res.ok) {
-        // 400 cuando la page se pasa del total
-        if (res.status === 400) break;
+        if (res.status === 400) break; // fin de páginas
         throw new Error('Network error fetching events');
       }
       const chunk = await res.json();
@@ -112,11 +114,8 @@ export default function NewsEventsHome() {
       try {
         const allCat = await fetchAllCategory(12);
         if (cancelled) return;
-        // filtra solo los que llevan el tag "event/events"
-        const eventPosts = allCat.filter(isEventPost);
-        // opcional: ordenar por fecha desc por si WP cambia el orden
-        eventPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setEvents(eventPosts); // ⬅️ sin slice: TODOS los events
+        const eventPosts = allCat.filter(isEventPost).sort((a, b) => new Date(b.date) - new Date(a.date));
+        setEvents(eventPosts); // ⬅️ TODOS los events
       } catch (e) {
         if (!cancelled) setErrorEvents(e.message);
       } finally {
@@ -136,40 +135,48 @@ export default function NewsEventsHome() {
 
     return (
       <motion.article
-        className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem]"
+        className="relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] overflow-hidden"
         variants={cardVariants}
         aria-labelledby={`post-title-${post.id}`}
       >
+        {/* stretched link: toda la tarjeta clickable con focus ring accesible */}
+        <a
+          href={`/news/${post.id}`}
+          className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+          aria-label={`Read more: ${titleText}`}
+        />
+
         <h3
           id={`post-title-${post.id}`}
-          className="text-xl font-serif mb-2 text-brown font-semibold leading-tight"
-          dangerouslySetInnerHTML={{ __html: titleHtml }}
-        />
-        <p className="text-xs text-gray-500 mb-3">
+          className="text-xl font-serif mb-2 text-brown font-semibold leading-tight relative z-0"
+        >
+          <span className="relative inline-block">
+            <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
+            {/* subrayado animado limpio (no text-decoration) */}
+            <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-brown scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+          </span>
+        </h3>
+
+        <p className="text-xs text-gray-500 mb-3 relative z-0">
           <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
         </p>
+
         {imgUrl ? (
-          <img
-            src={imgUrl}
-            alt=""
-            loading="lazy"
-            className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
-          />
+          <div className="relative z-0">
+            <img
+              src={imgUrl}
+              alt=""
+              loading="lazy"
+              className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
         ) : (
-          <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4" aria-hidden="true">
+          <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4 relative z-0" aria-hidden="true">
             <span className="text-gray-500 text-xs">No image</span>
           </div>
         )}
-        <p className="text-sm text-gray-700 mb-4 leading-relaxed">{excerptText}</p>
-        <div className="mt-auto">
-          <a
-            href={`/news/${post.id}`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-brown hover:bg-opacity-90 text-white font-bold rounded-full shadow-md transition-transform duration-300 ease-in-out hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
-            aria-label={`Read more: ${titleText}`}
-          >
-            Read More <FaArrowRight aria-hidden="true" />
-          </a>
-        </div>
+
+        <p className="text-sm text-gray-700 mb-4 leading-relaxed relative z-0">{excerptText}</p>
       </motion.article>
     );
   };
@@ -178,10 +185,31 @@ export default function NewsEventsHome() {
     if (!loading && items.length === 0 && !error) return null;
     return (
       <section className="py-12 px-6 md:px-16 my-4" aria-labelledby={`${title.toLowerCase()}-heading`}>
-        <div className="flex items-center justify-center md:justify-start gap-3 mb-10">
-          <span className="text-brown text-3xl" aria-hidden="true">{icon}</span>
-          <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown">{title}</h2>
+        {/* Header */}
+        <div className="flex items-center justify-center md:justify-between gap-6 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="text-brown text-3xl w-10 h-10 rounded-full bg-lightGreen/20 grid place-items-center" aria-hidden="true">
+              {icon}
+            </span>
+            <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-brown">
+              {title}
+            </h2>
+          </div>
+          {!loading && items.length > 0 && (
+            <a
+              href={seeAllHref}
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-brown text-brown hover:bg-brown hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+              aria-label={`Visit all ${title}`}
+            >
+              Visit all <FaArrowRight aria-hidden="true" />
+            </a>
+          )}
         </div>
+
+        {/* Divider suave */}
+        <div className="h-px bg-gradient-to-r from-transparent via-darkGreen/30 to-transparent mb-8" aria-hidden="true" />
+
+        {/* Grid */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
           variants={gridVariants}
@@ -193,19 +221,10 @@ export default function NewsEventsHome() {
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
             : items.map(p => <Card key={p.id} post={p} />)}
         </motion.div>
-        {!loading && items.length > 0 && (
-          <div className="text-center mt-12">
-            <a
-              href={seeAllHref}
-              className="px-8 py-4 bg-brown hover:bg-opacity-90 text-white font-bold rounded-full shadow-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
-              aria-label="Visit all news and events"
-            >
-              Visit all news &amp; events
-            </a>
-          </div>
-        )}
+
+        {/* Error */}
         {error && (
-          <p className="text-center text-red-600 mt-6" role="alert">{error}</p>
+          <p className="text-center text-red-600 mt-10" role="alert">{error}</p>
         )}
       </section>
     );
@@ -221,7 +240,9 @@ export default function NewsEventsHome() {
         error={errorNews}
         seeAllHref="/news"
       />
+
       <div className="w-24 mx-auto border-t-2 border-darkGreen my-8" aria-hidden="true" />
+
       <Section
         title="Events"
         icon={<FaCalendarAlt />}
