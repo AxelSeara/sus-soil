@@ -1,4 +1,4 @@
-// src/components/NewsEventsHome.jsx (versión limpia sin secuencias \n en atributos)
+// src/components/NewsEventsHome.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
@@ -19,12 +19,7 @@ const gridVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      staggerChildren: 0.12,
-      when: 'beforeChildren',
-      duration: 0.45,
-      ease: 'easeOut'
-    }
+    transition: { staggerChildren: 0.12, when: 'beforeChildren', duration: 0.45, ease: 'easeOut' }
   }
 };
 
@@ -33,21 +28,18 @@ const cardVariants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 120,
-      damping: 18
-    }
+    transition: { type: 'spring', stiffness: 120, damping: 18 }
   }
 };
 
 const stripHtml = (html) => (html ? html.replace(/<[^>]+>/g, '') : '');
 const shorten = (txt, n) => (txt.length > n ? txt.slice(0, n - 1).trimEnd() + '…' : txt);
 
+// ✅ Events SOLO si tienen tag "event"/"events" (no categorías)
 const isEventPost = (post) => {
   const termGroups = post._embedded?.['wp:term'] || [];
   const terms = termGroups.flat().filter(Boolean);
-  return terms.some(t => {
+  return terms.some((t) => {
     const name = t.name?.toLowerCase() || '';
     const slug = t.slug?.toLowerCase() || '';
     return t.taxonomy !== 'category' && (name === 'event' || name === 'events' || slug === 'event' || slug === 'events');
@@ -57,13 +49,16 @@ const isEventPost = (post) => {
 export default function NewsEventsHome() {
   const [news, setNews] = useState([]);
   const [events, setEvents] = useState([]);
+
   const [loadingNews, setLoadingNews] = useState(true);
   const [loadingEvents, setLoadingEvents] = useState(true);
+
   const [errorNews, setErrorNews] = useState(null);
   const [errorEvents, setErrorEvents] = useState(null);
 
-  const perFetch = 12;
+  const perFetch = 12; // mantengo tu tamaño para News
 
+  // --- NEWS: sin tocar la lógica original (primer batch y 3 items) ---
   const fetchBatch = useCallback(async () => {
     const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&per_page=${perFetch}&_=${Date.now()}`;
     const res = await fetch(url);
@@ -75,29 +70,61 @@ export default function NewsEventsHome() {
     let cancelled = false;
     (async () => {
       try {
-        const all = await fetchBatch();
+        const batch = await fetchBatch();
         if (cancelled) return;
-        const eventPosts = [];
-        const newsPosts = [];
-        for (const p of all) {
-          (isEventPost(p) ? eventPosts : newsPosts).push(p);
-        }
-        setEvents(eventPosts.slice(0, 3));
-        setNews(newsPosts.slice(0, 3));
+        const newsPosts = batch.filter(p => !isEventPost(p)).slice(0, 3);
+        setNews(newsPosts);
       } catch (e) {
-        if (!cancelled) {
-          setErrorNews(e.message);
-          setErrorEvents(e.message);
-        }
+        if (!cancelled) setErrorNews(e.message);
       } finally {
-        if (!cancelled) {
-          setLoadingNews(false);
-          setLoadingEvents(false);
-        }
+        if (!cancelled) setLoadingNews(false);
       }
     })();
     return () => { cancelled = true; };
   }, [fetchBatch]);
+
+  // --- EVENTS: paginar TODA la categoría 12 y filtrar por tag event/events ---
+  const fetchAllCategory = useCallback(async (catId = 12) => {
+    const perPage = 100; // máximo WP
+    let page = 1;
+    let out = [];
+    // loop con cabecera X-WP-TotalPages
+    while (true) {
+      const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${catId}&_embed&per_page=${perPage}&page=${page}&_=${Date.now()}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        // 400 cuando la page se pasa del total
+        if (res.status === 400) break;
+        throw new Error('Network error fetching events');
+      }
+      const chunk = await res.json();
+      out = out.concat(chunk);
+      const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '0', 10);
+      if (!totalPages || page >= totalPages) break;
+      page += 1;
+    }
+    return out;
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const allCat = await fetchAllCategory(12);
+        if (cancelled) return;
+        // filtra solo los que llevan el tag "event/events"
+        const eventPosts = allCat.filter(isEventPost);
+        // opcional: ordenar por fecha desc por si WP cambia el orden
+        eventPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setEvents(eventPosts); // ⬅️ sin slice: TODOS los events
+      } catch (e) {
+        if (!cancelled) setErrorEvents(e.message);
+      } finally {
+        if (!cancelled) setLoadingEvents(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [fetchAllCategory]);
 
   const Card = ({ post }) => {
     const titleHtml = post.title?.rendered || 'Untitled';
@@ -206,4 +233,3 @@ export default function NewsEventsHome() {
     </>
   );
 }
-

@@ -7,137 +7,116 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      when: 'beforeChildren',
-      staggerChildren: 0.1,
-    },
+    transition: { when: 'beforeChildren', staggerChildren: 0.1 },
   },
 };
 
 // Variants para cada tarjeta
 const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  hidden: { opacity: 0, y: 20, scale: 0.97 },
   visible: {
     opacity: 1, y: 0, scale: 1,
-    transition: { duration: 0.4, ease: 'easeOut' },
+    transition: { duration: 0.35, ease: 'easeOut' },
   },
 };
 
+// Solo las regiones pedidas, manteniendo textos y colores
 const regions = [
   {
     id: 'Boreal',
-    info: 'Northern latitudes with extensive forests',
-    // Gradiente start y end (puedes cambiar los colores o usar un array [colorStart, colorEnd])
+    info: ' ',
     color: ['#284b55', '#EAF4F1'],
-    image: 'https://source.unsplash.com/r0aq9pYIadI/600x400', // Cambia a tu URL
   },
   {
     id: 'Atlantic',
-    info: 'Coastal climates with mild temperatures',
+    info: ' ',
     color: ['#2e8479', '#F1FBFA'],
-    image: 'https://source.unsplash.com/hkjsfuyxK10/600x400',
   },
   {
     id: 'Continental',
-    info: 'More extreme climates and deeper soils',
+    info: ' ',
     color: ['#b7543d', '#FCECE9'],
-    image: 'https://source.unsplash.com/TRhGEGdw-YY/600x400',
-  },
-  {
-    id: 'Alpine',
-    info: 'Mountainous areas with fragile ecosystems',
-    color: ['#775786', '#F6F1FA'],
-    image: 'https://source.unsplash.com/ZEVkLRWmnX4/600x400',
   },
   {
     id: 'Pannonian',
-    info: 'Plains and fertile soils',
+    info: ' ',
     color: ['#86884c', '#FCFCE9'],
-    image: 'https://source.unsplash.com/2cddwbyhTsY/600x400',
   },
   {
     id: 'Mediterranean',
-    info: 'Dry summers and calcareous soils',
+    info: ' ',
     color: ['#ee9c39', '#FEF8EE'],
-    image: 'https://source.unsplash.com/mDa8FAg782c/600x400',
-  },
-  {
-    id: 'BlackSea',
-    info: 'Coasts and fertile valleys',
-    color: ['#5c81b5', '#EEF3FA'],
-    image: 'https://source.unsplash.com/5UhayavS2d4/600x400',
-  },
-  {
-    id: 'Anatolian',
-    info: 'Varied climates in ancient soils',
-    color: ['#a02b16', '#FAEEEB'],
-    image: 'https://source.unsplash.com/LSKmkJGog64/600x400',
   },
 ];
 
 export default function LivingLabs() {
   return (
-    <div className="container mx-auto px-6 py-16">
-      <h1 className="text-4xl font-bold text-center mb-8 text-brown font-serif">
-        Living Labs
-      </h1>
-
-      <div className="max-w-3xl mx-auto mb-12 text-gray-700 leading-relaxed">
-        <p className="mb-4">
-          Welcome to our Living Labs section! Each region below represents a unique 
-          ecosystem and set of challenges for soil management. Explore and discover 
+    <main className="container mx-auto px-6 py-16">
+      <header className="max-w-3xl mx-auto text-center mb-10">
+        <h1 className="text-4xl font-bold text-brown font-serif">Living Labs</h1>
+        <p className="mt-4 text-gray-700 leading-relaxed">
+          Welcome to our Living Labs section! Each region below represents a unique
+          ecosystem and set of challenges for soil management. Explore and discover
           the local partnerships and projects focusing on sustainable subsoil practices.
         </p>
-      </div>
+      </header>
 
-      {/* Contenedor animado con framer-motion */}
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {regions.map((region) => (
-          <motion.div 
-            key={region.id} 
-            variants={cardVariants}
-          >
-            <Link
-              to={`/living-labs/${region.id}`}
-              aria-label={`View details of ${region.id} region`}
-              className="relative w-full h-56 sm:h-64 flex items-center justify-center 
-                         text-center text-white border border-gray-300 
-                         rounded-lg shadow-lg cursor-pointer overflow-hidden group
-                         transition-transform transform hover:scale-105"
-            >
-              {/* Imagen de fondo + gradiente */}
-              <div 
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to bottom, ${region.color[0]} 50%, ${region.color[1]} 100%), 
-                    url(${region.image})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              />
-              
-              {/* Overlay al hover (más oscura) */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300" />
+      <section aria-label="Living Labs regions">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {regions.map((region) => (
+            <motion.div key={region.id} variants={cardVariants}>
+              <Link
+                to={`/living-labs/${region.id}`}
+                aria-label={`View details of ${region.id} region`}
+                className="group relative block w-full h-56 sm:h-64 rounded-xl overflow-hidden shadow-md focus:outline-none
+                           focus-visible:ring-2 ring-offset-2 ring-brown/50 transition-transform hover:scale-[1.015]"
+              >
+                {/* Fondo con solo gradiente (sin imagen) */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `linear-gradient(to bottom, ${region.color[0]} 50%, ${region.color[1]} 100%)`,
+                  }}
+                />
 
-              {/* Contenido textual */}
-              <div className="relative z-10 flex flex-col items-center px-4">
-                <h2 className="text-lg sm:text-xl font-bold drop-shadow-md font-serif">
-                  {region.id}
-                </h2>
-                <p className="text-xs sm:text-sm mt-1 drop-shadow-md font-serif">
-                  {region.info}
-                </p>
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
+                {/* Overlay para mejorar contraste en hover */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+
+                {/* Contenido */}
+                <div className="relative z-10 h-full w-full flex flex-col items-center justify-center px-4 text-center">
+                  <h2 className="text-lg sm:text-xl font-bold text-white drop-shadow-sm font-serif">
+                    {region.id}
+                  </h2>
+                  <p className="text-xs sm:text-sm mt-1 text-white/95 drop-shadow-sm font-serif">
+                    {region.info}
+                  </p>
+
+                  {/* Indicador sutil de clic navegable */}
+                  <span
+                    className="mt-3 inline-flex items-center gap-1 text-[12px] text-white/95 opacity-90
+                               bg-white/10 px-2 py-1 rounded-full backdrop-blur-sm"
+                    aria-hidden="true"
+                  >
+                    Explore
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         className="transition-transform group-hover:translate-x-0.5">
+                      <path d="M13 5l7 7-7 7M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </span>
+                </div>
+
+                {/* Borde sutil para definición en fondos claros */}
+                <div className="absolute inset-0 rounded-xl ring-1 ring-black/5 pointer-events-none" />
+              </Link>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+    </main>
   );
 }

@@ -68,7 +68,7 @@ const beneficiaries = [
   { title: 'Centro Internazionale di Altistudi Agronomici Mediterranei (CIHEAM)', subtitle: 'Italy', img: p18, url: 'https://www.iamb.ciheam.org/' },
   { title: 'University of Çukurova', subtitle: 'Turkey', img: p19, url: 'https://www.cu.edu.tr/en/' },
   { title: 'Heliopolis University Association', subtitle: 'Egypt', img: p22, url: 'https://hu.edu.eg/' },
-  { title: 'Larenstein University of Applied Sciences', subtitle: 'The Netherlands', img: p25, url: 'https://www.vhluas.com/' },
+  { title: 'Van Hall Larenstein University of Applied Sciences', subtitle: 'The Netherlands', img: p25, url: 'https://www.vhluas.com/' },
   // Optional entries:
   // { title: 'Senseen', subtitle: 'Spain', img: p20, url: 'https://senseen.io/' },
   // { title: 'Wetsus', subtitle: 'The Netherlands', img: p21, url: 'https://www.wetsus.nl/' }

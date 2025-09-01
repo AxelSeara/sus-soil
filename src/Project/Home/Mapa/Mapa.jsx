@@ -1,34 +1,20 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-/* Dejamos tu estructura de variables: 
-   - mapBase = noMap
-   - noMap = map 
-   como lo tengas originalmente.
-   Aquí muestro algo genérico para no romper tu naming actual.
-*/
-import mapBase from '../../../assets/regions/map.png'; // "noMap"
-import noMap from '../../../assets/regions/Nomap.png';      // "map"
+import mapBase from '../../../assets/regions/map.png'; // fallback
+import noMap from '../../../assets/regions/Nomap.png';
 import borealImage from '../../../assets/regions/Boreal.png';
 import atlanticImage from '../../../assets/regions/Atlantic.png';
 import continentalImage from '../../../assets/regions/Continental.png';
-import alpineImage from '../../../assets/regions/Alpine.png';
 import pannonianImage from '../../../assets/regions/Pannonian.png';
 import mediterraneanImage from '../../../assets/regions/Mediterranean.png';
-import blackSeaImage from '../../../assets/regions/BlackSea.png';
-import anatolianImage from '../../../assets/regions/Anatolian.png';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1, y: 0,
-    transition: {
-      when: 'beforeChildren',
-      staggerChildren: 0.2,
-      ease: 'easeInOut',
-      duration: 0.6,
-    },
+    transition: { when: 'beforeChildren', staggerChildren: 0.18, ease: 'easeInOut', duration: 0.55 },
   },
 };
 
@@ -36,40 +22,48 @@ const itemVariants = {
   hidden: { opacity: 0, scale: 1 },
   visible: {
     opacity: 1, scale: 1,
-    transition: { type: 'spring', stiffness: 70, damping: 15 },
+    transition: { type: 'spring', stiffness: 80, damping: 16 },
   },
 };
 
+// Only the requested regions
 const regions = [
-  { id: 'Boreal', label: 'Boreal', color: '#284b55', img: borealImage },
-  { id: 'Atlantic', label: 'Atlantic', color: '#2e8479', img: atlanticImage },
-  { id: 'Continental', label: 'Continental', color: '#b7543d', img: continentalImage },
-  { id: 'Alpine', label: 'Alpine', color: '#775786', img: alpineImage },
-  { id: 'Pannonian', label: 'Pannonian', color: '#86884c', img: pannonianImage },
+  { id: 'Boreal',        label: 'Boreal',        color: '#284b55', img: borealImage },
+  { id: 'Atlantic',      label: 'Atlantic',      color: '#2e8479', img: atlanticImage },
+  { id: 'Continental',   label: 'Continental',   color: '#b7543d', img: continentalImage },
+  { id: 'Pannonian',     label: 'Pannonian',     color: '#86884c', img: pannonianImage },
   { id: 'Mediterranean', label: 'Mediterranean', color: '#ee9c39', img: mediterraneanImage },
-  { id: 'BlackSea', label: 'Black Sea', color: '#5c81b5', img: blackSeaImage },
-  { id: 'Anatolian', label: 'Anatolian', color: '#a02b16', img: anatolianImage },
 ];
+
+const slug = (s) => s.toLowerCase().replace(/\s+/g, '-');
 
 export default function Mapa() {
   const [activeRegion, setActiveRegion] = useState(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
 
-  // Al hacer click: si ya está activa, se desactiva. Si no, se selecciona.
-  const handleRegionClick = (regionId) => {
-    setActiveRegion((prev) => (prev === regionId ? null : regionId));
+  const finalRegion = activeRegion || hoveredRegion;
+  const regionData = useMemo(
+    () => (finalRegion ? regions.find((r) => r.id === finalRegion) : null),
+    [finalRegion]
+  );
+
+  const overlayImg = regionData?.img || mapBase;
+  const overlayKey = finalRegion || 'noMap';
+
+  const ctaLabel = activeRegion ? `Explore ${regionData?.label}` : 'Explore our Living Labs';
+  const ctaTo = activeRegion ? `/living-labs/${slug(activeRegion)}` : '/living-labs';
+  const ctaBg = activeRegion ? (regionData?.color || '#4b3a2f') : '#4b3a2f';
+
+  const handleRegionClick = (id) => {
+    setActiveRegion((prev) => (prev === id ? null : id));
   };
 
-  // Overlay final según hovered > active
-  const finalRegion = activeRegion || hoveredRegion;
-  const regionData = finalRegion 
-    ? regions.find((r) => r.id === finalRegion)
-    : null;
-
-  // Img resultante 
-  const overlayImg = regionData?.img || mapBase; // tu mapBase es "Nomap.png"
-  // Para AnimatePresence key
-  const overlayKey = finalRegion || 'noMap';
+  const handleKey = (e, id) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleRegionClick(id);
+    }
+  };
 
   return (
     <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
@@ -79,94 +73,124 @@ export default function Mapa() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
         >
-          {/* Texto y botones */}
+          {/* Left column */}
           <motion.div
             className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 md:p-10"
             variants={itemVariants}
           >
-            <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown mb-6">
+            <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown mb-4">
               Consortium & Living Labs
             </h2>
-            <p className="text-lg md:text-xl text-brown font-serif mb-8 leading-relaxed">
+            <p className="text-lg md:text-xl text-brown/90 font-serif mb-6 leading-relaxed">
               Explore the different types of ecosystems and areas we work in, as well as
               the overall location of our Living Labs.
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {regions.map((region) => {
-                const isActive = activeRegion === region.id;
+            {/* Region chips */}
+            <div
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
+              role="toolbar"
+              aria-label="Toggle region overlays"
+            >
+              {regions.map((r) => {
+                const isActive = activeRegion === r.id;
                 return (
                   <motion.button
-                    key={region.id}
-                    onClick={() => handleRegionClick(region.id)}
-                    onMouseEnter={() => setHoveredRegion(region.id)}
+                    key={r.id}
+                    type="button"
+                    onClick={() => handleRegionClick(r.id)}
+                    onMouseEnter={() => setHoveredRegion(r.id)}
                     onMouseLeave={() => setHoveredRegion(null)}
+                    onKeyDown={(e) => handleKey(e, r.id)}
                     aria-pressed={isActive}
-                    className={`w-full text-center py-2 rounded-full shadow-md font-semibold text-xs md:text-sm 
-                                transition-all
-                                ${isActive ? 'text-white scale-105' : 'text-brown'}`}
+                    aria-label={`${isActive ? 'Disable' : 'Enable'} ${r.label} overlay`}
+                    className={`group w-full text-center py-2 rounded-full font-semibold text-xs md:text-sm transition-all
+                      ring-offset-2 focus:outline-none focus-visible:ring-2
+                      ${isActive ? 'text-white scale-[1.03]' : 'text-brown hover:shadow-md'}`}
                     style={{
-                      backgroundColor: isActive ? region.color : '#f8f8f8',
+                      backgroundColor: isActive ? r.color : '#f6f6f6',
+                      boxShadow: isActive ? '0 6px 18px rgba(0,0,0,.12)' : undefined,
+                      outline: isActive ? `2px solid ${r.color}33` : 'none',
                     }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
                   >
-                    {region.label}
+                    <span className="inline-flex items-center justify-center gap-1.5">
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: r.color }}
+                        aria-hidden="true"
+                      />
+                      {r.label}
+                    </span>
                   </motion.button>
                 );
               })}
             </div>
 
-            {/* Sólo se muestra “Explore more” si hay una region fija (click) */}
-            {activeRegion && (
-              <motion.div
-                className="mt-8 flex justify-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+            {/* Primary CTA (always visible) */}
+            <motion.div
+              className="mt-8 flex justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: 'easeOut' }}
+            >
+              <Link
+                to={ctaTo}
+                aria-label={activeRegion ? `Go to ${regionData?.label}` : 'Go to Living Labs'}
+                className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 ring-offset-2"
+                style={{ backgroundColor: ctaBg }}
               >
+                {ctaLabel}
+              </Link>
+            </motion.div>
 
-                {/* REACTIVATE */}
-
-                {/* <Link
-                  to={`/living-labs/${activeRegion.toLowerCase()}`}
-                  className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-1 transition-transform"
-                  style={{ backgroundColor: regionData?.color }}
-                >
-                  Explore more about {regionData?.label}
-                </Link> */}
-              </motion.div>
-            )}
+            {/* A11y live status */}
+            <p className="sr-only" aria-live="polite">
+              {activeRegion ? `${regionData?.label} selected` : 'No region selected'}
+            </p>
           </motion.div>
 
-          {/* Mapa base + overlay */}
+          {/* Right column: map */}
           <motion.div className="w-full max-w-lg mx-auto lg:mx-0" variants={itemVariants}>
-            <div className="relative w-full aspect-square rounded-full overflow-hidden">
-              {/* “NoMap.png” según tu naming */}
+            <div className="relative w-full aspect-square rounded-[28px] overflow-hidden shadow-sm">
               <img
                 src={noMap}
-                alt="Base Map"
+                alt="Base map"
                 className="absolute inset-0 w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+                fetchpriority="high"
               />
-
-              {/* AnimatePresence */}
               <AnimatePresence mode="wait">
                 {overlayImg && (
                   <motion.img
                     key={overlayKey}
                     src={overlayImg}
-                    alt="Region Overlay"
+                    alt={regionData ? `${regionData.label} overlay` : 'Map overlay'}
                     className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.4, ease: 'easeInOut' }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    loading="lazy"
+                    decoding="async"
                   />
                 )}
               </AnimatePresence>
+
+              {/* Corner caption for subtle feedback */}
+              <div className="absolute bottom-3 right-3">
+                <span
+                  className="px-2.5 py-1 text-[11px] rounded-full bg-white/80 backdrop-blur border border-black/5"
+                  style={{ color: regionData?.color || '#4b3a2f' }}
+                >
+                  {regionData ? regionData.label : 'Overview'}
+                </span>
+              </div>
             </div>
           </motion.div>
         </motion.div>
