@@ -52,9 +52,9 @@ const collaborators = [
   { logo: logo20, alt: 'Senseen', url: 'https://senseen.io/' },
   // { logo: logo21, alt: 'Wetseus', url: 'https://www.wetsus.nl/' },
   { logo: logo22, alt: 'Heliopolis University for Sustainable Development', url: 'https://hu.edu.eg/' },
+  { logo: logo25, alt: 'Larenstein University of Applied Sciences – The Netherlands ', url: 'https://www.vhluas.com/' },
   { logo: logo23, alt: 'Carqueixa Sabor dos Ancares', url: 'https://www.osabordosancares.com/' },
   { logo: logo24, alt: 'AFG Asociación Forestal Galicia', url: 'https://asociacionforestal.gal/en/' },
-  { logo: logo25, alt: 'Larenstein University of Applied Sciences – The Netherlands ', url: 'https://www.vhluas.com/' },
 
 ];
 
