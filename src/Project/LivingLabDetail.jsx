@@ -161,12 +161,12 @@ export default function LivingLabDetail() {
         </section>
       )}
 
-      {/* Info región */}
+      {/* Info región
       <section className="max-w-3xl mx-auto mb-10">
         <h2 className="text-xl font-bold font-serif text-brown mb-3">About the {region.id}</h2>
         {region.info && <p className="text-brown/90 font-serif mb-2">{region.info}</p>}
         {region.description && <p className="text-gray-700 leading-relaxed whitespace-pre-line">{region.description}</p>}
-      </section>
+      </section> */}
 
       {/* Galería opcional */}
       {Array.isArray(lab.gallery) && lab.gallery.length > 0 && (

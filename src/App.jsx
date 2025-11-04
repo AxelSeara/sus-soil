@@ -22,6 +22,7 @@ import KnowledgeCloud from './Project/KnowledgeCloud';
 import Contact from './Project/Contact';
 import NotFound from './Project/NotFound';
 import CookieConsent from 'react-cookie-consent';
+import Deliverables from './Project/Deliverables';
 import { Analytics } from '@vercel/analytics/react';
 
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/resources/newsletter" element={<Newsletter />} />
           <Route path="/knowledge-cloud" element={<KnowledgeCloud />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/project/deliverables" element={<Deliverables />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

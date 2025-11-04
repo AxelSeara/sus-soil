@@ -8,15 +8,16 @@ import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg';
 
 // --- Data ------------------------------------------------------------------
 const projectItems = [
-  { to: '/project/about', label: 'About' },
-  { to: '/project/work-packages', label: 'Work Packages' },
-  { to: '/project/partners', label: 'Partners' }
+  { to: '/project/about',          label: 'About' },
+  { to: '/project/work-packages',  label: 'Work Packages' },
+  { to: '/project/partners',       label: 'Partners' },
+  { to: '/project/deliverables',   label: 'Deliverables' }, // 🆕 Añadido
 ];
 
 const resourcesItems = [
-  { to: '/resources/materials', label: 'Materials' },
-  { to: '/resources/practice-abstracts', label: 'Practice Abstracts' },
-  { to: '/resources/newsletter', label: 'Newsletter' }
+  { to: '/resources/materials',           label: 'Materials' },
+  { to: '/resources/practice-abstracts',  label: 'Practice Abstracts' },
+  { to: '/resources/newsletter',          label: 'Newsletter' },
 ];
 
 // --- Utility hooks ---------------------------------------------------------

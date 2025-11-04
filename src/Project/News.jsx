@@ -1,7 +1,7 @@
 // src/components/News.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
+import { FaArrowRight, FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
 function SkeletonCard() {
   return (
@@ -19,7 +19,12 @@ const gridVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { staggerChildren: 0.15, when: 'beforeChildren', duration: 0.5, ease: 'easeInOut' }
+    transition: {
+      staggerChildren: 0.15,
+      when: 'beforeChildren',
+      duration: 0.5,
+      ease: 'easeInOut'
+    }
   }
 };
 
@@ -28,7 +33,11 @@ const cardVariants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { type: 'spring', stiffness: 100, damping: 15 }
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 15
+    }
   }
 };
 
@@ -49,11 +58,12 @@ export default function News() {
   const [filterTag, setFilterTag] = useState('all');
   const [error, setError] = useState(null);
   const [orderAsc, setOrderAsc] = useState(false); // false = newest first
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1); // WP REST API pages start at 1
   const [hasMore, setHasMore] = useState(true);
   const [fetchingMore, setFetchingMore] = useState(false);
-  const [allLoaded, setAllLoaded] = useState(false);
+  const [allLoaded, setAllLoaded] = useState(false); // true cuando ya cargamos TODAS las páginas
 
+  // si viene ?filter=events en la URL, aplicarlo al montar
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -62,6 +72,7 @@ export default function News() {
     } catch {}
   }, []);
 
+  // Fetch una página (carga incremental por defecto)
   const fetchPosts = useCallback(async (requestedPage = 1) => {
     try {
       if (requestedPage === 1) {
@@ -94,6 +105,7 @@ export default function News() {
     }
   }, []);
 
+  // Carga completa de TODA la categoría (para Events)
   const fetchAllCategory = useCallback(async (catId = 12) => {
     const perPage = 100;
     let pageNum = 1;
@@ -114,10 +126,12 @@ export default function News() {
     return out;
   }, []);
 
+  // Carga inicial (página 1)
   useEffect(() => {
     fetchPosts(1);
   }, [fetchPosts]);
 
+  // Si el usuario selecciona Events, forzar CARGA COMPLETA para que salgan TODOS los eventos
   useEffect(() => {
     const isEvents = filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event';
     if (isEvents && !allLoaded) {
@@ -149,6 +163,7 @@ export default function News() {
     fetchPosts(nextPage);
   };
 
+  // Construir lista de tags (forzamos que "Events" exista siempre)
   const allTags = useMemo(() => {
     const tagsSet = new Set();
     posts.forEach(post => {
@@ -162,6 +177,7 @@ export default function News() {
     return ['all', ...tags];
   }, [posts]);
 
+  // Filtrado + orden local
   const filteredPosts = useMemo(() => {
     const isEvents = filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event';
     let base;
@@ -257,7 +273,6 @@ export default function News() {
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
             : items.map(post => {
                 const title = post.title?.rendered || 'No Title';
-                const plainTitle = title.replace(/<[^>]+>/g, '');
                 const date = new Date(post.date);
                 const dateFormatted = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
                 const excerptText = getExcerptText(post.excerpt?.rendered);
@@ -267,27 +282,19 @@ export default function News() {
                 return (
                   <motion.article
                     key={post.id}
-                    className="relative bg-white p-6 rounded-xl border border-gray-100 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] group cursor-pointer"
+                    className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] group"
                     tabIndex={-1}
                     variants={cardVariants}
                     aria-labelledby={`post-title-${post.id}`}
                   >
-                    {/* stretched link para que toda la tarjeta sea clickable */}
-                    <a
-                      href={`/news/${post.id}`}
-                      aria-label={`Read: ${plainTitle}`}
-                      className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
-                    />
-
-                    {/* Título con subrayado animado limpio */}
-                    <h3
-                      id={`post-title-${post.id}`}
-                      className="text-xl font-serif mb-2 text-brown font-semibold leading-tight"
-                    >
-                      <span className="relative inline-block">
-                        <span dangerouslySetInnerHTML={{ __html: title }} />
-                        <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-brown scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                      </span>
+                    {/* Title becomes the CTA with animated underline */}
+                    <h3 id={`post-title-${post.id}`} className="text-xl font-serif mb-2 text-brown font-semibold leading-tight">
+                      <a
+                        href={`/news/${post.id}`}
+                        aria-label={`Read more: ${title.replace(/<[^>]+>/g, '')}`}
+                        className="inline-block underline decoration-transparent hover:decoration-brown underline-offset-4 hover:underline-offset-8 transition-all duration-200"
+                        dangerouslySetInnerHTML={{ __html: title }}
+                      />
                     </h3>
 
                     <p className="text-xs text-gray-500 mb-3">
@@ -299,7 +306,7 @@ export default function News() {
                         src={imgUrl}
                         alt=""
                         role="presentation"
-                        className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 group-hover:scale-105"
+                        className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
                         loading="lazy"
                       />
                     ) : (
@@ -323,6 +330,8 @@ export default function News() {
                         ))}
                       </ul>
                     )}
+
+                    {/* Removed the bottom "Read More" button to avoid redundancy */}
                   </motion.article>
                 );
               })}
