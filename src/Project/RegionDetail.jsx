@@ -12,6 +12,7 @@ const ACTIVE_REGION_IDS = new Set([
   'Continental',
   'Pannonian',
   'Mediterranean',
+  'Alpine',
 ]);
 
 export default function RegionDetail() {
@@ -27,10 +28,12 @@ export default function RegionDetail() {
     return ACTIVE_REGION_IDS.has(found.id) ? found : null;
   }, [regionId]);
 
-  // UX: scroll arriba y actualizar título
+  // UX: scroll arriba, actualizar título y estado de carga del hero
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.title = region ? `${region.id} — Living Labs` : `Region not found — Living Labs`;
+    // 👉 solo mostramos "loading" si hay imagen
+    setLoadingHero(!!region?.image);
   }, [region]);
 
   if (!region) {
@@ -63,6 +66,7 @@ export default function RegionDetail() {
 
   const colorStart = Array.isArray(region.color) ? region.color[0] : region.color || '#4b3a2f';
   const colorEnd   = Array.isArray(region.color) ? region.color[1] : '#ffffff';
+  const hasHeroImage = !!region.image;
 
   return (
     <div className="container mx-auto px-6 py-16">
@@ -106,7 +110,7 @@ export default function RegionDetail() {
                 style={{ backgroundColor: bg }}
               >
                 {reg.id}
-              </Link>
+            </Link>
             );
           })}
         </div>
@@ -118,19 +122,37 @@ export default function RegionDetail() {
         <p className="text-brown/90 font-serif text-lg">{region.info}</p>
       </header>
 
-      {/* Hero (gradiente sin imagen) */}
+      {/* Hero: usa imagen si existe, si no gradiente */}
       <section className="w-full max-w-4xl mx-auto mb-8">
         <div
           className="h-64 w-full rounded-2xl overflow-hidden relative shadow-sm ring-1 ring-black/5"
           aria-label={`${region.id} cover`}
           role="img"
         >
-          <div
-            className="absolute inset-0"
-            style={{ backgroundImage: `linear-gradient(to bottom, ${colorStart} 55%, ${colorEnd} 100%)` }}
-            onLoad={() => setLoadingHero(false)}
-          />
-          {loadingHero && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+          {hasHeroImage ? (
+            <>
+              <img
+                src={region.image}
+                alt={`${region.id} region`}
+                className="absolute inset-0 w-full h-full object-cover"
+                onLoad={() => setLoadingHero(false)}
+              />
+              {/* Overlay suave para que el texto/label se lea bien */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-black/5" />
+            </>
+          ) : (
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `linear-gradient(to bottom, ${colorStart} 55%, ${colorEnd} 100%)`,
+              }}
+            />
+          )}
+
+          {loadingHero && (
+            <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+          )}
+
           <div className="absolute bottom-3 right-3">
             <span
               className="px-2.5 py-1 text-[11px] rounded-full bg-white/85 backdrop-blur border border-black/5"

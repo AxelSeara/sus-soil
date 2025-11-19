@@ -1,7 +1,22 @@
 // src/data/regions.js
-import LL_Germany from "../assets/ll/LL_Germany.png";
-import LL_Madrid  from "../assets/ll/LL_Madrid.png";
-import LL_France  from "../assets/ll/LL_France.png";
+import LL_France        from "../assets/thumbnails/ll/LL_France.jpg";
+import LL_Germany       from "../assets/thumbnails/ll/LL_Germany.png";
+import LL_Spain_Galicia from "../assets/thumbnails/ll/LL_Spain_Galicia.jpeg";
+import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.jpeg";
+import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.jpeg";
+import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.jpeg";
+import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.jpeg";
+import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.JPG";
+import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.jpeg";
+
+import Region_Alpine        from "../assets/thumbnails/regions/Alpine.jpg";
+import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.jpg";
+import Region_Boreal        from "../assets/thumbnails/regions/Boreal.jpg";
+import Region_Continental   from "../assets/thumbnails/regions/Continental.jpg";
+import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.jpg";
+import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.jpg";
+
+
 
 // Biogeographic regions (texts exactly as provided)
 export const regions = [
@@ -9,7 +24,7 @@ export const regions = [
     id: "Boreal",
     info: "The Boreal Biogeographic Region",
     color: "#284b55",
-    image: null,
+    image: Region_Boreal,
     description: `
 The Boreal Biogeographic Region spans across the northern parts of Europe, including large areas of Scandinavia, Finland, and the Baltic States. It is characterized by vast coniferous forests, known as the taiga, which form the largest biome in Europe. The region experiences long, harsh winters with heavy snowfall and short, mild summers.
 
@@ -23,7 +38,7 @@ Human activity in the Boreal region has traditionally included forestry, reindee
     id: "Atlantic",
     info: "The Atlantic Biogeographic Region",
     color: "#2e8479",
-    image: null,
+    image: Region_Atlantic,
     description: `
 The Atlantic Biogeographic Region covers the coastal areas of western Europe, including parts of Portugal, Spain, France, the United Kingdom, Ireland, the Netherlands, Belgium, and Germany. The region has a temperate oceanic climate, with mild winters, cool summers, and abundant rainfall throughout the year.
 
@@ -37,7 +52,7 @@ Due to its long history of human settlement, much of the natural landscape has b
     id: "Continental",
     info: "The Continental Biogeographic Region",
     color: "#b7543d",
-    image: null,
+    image: Region_Continental,
     description: `
 The Continental Biogeographic Region stretches across central Europe, covering parts of Germany, Poland, the Czech Republic, Austria, Hungary, and Romania. It has a diverse climate with cold winters and warm summers, influenced by both Atlantic and Mediterranean weather patterns.
 
@@ -51,7 +66,7 @@ Agriculture is a key land use in this region, with vast fields of wheat, maize, 
     id: "Mediterranean",
     info: "The Mediterranean Biogeographic Region",
     color: "#ee9c39",
-    image: null,
+    image: Region_Mediterranean,
     description: `
 The Mediterranean Biogeographic Region surrounds the Mediterranean Sea and includes large parts of southern Europe, such as Spain, Portugal, France, Italy, Greece, Malta, and Cyprus. It is characterized by a hot-summer Mediterranean climate, with mild, humid winters and hot, dry summers. Average summer temperatures often exceed 22°C, while winter temperatures remain above 0°C. Precipitation varies across the region, with drier areas like southeastern Spain receiving less than 300 mm annually, while wetter zones like the Italian coast can exceed 1,000 mm.
 
@@ -65,7 +80,7 @@ Human activity has significantly shaped the Mediterranean landscape for thousand
     id: "Alpine",
     info: "The Alpine Biogeographic Region",
     color: "#775786",
-    image: null,
+    image: Region_Alpine,
     description: `
 The Alpine Biogeographic Region includes the high mountain areas of Europe, such as the Alps, Pyrenees, Carpathians, and parts of the Balkans. It is characterized by rugged terrain, high altitudes, and a cold mountain climate with heavy snowfall in winter and cool summers.
 
@@ -79,7 +94,7 @@ Human activities such as tourism, skiing, and mountain farming have altered the 
     id: "Pannonian",
     info: "The Pannonian Biogeographic Region",
     color: "#86884c",
-    image: null,
+    image: Region_Pannonian,
     description: `
 The Pannonian Biogeographic Region is centered around the Pannonian Basin, covering parts of Hungary, Slovakia, Serbia, and Romania. It has a continental climate with hot summers and cold winters, creating a landscape of steppe grasslands, river plains, and wetlands.
 
@@ -152,7 +167,7 @@ Cities such as Eberswalde and Frankfurt (Oder) serve as economic and cultural ce
     id: "ll-madrid",
     title: "Living Lab of Comunidad Autónoma de Madrid, Spain",
     regionId: "Mediterranean",
-    image: LL_Madrid,
+    image: LL_Spain_Madrid,
     gallery: [],
     description: `
 The Comunidad Autónoma de Madrid is located in the Centre of the Iberian Peninsula, and of the Central Plateau (Meseta Central). Its capital and largest municipality is Madrid, which is also the capital of Spain. 
@@ -198,7 +213,7 @@ These sites will deepen our knowledge of soil, subsoil, and the mechanisms that 
     id: "ll-galicia",
     title: "Living Lab in Galicia, Spain",
     regionId: "Atlantic",
-    image: "",
+    image: LL_Spain_Galicia,
     gallery: [],
     description: `
 The Galician Living Lab (LL) is leaded by the University of Santiago de Compostela (USC) and located in the Atlantic biogeographic region of Galicia, northwest Spain. This region is predominantly characterized by a temperate oceanic climate due to its position with respect to the Atlantic Ocean. Galicia covers approximately 29,574 km² and faces diverse topography with mountainous regions such as Serra do Xistral and Serra dos Ancares reaching altitudes over 1,800 meters above sea level, as well as agricultural and extensive coastal plains.
@@ -242,7 +257,7 @@ Overall, the Central Region of Portugal, and Beira Baixa in particular, exemplif
     id: "ll-tunisia",
     title: "Living Lab in Tunisia",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Tunisia,
     gallery: [],
     description: `
 The Tunisian Living Lab is located in the Grand Tunis region, encompassing the delegations of Tunis, Ariana, Ben Arous, and Manouba. It is coordinated by the Faculty of Sciences of Tunis (FST-UTM), approximately at coordinates 36°50′ N, 10°8′ E. The region spans around 260,000 hectares, of which 30,000 ha are urbanized and 230,000 ha are used for agriculture or preserved as natural land. Its proximity to the Mediterranean Sea and predominantly flat terrain make it suitable for diverse agricultural activities closely linked to subsoil structure and sediment composition.
@@ -288,7 +303,7 @@ By rooting its activities in such a historically and agriculturally rich setting
     id: "ll-greece",
     title: "Living Lab in Central Greece",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Greece,
     gallery: [],
     description: `
 Central Greece (Sterea Ellada) is one of Greece’s thirteen administrative regions, with a total population of approximately 500,000. It is located in the central part of the Greek mainland, bordered by Thessaly to the North, Attica to the southeast, and Western Greece to the west. Ιts administrative capital is Lamia, a city located in the regional unit of Phthiotis. The region fertures a diverse landscape of coastal areas, fertile plains, and  extensive mountain ranges, supporting multiple land uses, including agriculture, livestock farming, forestry, and tourism. Evrytania, one of the regional units of Central Greece, is characterized by a rugged mountainous terrain and rich forest cover. 
@@ -308,7 +323,7 @@ The landscape includes cultivated plots, extensive forested areas and semi-natur
     id: "ll-bosnia-herzegovina",
     title: "Living Lab in Bosnia-Herzegovina",
     regionId: "Continental",
-    image: "",
+    image: LL_Bosnia,
     gallery: [],
     description: `
 The Bosnian-Herzegovinian Living Lab is located in the central and northeastern part of the country, within the Federation of Bosnia and Herzegovina. It spans three municipalities, Ilidža, Bugojno, and Živinice, each strategically selected for their diverse geographical, climatic, and socio-economic conditions. Together, they represent a broad spectrum of landscapes and land-use systems, from lowland floodplains and hilly terrain to mountainous forested areas.
@@ -328,7 +343,7 @@ The selection of Ilidža, Bugojno, and Živinice within the SUS-SOIL project ref
     id: "ll-slovakia",
     title: "Living Lab in Slovakia",
     regionId: "Alpine",
-    image: "",
+    image: LL_Slovakia,
     gallery: [],
     description: `
 The Slovak Living Lab is located in two regions (or districts):  Zvolen and Trnava.  They differ in geology, relief, history of land use and socio-economic parameters. Sample point locations were selected to meet the requirements and objectives of the project, while also representing the landscape, geological, soil, land use, and socio-economic diversity of the region.
@@ -344,7 +359,7 @@ The contrasting part of the Living Lab is located in the south-western part of S
     id: "ll-finland",
     title: "Living Lab in North Savo, Finland",
     regionId: "Boreal",
-    image: "",
+    image: LL_Finland,
     gallery: [],
     description: `
 The region of North Savo, or Pohjois-Savo in Finnish, is the sixth largest region of Finland and is spread over 17345 km2 of with 248190 of total population. It is located in Eastern Finland and borders with regions of South Savo, Central Finland, North Ostrobothnia and North Karelia. In the region there are 19 municipalities, and Kuopio is the biggest municipality with 124021 population. As per the population statistics, the population change from 2020 to 2023 in this region has been negative, - 0.01%. Over 62% of population in the region lives within and in the periphery of urban areas and about 56% of population share 18-64 working age group. 

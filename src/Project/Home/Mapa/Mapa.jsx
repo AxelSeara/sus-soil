@@ -10,6 +10,7 @@ import atlanticImage from '../../../assets/regions/Atlantic.png';
 import continentalImage from '../../../assets/regions/Continental.png';
 import pannonianImage from '../../../assets/regions/Pannonian.png';
 import mediterraneanImage from '../../../assets/regions/Mediterranean.png';
+import alpineImage from '../../../assets/regions/Alpine.png';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -34,6 +35,7 @@ const regions = [
   { id: 'Continental',   label: 'Continental',   color: '#b7543d', img: continentalImage },
   { id: 'Pannonian',     label: 'Pannonian',     color: '#86884c', img: pannonianImage },
   { id: 'Mediterranean', label: 'Mediterranean', color: '#ee9c39', img: mediterraneanImage },
+  { id: 'Alpine',        label: 'Alpine',        color: '#6b5d4f', img: alpineImage },
 ];
 
 const slug = (s) => s.toLowerCase().replace(/\s+/g, '-');

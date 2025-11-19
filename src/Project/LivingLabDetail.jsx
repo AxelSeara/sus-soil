@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { regions, livingLabs } from '../data/regions';
+import LLRelatedNews from "../components/LLRelatedNews";
 
 const toSlug = (s) => s?.toString().trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -21,7 +22,9 @@ export default function LivingLabDetail() {
     if (!regionId) return null;
     const found =
       regions.find(
-        (r) => r.id.toLowerCase() === regionId.toLowerCase() || toSlug(r.id) === regionId
+        (r) =>
+          r.id.toLowerCase() === regionId.toLowerCase() ||
+          toSlug(r.id) === regionId
       ) || null;
     if (!found) return null;
     return ACTIVE_REGION_IDS.has(found.id) ? found : null;
@@ -55,24 +58,45 @@ export default function LivingLabDetail() {
     );
   }
 
-  const colorStart = Array.isArray(region.color) ? region.color[0] : region.color || '#4b3a2f';
-  const colorEnd   = Array.isArray(region.color) ? region.color[1] : '#ffffff';
+  const colorStart = Array.isArray(region.color)
+    ? region.color[0]
+    : region.color || '#4b3a2f';
+  const colorEnd = Array.isArray(region.color) ? region.color[1] : '#ffffff';
 
   const quickRegions = useMemo(
     () => regions.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
     []
   );
 
+  // 🔗 Tag slug para buscar noticias relacionadas en WP
+  // Asumimos que el slug del tag en WP coincide con lab.id (ej: "ll-galicia")
+  const llTagSlug = lab.id?.toLowerCase();
+
   return (
     <div className="container mx-auto px-6 py-16">
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6">
         <ol className="inline-flex items-center gap-2 text-sm text-brown/80">
-          <li><Link to="/" className="underline hover:opacity-80">Home</Link></li>
+          <li>
+            <Link to="/" className="underline hover:opacity-80">
+              Home
+            </Link>
+          </li>
           <li aria-hidden="true">/</li>
-          <li><Link to="/living-labs" className="underline hover:opacity-80">Living Labs</Link></li>
+          <li>
+            <Link to="/living-labs" className="underline hover:opacity-80">
+              Living Labs
+            </Link>
+          </li>
           <li aria-hidden="true">/</li>
-          <li><Link to={`/living-labs/${toSlug(region.id)}`} className="underline hover:opacity-80">{region.id}</Link></li>
+          <li>
+            <Link
+              to={`/living-labs/${toSlug(region.id)}`}
+              className="underline hover:opacity-80"
+            >
+              {region.id}
+            </Link>
+          </li>
           <li aria-hidden="true">/</li>
           <li className="text-brown font-semibold">{lab.title}</li>
         </ol>
@@ -80,7 +104,9 @@ export default function LivingLabDetail() {
 
       {/* Quick Menu */}
       <div className="bg-white/80 backdrop-blur rounded-lg shadow-sm p-4 md:p-5 mb-8">
-        <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">Quick Menu</h2>
+        <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">
+          Quick Menu
+        </h2>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
             to="/living-labs"
@@ -91,8 +117,13 @@ export default function LivingLabDetail() {
             All Living Labs
           </Link>
           {quickRegions.map((reg) => {
-            const isActive = reg.id.toLowerCase() === region.id.toLowerCase();
-            const bg = isActive ? (Array.isArray(reg.color) ? reg.color[0] : reg.color) : '#f8f8f8';
+            const isActive =
+              reg.id.toLowerCase() === region.id.toLowerCase();
+            const bg = isActive
+              ? Array.isArray(reg.color)
+                ? reg.color[0]
+                : reg.color
+              : '#f8f8f8';
             const to = `/living-labs/${toSlug(reg.id)}`;
             return (
               <Link
@@ -120,7 +151,9 @@ export default function LivingLabDetail() {
         >
           {lab.image ? (
             <>
-              {loadingHero && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
+              {loadingHero && (
+                <div className="absolute inset-0 bg-gray-200 animate-pulse" />
+              )}
               <img
                 src={lab.image}
                 alt={lab.title}
@@ -135,7 +168,9 @@ export default function LivingLabDetail() {
           ) : (
             <div
               className="absolute inset-0"
-              style={{ backgroundImage: `linear-gradient(to bottom, ${colorStart} 55%, ${colorEnd} 100%)` }}
+              style={{
+                backgroundImage: `linear-gradient(to bottom, ${colorStart} 55%, ${colorEnd} 100%)`,
+              }}
             />
           )}
 
@@ -152,26 +187,25 @@ export default function LivingLabDetail() {
 
       {/* Título + Descripción */}
       <header className="text-center mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold text-brown font-serif">{lab.title}</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-brown font-serif">
+          {lab.title}
+        </h1>
       </header>
 
       {lab.description && (
         <section className="max-w-3xl mx-auto mb-10">
-          <p className="text-gray-700 leading-relaxed whitespace-pre-line">{lab.description}</p>
+          <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+            {lab.description}
+          </p>
         </section>
       )}
-
-      {/* Info región
-      <section className="max-w-3xl mx-auto mb-10">
-        <h2 className="text-xl font-bold font-serif text-brown mb-3">About the {region.id}</h2>
-        {region.info && <p className="text-brown/90 font-serif mb-2">{region.info}</p>}
-        {region.description && <p className="text-gray-700 leading-relaxed whitespace-pre-line">{region.description}</p>}
-      </section> */}
 
       {/* Galería opcional */}
       {Array.isArray(lab.gallery) && lab.gallery.length > 0 && (
         <section className="max-w-4xl mx-auto mb-8">
-          <h3 className="text-lg font-semibold font-serif text-brown mb-4">Gallery</h3>
+          <h3 className="text-lg font-semibold font-serif text-brown mb-4">
+            Gallery
+          </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {lab.gallery.map((src, i) => (
               <img
@@ -186,6 +220,9 @@ export default function LivingLabDetail() {
           </div>
         </section>
       )}
+
+      {/* 🔽 Sección de noticias / eventos relacionados (si hay) */}
+      <LLRelatedNews llTagSlug={llTagSlug} />
 
       {/* Navegación inferior */}
       <div className="text-center mt-12 flex items-center justify-center gap-3">
