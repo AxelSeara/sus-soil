@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaNewspaper, FaCalendarAlt } from "react-icons/fa";
+import { FaNewspaper } from "react-icons/fa";
 
-const stripHtml = (html) => (html ? html.replace(/<[^>]+>/g, "") : "");
-const shorten = (txt, n) => (txt.length > n ? txt.slice(0, n).trimEnd() + "…" : txt);
+const stripHtml = (html = "") => (html ? html.replace(/<[^>]+>/g, "") : "");
+const shorten = (txt = "", n = 140) =>
+  txt.length > n ? txt.slice(0, n).trimEnd() + "…" : txt;
 
 function SkeletonCard() {
   return (
@@ -25,32 +26,80 @@ const cardVariants = {
   },
 };
 
-export default function LLRelatedNews({ llTag }) {
+export default function LLRelatedNews({
+  // ✅ usa slug (ej: "ll-galicia") — esto es lo que tú tienes ahora en LivingLabDetail
+  llTagSlug,
+  // opcional: si algún día prefieres pasar el ID directamente
+  llTagId,
+  perPage = 100,
+}) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!llTag) return;
+    const controller = new AbortController();
 
     const fetchRelated = async () => {
       try {
-        const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=${llTag}&_embed&per_page=100&_=${Date.now()}`;
+        setLoading(true);
+        setPosts([]);
 
-        const res = await fetch(url);
+        // 1) Determinar el tagId
+        let tagId = llTagId || null;
+
+        if (!tagId) {
+          if (!llTagSlug) {
+            setLoading(false);
+            return;
+          }
+
+          // Endpoint: resolver tag por slug
+          const tagUrl = `https://admin.sus-soil.eu/wp-json/wp/v2/tags?slug=${encodeURIComponent(
+            llTagSlug
+          )}&_=${Date.now()}`;
+
+          const tagRes = await fetch(tagUrl, {
+            cache: "no-cache",
+            signal: controller.signal,
+          });
+          if (!tagRes.ok) throw new Error("Error fetching tag ID");
+
+          const tagData = await tagRes.json();
+          tagId = Array.isArray(tagData) && tagData[0]?.id ? tagData[0].id : null;
+
+          // Si no existe el tag, no mostramos nada
+          if (!tagId) {
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 2) Buscar posts con ese tag ID
+        const postsUrl = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=${tagId}&_embed&per_page=${perPage}&_=${Date.now()}`;
+
+        const res = await fetch(postsUrl, {
+          cache: "no-cache",
+          signal: controller.signal,
+        });
+        if (!res.ok) throw new Error("Error fetching related posts");
+
         const data = await res.json();
+        const arr = Array.isArray(data) ? data : [];
 
-        setPosts(
-          data.sort((a, b) => new Date(b.date) - new Date(a.date))
-        );
+        setPosts(arr.sort((a, b) => new Date(b.date) - new Date(a.date)));
       } catch (e) {
-        console.error("Error fetching related posts", e);
+        if (e?.name !== "AbortError") {
+          console.error("Error fetching related posts", e);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchRelated();
-  }, [llTag]);
+
+    return () => controller.abort();
+  }, [llTagSlug, llTagId, perPage]);
 
   if (!loading && posts.length === 0) return null;
 
@@ -67,16 +116,17 @@ export default function LLRelatedNews({ llTag }) {
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
+          {[...Array(3)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       ) : (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
           initial="hidden"
           animate="visible"
-          variants={{
-            visible: { transition: { staggerChildren: 0.12 } },
-          }}>
+          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+        >
           {posts.map((post) => {
             const titleHtml = post.title?.rendered || "Untitled";
             const titleText = stripHtml(titleHtml);
@@ -86,9 +136,14 @@ export default function LLRelatedNews({ llTag }) {
               month: "short",
               day: "numeric",
             });
+
             const imgUrl =
               post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || null;
-            const excerptText = shorten(stripHtml(post.excerpt?.rendered || ""), 140);
+
+            const excerptText = shorten(
+              stripHtml(post.excerpt?.rendered || ""),
+              140
+            );
 
             return (
               <motion.article
@@ -122,7 +177,9 @@ export default function LLRelatedNews({ llTag }) {
                   </div>
                 )}
 
-                <p className="text-sm text-gray-700 leading-relaxed">{excerptText}</p>
+                <p className="text-sm text-gray-700 leading-relaxed">
+                  {excerptText}
+                </p>
               </motion.article>
             );
           })}

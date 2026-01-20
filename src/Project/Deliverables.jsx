@@ -3,14 +3,21 @@
 // - deliverable_number   (texto, ej. "D1.1")
 // - work_package         (texto o número, ej. "1")
 // - leader               (texto, ej. "IDELE")
-// - dissemination_level  (texto, ej. "PU")
+// - dissemination_level  (texto, ej. "PU")  ⚠️ en tu WP ahora mismo llega como "dissemination_level_"
 // - milestone            (texto, ej. "M6")
-// - pdf_file             (archivo; usamos pdf_file.url)
+// - pdf_file             (archivo; usamos pdf_file.url y pdf_file.title)
 
 import React, { useEffect, useState } from 'react';
 import { FaFilePdf, FaDownload } from 'react-icons/fa';
 
 const DELIVERABLES_CATEGORY_ID = 36;
+
+function decodeHtml(str = '') {
+  // Decodifica entidades HTML tipo &amp;
+  const txt = document.createElement('textarea');
+  txt.innerHTML = str;
+  return txt.value;
+}
 
 function SkeletonRow() {
   return (
@@ -46,6 +53,9 @@ export default function Deliverables() {
   useEffect(() => {
     const fetchDeliverables = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
         const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${DELIVERABLES_CATEGORY_ID}&_embed&acf_format=standard&per_page=100&_=${Date.now()}`;
         const res = await fetch(url, { cache: 'no-cache' });
         if (!res.ok) throw new Error('Error fetching deliverables');
@@ -60,17 +70,17 @@ export default function Deliverables() {
           return {
             id: post.id,
             number: acf.deliverable_number || '',
-            title: post.title?.rendered || '',
+            // ✅ TITULO: SOLO el title del PDF (fallback al title del post si no existe)
+            title: file.title || decodeHtml(post.title?.rendered || ''),
             workPackage: acf.work_package || '',
             leader: acf.leader || '',
-            level: acf.dissemination_level || '',
+            level: acf.dissemination_level || acf.dissemination_level_ || '',
             milestone: acf.milestone || '',
             pdfUrl: file.url || '',
           };
         });
 
-        // Ordenamos por número de deliverable si existe,
-        // si no, por ID descendente.
+        // Orden por número de deliverable si existe, si no por ID desc
         mapped.sort((a, b) => {
           if (a.number && b.number) {
             return a.number.localeCompare(b.number, undefined, { numeric: true });
@@ -81,7 +91,7 @@ export default function Deliverables() {
         setDeliverables(mapped);
       } catch (e) {
         console.error(e);
-        setError(e.message || 'Error loading deliverables');
+        setError(e?.message || 'Error loading deliverables');
       } finally {
         setLoading(false);
       }
@@ -167,99 +177,105 @@ export default function Deliverables() {
                   </tr>
                 )}
 
-                {!loading && !error && deliverables.map((d, idx) => (
-                  <tr
-                    key={d.id}
-                    className={`text-sm md:text-base text-brown border-t border-darkGreen/25 ${
-                      idx % 2 === 1 ? 'bg-lightGreen/5' : 'bg-white'
-                    } hover:bg-lightGreen/15 transition-colors`}
-                  >
-                    {/* Title + number (link to PDF si existe) */}
-                    <td className="px-6 py-5 align-middle">
-                      {d.pdfUrl ? (
-                        <a
-                          href={d.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-start gap-3 text-left"
-                        >
-                          <span className="mt-[2px] flex-shrink-0 text-darkGreen">
-                            <FaFilePdf aria-hidden="true" />
-                          </span>
-                          <span>
-                            <span className="block font-semibold font-serif text-brown">
-                              {d.number ? `${d.number} – ` : ''}{d.title}
+                {!loading &&
+                  !error &&
+                  deliverables.map((d, idx) => (
+                    <tr
+                      key={d.id}
+                      className={`text-sm md:text-base text-brown border-t border-darkGreen/25 ${
+                        idx % 2 === 1 ? 'bg-lightGreen/5' : 'bg-white'
+                      } hover:bg-lightGreen/15 transition-colors`}
+                    >
+                      {/* Title + number (link to PDF si existe) */}
+                      <td className="px-6 py-5 align-middle">
+                        {d.pdfUrl ? (
+                          <a
+                            href={d.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group inline-flex items-start gap-3 text-left"
+                          >
+                            <span className="mt-[2px] flex-shrink-0 text-darkGreen">
+                              <FaFilePdf aria-hidden="true" />
                             </span>
-                            <span className="mt-0.5 block text-xs text-brown/60 group-hover:text-brown/80">
-                              Click to view / download PDF
+                            <span>
+                              {/* ✅ MUESTRA SOLO EL TÍTULO (del PDF) */}
+                              <span className="block font-semibold font-serif text-brown">
+                                {d.title}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-brown/60 group-hover:text-brown/80">
+                                Click to view / download PDF
+                              </span>
+                            </span>
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-start gap-3 text-left">
+                            <span className="mt-[2px] flex-shrink-0 text-gray-400">
+                              <FaFilePdf aria-hidden="true" />
+                            </span>
+                            <span>
+                              {/* ✅ MUESTRA SOLO EL TÍTULO (del PDF) */}
+                              <span className="block font-semibold font-serif text-brown">
+                                {d.title}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-brown/60">
+                                PDF not available yet
+                              </span>
                             </span>
                           </span>
-                        </a>
-                      ) : (
-                        <span className="inline-flex items-start gap-3 text-left">
-                          <span className="mt-[2px] flex-shrink-0 text-gray-400">
-                            <FaFilePdf aria-hidden="true" />
+                        )}
+                      </td>
+
+                      {/* WP */}
+                      <td className="px-4 py-5 align-middle text-center">
+                        {d.workPackage && (
+                          <span className="inline-flex items-center justify-center rounded-full border border-darkGreen/30 px-3 py-1 text-xs md:text-sm font-semibold text-darkGreen">
+                            WP{d.workPackage}
                           </span>
-                          <span>
-                            <span className="block font-semibold font-serif text-brown">
-                              {d.number ? `${d.number} – ` : ''}{d.title}
-                            </span>
-                            <span className="mt-0.5 block text-xs text-brown/60">
-                              PDF not available yet
-                            </span>
-                          </span>
+                        )}
+                      </td>
+
+                      {/* Leader */}
+                      <td className="px-4 py-5 align-middle text-center">
+                        <span className="inline-flex items-center justify-center text-sm font-medium text-darkGreen">
+                          {d.leader}
                         </span>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* WP */}
-                    <td className="px-4 py-5 align-middle text-center">
-                      {d.workPackage && (
-                        <span className="inline-flex items-center justify-center rounded-full border border-darkGreen/30 px-3 py-1 text-xs md:text-sm font-semibold text-darkGreen">
-                          WP{d.workPackage}
+                      {/* Dissemination level */}
+                      <td className="px-4 py-5 align-middle text-center">
+                        {d.level ? (
+                          <span className="inline-flex items-center justify-center rounded-full bg-lightGreen/20 px-3 py-1 text-xs md:text-sm font-semibold text-darkGreen">
+                            {d.level}
+                          </span>
+                        ) : (
+                          <span className="text-xs md:text-sm text-darkGreen/60">-</span>
+                        )}
+                      </td>
+
+                      {/* Date / Milestone */}
+                      <td className="px-4 py-5 align-middle text-center">
+                        <span className="inline-flex items-center justify-center text-xs md:text-sm font-medium text-darkGreen">
+                          {d.milestone || '-'}
                         </span>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* Leader */}
-                    <td className="px-4 py-5 align-middle text-center">
-                      <span className="inline-flex items-center justify-center text-sm font-medium text-darkGreen">
-                        {d.leader}
-                      </span>
-                    </td>
-
-                    {/* Dissemination level */}
-                    <td className="px-4 py-5 align-middle text-center">
-                      {d.level && (
-                        <span className="inline-flex items-center justify-center rounded-full bg-lightGreen/20 px-3 py-1 text-xs md:text-sm font-semibold text-darkGreen">
-                          {d.level}
-                        </span>
-                      )}
-                    </td>
-
-                    {/* Date / Milestone */}
-                    <td className="px-4 py-5 align-middle text-center">
-                      <span className="inline-flex items-center justify-center text-xs md:text-sm font-medium text-darkGreen">
-                        {d.milestone || '-'}
-                      </span>
-                    </td>
-
-                    {/* Download icon */}
-                    <td className="px-4 py-5 align-middle text-center">
-                      {d.pdfUrl && (
-                        <a
-                          href={d.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-darkGreen/30 text-darkGreen hover:bg-darkGreen hover:text-white transition-colors"
-                          aria-label={`Download ${d.number || d.title}`}
-                        >
-                          <FaDownload aria-hidden="true" />
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      {/* Download icon */}
+                      <td className="px-4 py-5 align-middle text-center">
+                        {d.pdfUrl && (
+                          <a
+                            href={d.pdfUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-darkGreen/30 text-darkGreen hover:bg-darkGreen hover:text-white transition-colors"
+                            aria-label={`Download ${d.title}`}
+                          >
+                            <FaDownload aria-hidden="true" />
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
 
                 {!loading && !error && (
                   <tr className="border-t border-darkGreen/15 bg-white/60">

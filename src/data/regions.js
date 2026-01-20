@@ -60,7 +60,7 @@ The region features a mix of deciduous and coniferous forests, grasslands, and l
 
 Agriculture is a key land use in this region, with vast fields of wheat, maize, and vineyards. Industrial development and deforestation have impacted natural ecosystems, leading to conservation initiatives focused on protecting river habitats, wetlands, and forested areas.
     `,
-    livingLabs: ["LL Germany", "LL Veneto", "LL Slovakia", "LL Bosnia-Herzegovina"],
+    livingLabs: ["LL Germany", "LL Veneto", "LL Bosnia-Herzegovina"],
   },
   {
     id: "Mediterranean",
