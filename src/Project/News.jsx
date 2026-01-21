@@ -1,7 +1,7 @@
 // src/components/News.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { FaArrowRight, FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
+import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 
 function SkeletonCard() {
   return (
@@ -23,9 +23,9 @@ const gridVariants = {
       staggerChildren: 0.15,
       when: 'beforeChildren',
       duration: 0.5,
-      ease: 'easeInOut'
-    }
-  }
+      ease: 'easeInOut',
+    },
+  },
 };
 
 const cardVariants = {
@@ -36,9 +36,9 @@ const cardVariants = {
     transition: {
       type: 'spring',
       stiffness: 100,
-      damping: 15
-    }
-  }
+      damping: 15,
+    },
+  },
 };
 
 // helper: detectar posts con tag "event"/"events" (no categorías)
@@ -94,7 +94,7 @@ export default function News() {
       }
       const newPosts = await response.json();
       if (newPosts.length < perPage) setHasMore(false);
-      setPosts(prev => (requestedPage === 1 ? newPosts : [...prev, ...newPosts]));
+      setPosts((prev) => (requestedPage === 1 ? newPosts : [...prev, ...newPosts]));
     } catch (err) {
       console.error('Error fetching posts:', err);
       if (requestedPage === 1) setError(err.message);
@@ -166,12 +166,13 @@ export default function News() {
   // Construir lista de tags (forzamos que "Events" exista siempre)
   const allTags = useMemo(() => {
     const tagsSet = new Set();
-    posts.forEach(post => {
-      const postTags = (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter(t => t.taxonomy !== 'category')) || [];
-      postTags.forEach(tag => tagsSet.add(tag.name));
+    posts.forEach((post) => {
+      const postTags =
+        (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter((t) => t.taxonomy !== 'category')) || [];
+      postTags.forEach((tag) => tagsSet.add(tag.name));
     });
     const tags = Array.from(tagsSet).sort((a, b) => a.localeCompare(b));
-    if (!tags.some(t => t.toLowerCase() === 'events' || t.toLowerCase() === 'event')) {
+    if (!tags.some((t) => t.toLowerCase() === 'events' || t.toLowerCase() === 'event')) {
       tags.unshift('Events');
     }
     return ['all', ...tags];
@@ -186,9 +187,10 @@ export default function News() {
     } else if (isEvents) {
       base = posts.filter(isEventPost);
     } else {
-      base = posts.filter(post => {
-        const t = (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter(x => x.taxonomy !== 'category')) || [];
-        return t.some(tag => (tag.name || '').toLowerCase() === filterTag.toLowerCase());
+      base = posts.filter((post) => {
+        const t =
+          (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter((x) => x.taxonomy !== 'category')) || [];
+        return t.some((tag) => (tag.name || '').toLowerCase() === filterTag.toLowerCase());
       });
     }
     return [...base].sort((a, b) => {
@@ -198,22 +200,20 @@ export default function News() {
     });
   }, [posts, filterTag, orderAsc]);
 
-  const getExcerptText = html => {
+  const getExcerptText = (html) => {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '');
     return text.length > 140 ? text.substring(0, 137) + '…' : text;
   };
 
-  const toggleOrder = () => setOrderAsc(o => !o);
+  const toggleOrder = () => setOrderAsc((o) => !o);
 
   const renderSection = (items, loading, title) => {
     if (!loading && items.length === 0) {
       if (filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event') {
         return (
           <section className="py-12 px-6 md:px-16 my-8">
-            <h2 className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown mb-6">
-              {title}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown mb-6">{title}</h2>
             <p className="text-center text-sm text-gray-500">No events found.</p>
           </section>
         );
@@ -229,9 +229,10 @@ export default function News() {
           <h2 id="news-heading" className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown">
             {title}
           </h2>
+
           <div className="flex flex-wrap justify-center md:justify-end gap-4">
             <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Filter posts by tag">
-              {allTags.map(tag => {
+              {allTags.map((tag) => {
                 const value = tag.toLowerCase() === 'event' ? 'Events' : tag;
                 return (
                   <button
@@ -243,7 +244,11 @@ export default function News() {
                         setPage(1);
                       }
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown ${filterTag.toLowerCase() === value.toLowerCase() ? 'bg-brown text-white' : 'bg-gray-100 text-brown hover:bg-brown hover:text-white'}`}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown ${
+                      filterTag.toLowerCase() === value.toLowerCase()
+                        ? 'bg-brown text-white'
+                        : 'bg-gray-100 text-brown hover:bg-brown hover:text-white'
+                    }`}
                     aria-pressed={filterTag.toLowerCase() === value.toLowerCase()}
                   >
                     {value}
@@ -251,6 +256,7 @@ export default function News() {
                 );
               })}
             </div>
+
             <button
               onClick={toggleOrder}
               className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white font-semibold text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
@@ -271,57 +277,70 @@ export default function News() {
         >
           {loading
             ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
-            : items.map(post => {
-                const title = post.title?.rendered || 'No Title';
+            : items.map((post) => {
+                const titleHtml = post.title?.rendered || 'No Title';
+                const titleText = titleHtml.replace(/<[^>]+>/g, '');
                 const date = new Date(post.date);
                 const dateFormatted = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
                 const excerptText = getExcerptText(post.excerpt?.rendered);
                 const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-                const postTags = (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter(t => t.taxonomy !== 'category')) || [];
+                const postTags =
+                  (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter((t) => t.taxonomy !== 'category')) || [];
 
                 return (
                   <motion.article
                     key={post.id}
-                    className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] group"
-                    tabIndex={-1}
+                    className="relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] overflow-hidden"
                     variants={cardVariants}
                     aria-labelledby={`post-title-${post.id}`}
                   >
-                    {/* Title becomes the CTA with animated underline */}
-                    <h3 id={`post-title-${post.id}`} className="text-xl font-serif mb-2 text-brown font-semibold leading-tight">
-                      <a
-                        href={`/news/${post.id}`}
-                        aria-label={`Read more: ${title.replace(/<[^>]+>/g, '')}`}
-                        className="inline-block underline decoration-transparent hover:decoration-brown underline-offset-4 hover:underline-offset-8 transition-all duration-200"
-                        dangerouslySetInnerHTML={{ __html: title }}
-                      />
+                    {/* stretched link: toda la tarjeta clickable con focus ring accesible */}
+                    <a
+                      href={`/news/${post.id}`}
+                      className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+                      aria-label={`Read more: ${titleText}`}
+                    />
+
+                    <h3
+                      id={`post-title-${post.id}`}
+                      className="text-xl font-serif mb-2 text-brown font-semibold leading-tight relative z-0"
+                    >
+                      <span className="relative inline-block">
+                        <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
+                        {/* subrayado animado limpio */}
+                        <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-brown scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                      </span>
                     </h3>
 
-                    <p className="text-xs text-gray-500 mb-3">
+                    <p className="text-xs text-gray-500 mb-3 relative z-0">
                       <time dateTime={date.toISOString()}>{dateFormatted}</time>
                     </p>
 
                     {imgUrl ? (
-                      <img
-                        src={imgUrl}
-                        alt=""
-                        role="presentation"
-                        className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-200 hover:scale-105"
-                        loading="lazy"
-                      />
+                      <div className="relative z-0">
+                        <img
+                          src={imgUrl}
+                          alt=""
+                          loading="lazy"
+                          className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4" aria-hidden="true">
-                        <span className="text-gray-500 text-sm">No image</span>
+                      <div
+                        className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4 relative z-0"
+                        aria-hidden="true"
+                      >
+                        <span className="text-gray-500 text-xs">No image</span>
                       </div>
                     )}
 
-                    <p className="text-sm text-gray-700 mb-4 leading-relaxed" aria-label="Excerpt">
+                    <p className="text-sm text-gray-700 mb-4 leading-relaxed relative z-0" aria-label="Excerpt">
                       {excerptText}
                     </p>
 
                     {postTags.length > 0 && (
-                      <ul className="flex flex-wrap gap-2 mt-auto" aria-label="Tags">
-                        {postTags.map(t => (
+                      <ul className="flex flex-wrap gap-2 mt-auto relative z-0" aria-label="Tags">
+                        {postTags.map((t) => (
                           <li key={t.id}>
                             <span className="inline-block bg-lightGreen/20 text-darkGreen text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
@@ -330,8 +349,6 @@ export default function News() {
                         ))}
                       </ul>
                     )}
-
-                    {/* Removed the bottom "Read More" button to avoid redundancy */}
                   </motion.article>
                 );
               })}
@@ -346,17 +363,21 @@ export default function News() {
               className="px-8 py-3 rounded-full bg-brown text-white font-semibold shadow-md hover:bg-opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown transition"
               aria-live="polite"
             >
-              {fetchingMore ? (isEventsView ? 'Loading events…' : 'Loading…') : (isEventsView ? 'Load more events' : 'Load more news')}
+              {fetchingMore ? (isEventsView ? 'Loading events…' : 'Loading…') : isEventsView ? 'Load more events' : 'Load more news'}
             </button>
           </div>
         )}
+
         {!hasMore && posts.length > 0 && (
           <p className="mt-12 text-center text-sm text-gray-500" role="status">
             {isEventsView ? 'All events loaded.' : 'No more news.'}
           </p>
         )}
+
         {error && (
-          <div className="text-center text-red-600 mt-8" role="alert">{error}</div>
+          <div className="text-center text-red-600 mt-8" role="alert">
+            {error}
+          </div>
         )}
       </section>
     );

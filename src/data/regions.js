@@ -8,6 +8,12 @@ import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.jpeg";
 import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.jpeg";
 import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.JPG";
 import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.jpeg";
+import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.png";
+import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.jpeg";
+import LL_Turkey        from "../assets/thumbnails/ll/LL_Turkey.jpeg";
+import LL_Netherlands   from "../assets/thumbnails/ll/LL_Netherlands.jpeg";
+import LL_Egypt         from "../assets/thumbnails/ll/LL_Egypt.jpeg";
+import LL_Portugal      from "../assets/thumbnails/ll/LL_Portugal.jpeg";
 
 import Region_Alpine        from "../assets/thumbnails/regions/Alpine.jpg";
 import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.jpg";
@@ -15,8 +21,6 @@ import Region_Boreal        from "../assets/thumbnails/regions/Boreal.jpg";
 import Region_Continental   from "../assets/thumbnails/regions/Continental.jpg";
 import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.jpg";
 import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.jpg";
-
-
 
 // Biogeographic regions (texts exactly as provided)
 export const regions = [
@@ -60,7 +64,7 @@ The region features a mix of deciduous and coniferous forests, grasslands, and l
 
 Agriculture is a key land use in this region, with vast fields of wheat, maize, and vineyards. Industrial development and deforestation have impacted natural ecosystems, leading to conservation initiatives focused on protecting river habitats, wetlands, and forested areas.
     `,
-    livingLabs: ["LL Germany", "LL Veneto", "LL Bosnia-Herzegovina"],
+    livingLabs: ["LL Germany", "LL Veneto", "LL Slovakia", "LL Bosnia-Herzegovina"],
   },
   {
     id: "Mediterranean",
@@ -104,39 +108,10 @@ Agriculture, especially wheat and sunflower cultivation, dominates the land use 
     `,
     livingLabs: ["LL Slovakia"],
   },
-  {
-    id: "BlackSea",
-    info: "The Black Sea Biogeographic Region",
-    color: "#5c81b5",
-    image: null,
-    description: `
-The Black Sea Biogeographic Region includes the coastal areas surrounding the Black Sea, particularly in Bulgaria and Romania. It has a humid subtropical to continental climate, with mild winters and warm summers.
-
-The region is characterized by coastal lagoons, sand dunes, and wetlands that serve as critical habitats for migratory birds. The Black Sea itself is home to diverse marine life, including dolphins, sturgeons, and seagrass meadows that support fish populations.
-
-Pollution, overfishing, and habitat destruction have affected the region’s ecosystems. Conservation efforts focus on protecting coastal wetlands, reducing pollution, and managing fisheries sustainably.
-    `,
-    livingLabs: ["LL Turkey"],
-  },
-  {
-    id: "Anatolian",
-    info: "The Anatolian Biogeographic Region",
-    color: "#a02b16",
-    image: null,
-    description: `
-The Anatolian Biogeographic Region covers most of Turkey and is influenced by both Mediterranean and continental climates. It has a diverse landscape that includes mountains, plateaus, and semi-arid steppes.
-
-Vegetation in the region ranges from Mediterranean forests of oak and pine to dry steppe grasslands. The Anatolian region is home to many endemic species, including wild goats, Anatolian leopards, and rare bird species like the Dalmatian pelican.
-
-Human activity, particularly agriculture and urban expansion, has significantly altered natural habitats. Conservation efforts focus on protecting wetlands, forests, and endangered species unique to this region.
-    `,
-    livingLabs: ["LL Turkey"],
-  },
 ];
 
 // Living Labs (texts exactly as provided; gallery left empty on purpose)
 export const livingLabs = [
-  // Germany (image imported)
   {
     id: "ll-germany",
     title: "Living Lab in East Brandenburg, Germany",
@@ -162,7 +137,6 @@ Cities such as Eberswalde and Frankfurt (Oder) serve as economic and cultural ce
     `,
   },
 
-  // Madrid (image imported)
   {
     id: "ll-madrid",
     title: "Living Lab of Comunidad Autónoma de Madrid, Spain",
@@ -170,13 +144,13 @@ Cities such as Eberswalde and Frankfurt (Oder) serve as economic and cultural ce
     image: LL_Spain_Madrid,
     gallery: [],
     description: `
-The Comunidad Autónoma de Madrid is located in the Centre of the Iberian Peninsula, and of the Central Plateau (Meseta Central). Its capital and largest municipality is Madrid, which is also the capital of Spain. 
+The Comunidad Autónoma de Madrid is located in the Centre of the Iberian Peninsula, and of the Central Plateau (Meseta Central). Its capital and largest municipality is Madrid, which is also the capital of Spain.
 
-It has an extension of 8,028 km2 and 7,058,041 inhabitants (2024), these make Madrid the third most highly populated region in Spain, although mostly concentrated in the metropolitan area of Madrid city, with 98% of its population. It is the most densely populated autonomous community and has the largest nominal GDP (gross domestic product) in Spain. Nowadays Madrid's economy is mainly based on services (84% of the gross added value) and industry and construction (12%), representing agriculture and livestock sectors around 0.1%. 
+It has an extension of 8,028 km2 and 7,058,041 inhabitants (2024), these make Madrid the third most highly populated region in Spain, although mostly concentrated in the metropolitan area of Madrid city, with 98% of its population. It is the most densely populated autonomous community and has the largest nominal GDP (gross domestic product) in Spain. Nowadays Madrid's economy is mainly based on services (84% of the gross added value) and industry and construction (12%), representing agriculture and livestock sectors around 0.1%.
 
-The economic activity of the region has historically been very much oriented towards agricultural production, thanks to its climate and soil that are quite favorable to cereal and horticultural production. However, from the 19th century onwards, Madrid became the financial Centre of the country and a powerful focus of industrial production. But Madrid's great economic development came with the 20th century, especially from the 1950s and 1960s, when the province became the main national Centre of the services sector. Nowadays, approximately 25% of Madrid land is dedicated to agriculture, being the main crops (in surface) cereals, olive trees and vineyards.  
+The economic activity of the region has historically been very much oriented towards agricultural production, thanks to its climate and soil that are quite favorable to cereal and horticultural production. However, from the 19th century onwards, Madrid became the financial Centre of the country and a powerful focus of industrial production. But Madrid's great economic development came with the 20th century, especially from the 1950s and 1960s, when the province became the main national Centre of the services sector. Nowadays, approximately 25% of Madrid land is dedicated to agriculture, being the main crops (in surface) cereals, olive trees and vineyards.
 
-The climate is Continental Mediterranean, and the orography makes important differences within the region. The Comunidad de Madrid is placed in the Central Plateau with a mean altitude of 678 m a.s.l. making Madrid city the highest capital in Europe with 667 m a.s.l. We find mountain peaks rising above 2,000 m a.s.l. in the North, with forests of Scots pine and Pyrenean oak, and an important livestock production in their permanent grasslands. Lower lands are dedicated to holm oak dehesas, and plains to agriculture. Near our main rivers (Tajo and Jarama), horticulture has the main role of our agriculture. 
+The climate is Continental Mediterranean, and the orography makes important differences within the region. The Comunidad de Madrid is placed in the Central Plateau with a mean altitude of 678 m a.s.l. making Madrid city the highest capital in Europe with 667 m a.s.l. We find mountain peaks rising above 2,000 m a.s.l. in the North, with forests of Scots pine and Pyrenean oak, and an important livestock production in their permanent grasslands. Lower lands are dedicated to holm oak dehesas, and plains to agriculture. Near our main rivers (Tajo and Jarama), horticulture has the main role of our agriculture.
 
 The Comunidad of Madrid is in the limit between the two main bedrocks of the Iberian Peninsula: siliceous in the north-northwest and limestone in the south-southeast. There are three types of landscapes in the Community of Madrid: alpine meadows and pine forests in Guadarrama mountains of the North and North-west, Mediterranean forests and pastures in the flatter northern area and steppe shrubs in the extreme southeast of the region.
 
@@ -188,7 +162,6 @@ The Living Lab of Comunidad Autónoma de Madrid is located approximately at the 
     `,
   },
 
-  // France (image imported)
   {
     id: "ll-france",
     title: "Living Lab in Normandy, France",
@@ -196,19 +169,18 @@ The Living Lab of Comunidad Autónoma de Madrid is located approximately at the 
     image: LL_France,
     gallery: [],
     description: `
-The living laboratory run by Ver De Terre Production is located in Normandy, a region with diverse climatic and agricultural characteristics. Located at coordinates 48° 52' 47.532" N, 0° 10' 16.511" E, Normandy benefits from a temperate oceanic climate, characterized by high humidity, an average annual temperature between 10 and 12°C, and precipitation ranging from 600 to 1,200 mm per year. 
+The living laboratory run by Ver De Terre Production is located in Normandy, a region with diverse climatic and agricultural characteristics. Located at coordinates 48° 52' 47.532" N, 0° 10' 16.511" E, Normandy benefits from a temperate oceanic climate, characterized by high humidity, an average annual temperature between 10 and 12°C, and precipitation ranging from 600 to 1,200 mm per year.
 
-This regular distribution of precipitation, with a peak in autumn and winter, as well as prevailing westerly winds, shapes a diverse agricultural landscape. It includes the bocage and wet meadows of the Orne and Manche departments, favorable to cattle breeding, as well as fertile limestone plains in the Eure and Calvados departments, suitable for major crops such as wheat, rapeseed and beetroot. The alluvial valleys, particularly those of the Seine and Orne, offer rich soils suitable for market gardening and fodder crops. The region's agricultural activities reflect this landscape diversity, with a strong presence of cattle breeding, cereal crops, market gardening, and horticulture, as well as flax cultivation and cider production, emblematic of Normandy. 
+This regular distribution of precipitation, with a peak in autumn and winter, as well as prevailing westerly winds, shapes a diverse agricultural landscape. It includes the bocage and wet meadows of the Orne and Manche departments, favorable to cattle breeding, as well as fertile limestone plains in the Eure and Calvados departments, suitable for major crops such as wheat, rapeseed and beetroot. The alluvial valleys, particularly those of the Seine and Orne, offer rich soils suitable for market gardening and fodder crops. The region's agricultural activities reflect this landscape diversity, with a strong presence of cattle breeding, cereal crops, market gardening, and horticulture, as well as flax cultivation and cider production, emblematic of Normandy.
 
-Furthermore, the forest landscapes are dominated by deciduous and alluvial forests, with a rarer presence of conifers. The living laboratory approach covers several soil types, whether agricultural, forest, or urban, in order to explore different solutions adapted to the region's challenges. 
+Furthermore, the forest landscapes are dominated by deciduous and alluvial forests, with a rarer presence of conifers. The living laboratory approach covers several soil types, whether agricultural, forest, or urban, in order to explore different solutions adapted to the region's challenges.
 
-The experimental sites, including the experimental station: Les Serres de Marcel, as well as other plots or experimental sites, will serve as a field for action research and innovation in agroecology. 
+The experimental sites, including the experimental station: Les Serres de Marcel, as well as other plots or experimental sites, will serve as a field for action research and innovation in agroecology.
 
 These sites will deepen our knowledge of soil, subsoil, and the mechanisms that impact them. The laboratory's mission will be to experiment with and document innovative agricultural practices, while promoting the creation and facilitation of networks of stakeholders involved in the agroecological transition. Through a participatory approach, it will seek to scale up sustainable practices and stimulate knowledge exchange between farmers, researchers, and other stakeholders.
     `,
   },
 
-  // Galicia
   {
     id: "ll-galicia",
     title: "Living Lab in Galicia, Spain",
@@ -228,12 +200,11 @@ The Galician experimental sites include long-term managed agricultural fields, s
     `,
   },
 
-  // Portugal
   {
     id: "ll-portugal",
     title: "Living Lab in Região Centro, Portugal",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Portugal,
     gallery: [],
     description: `
 The Portuguese Living Lab is located in the Central Region of Portugal (Região Centro), one of the largest and most diverse areas in the country, stretching from the Atlantic Ocean to the Spanish border. Covering approximately 28,462 km², the region includes important urban centers such as Coimbra, Aveiro, Leiria, Viseu, Guarda, and Castelo Branco. It is characterized by a wide range of landscapes—from coastal plains to the Serra da Estrela mountains, the highest in mainland Portugal—supporting both agricultural productivity and biodiversity conservation.
@@ -252,7 +223,6 @@ Overall, the Central Region of Portugal, and Beira Baixa in particular, exemplif
     `,
   },
 
-  // Tunisia
   {
     id: "ll-tunisia",
     title: "Living Lab in Tunisia",
@@ -274,12 +244,11 @@ The Tunisian Living Lab is a collaborative innovation space involving end-users 
     `,
   },
 
-  // Egypt
   {
     id: "ll-egypt",
     title: "Living Lab in Egypt",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Egypt,
     gallery: [],
     description: `
 The Sekem Living Lab is located in the Eastern part of the Nile Delta, within the Sharkia Governorate of Egypt. Centered around the town of Belbies (Latitude: 31.517, Longitude: 30.418), this Living Lab represents a key agricultural and ecological site within the Mediterranean biogeographical region.
@@ -298,7 +267,6 @@ By rooting its activities in such a historically and agriculturally rich setting
     `,
   },
 
-  // Greece
   {
     id: "ll-greece",
     title: "Living Lab in Central Greece",
@@ -306,22 +274,21 @@ By rooting its activities in such a historically and agriculturally rich setting
     image: LL_Greece,
     gallery: [],
     description: `
-Central Greece (Sterea Ellada) is one of Greece’s thirteen administrative regions, with a total population of approximately 500,000. It is located in the central part of the Greek mainland, bordered by Thessaly to the North, Attica to the southeast, and Western Greece to the west. Ιts administrative capital is Lamia, a city located in the regional unit of Phthiotis. The region fertures a diverse landscape of coastal areas, fertile plains, and  extensive mountain ranges, supporting multiple land uses, including agriculture, livestock farming, forestry, and tourism. Evrytania, one of the regional units of Central Greece, is characterized by a rugged mountainous terrain and rich forest cover. 
+Central Greece (Sterea Ellada) is one of Greece’s thirteen administrative regions, with a total population of approximately 500,000. It is located in the central part of the Greek mainland, bordered by Thessaly to the North, Attica to the southeast, and Western Greece to the west. Ιts administrative capital is Lamia, a city located in the regional unit of Phthiotis. The region fertures a diverse landscape of coastal areas, fertile plains, and  extensive mountain ranges, supporting multiple land uses, including agriculture, livestock farming, forestry, and tourism. Evrytania, one of the regional units of Central Greece, is characterized by a rugged mountainous terrain and rich forest cover.
 
-To support applied research on agroforestry systems and better understand soil properties accross mixed land use types, a Living Lab has been established across the mountainous landscape of Evrytania and part of northern Fthiotida-a transitional area that borders Evrytania and shares similar topographic and ecological characteristics. The focus area includes the wider region of Saint Nikolaos, near Karpenisi (capital of Evrytania), where traditional agriculture coexists with forested land, creating ideal conditions for studying soil-crop-forest interaction under real field conditions. 
+To support applied research on agroforestry systems and better understand soil properties accross mixed land use types, a Living Lab has been established across the mountainous landscape of Evrytania and part of northern Fthiotida-a transitional area that borders Evrytania and shares similar topographic and ecological characteristics. The focus area includes the wider region of Saint Nikolaos, near Karpenisi (capital of Evrytania), where traditional agriculture coexists with forested land, creating ideal conditions for studying soil-crop-forest interaction under real field conditions.
 
 The Saint Nikolaos area is situated approximately 1,000 meters elevation in the Pindus Mountain range, and is characterized by steep terrain, dense fir forests, and numerous springs and streams. It has a mountain Mediterranean climate with cold, snowy winters and warm, dry summers. This seasonal weather affects the type of plants that grow and the way farming is done. The geological substrate is complex, with flysch being the dominant formation. Flysch consists of alternating layers of sandstones, shale and siltstone, and its weathering leads to the formation of shallow, erodible, and often acidic soils. In addition to flysch, there are also occurrences of limestone (karstic) formations, particularly in higher zones, with produce more alkaline soils with different drainage properties. Other rock types in the broader area include schist, alluvium and ophiΙolites, which contribute to localized variations in soil texture and mineral composition.
 
-The soils of the Living Lab area are primarily developed on flysch parent material and exhibit variation in depth, stoniness and texture, creating a heterogeneous soilscape that influences local vegetation patterns, erosion dynamics, and land use practices. 
+The soils of the Living Lab area are primarily developed on flysch parent material and exhibit variation in depth, stoniness and texture, creating a heterogeneous soilscape that influences local vegetation patterns, erosion dynamics, and land use practices.
 
 The landscape includes cultivated plots, extensive forested areas and semi-natural zones, providing an ideal setting for comparing soil characteristics across various land use types. Local agriculture is predominantly small-scale, featuring crops such as potatoes, beans, and aromatic herbs, alongside pasturelands used for grazing. The forested areas are dominated by Greek fir (Abies Cephalonica) and Bulgarian fir (Abies borisii-regis), mixed oak species, and chestnut trees, forming dense montane forests that play a crucial role in maintaining soil stability and local biodiversity. This Living Lab offers a practical and diverse environment for conducting field-based soil analyses, facilitating accurate land evaluation and supporting evidence-based agricultural planning in mountainous regions.
     `,
   },
 
-  // Bosnia & Herzegovina (note: region is Continental per your list)
   {
     id: "ll-bosnia-herzegovina",
-    title: "Living Lab in Bosnia-Herzegovina",
+    title: "Living Lab in Central Bosnia",
     regionId: "Continental",
     image: LL_Bosnia,
     gallery: [],
@@ -338,7 +305,6 @@ The selection of Ilidža, Bugojno, and Živinice within the SUS-SOIL project ref
     `,
   },
 
-  // Slovakia (mapped to Alpine, also appears in Pannonian list)
   {
     id: "ll-slovakia",
     title: "Living Lab in Slovakia",
@@ -348,13 +314,12 @@ The selection of Ilidža, Bugojno, and Živinice within the SUS-SOIL project ref
     description: `
 The Slovak Living Lab is located in two regions (or districts):  Zvolen and Trnava.  They differ in geology, relief, history of land use and socio-economic parameters. Sample point locations were selected to meet the requirements and objectives of the project, while also representing the landscape, geological, soil, land use, and socio-economic diversity of the region.
 
-Most of the sampling points are located in the Zvolenská kotlina (Zvolen Basin), forming a cluster near the LUCAS point at coordinates 48.5271 N, 19.1894 E, not far from the town of Zvolen. The centre of this region is Zvolen (about 300 m a.s.l.), a town with the population of about 39,000 inhabitants.  The Zvolen basin is surrounded by mountain ranges covered by managed broadleaved and mixed forests. The highest mountain is Poľana (1457 m a.s.l.), one of the highest extinct volcanos in Central Europe. The dominated geological substrates are andesites and other volcanic rocks. Most soils are classified as various subtypes of Cambisols.  In central part of this region, in the bottom of the Zvolen basin, the geological substrates are quaternary alluvial sediments and loams with Fluvisols (at the rivers) and Planosols. Mean annual temperature near Zvolen is 8.0 °C (decreasing with increasing altitude toward the surrounding mountains). The dominant land use is agriculture (mainly cropland, and to a certain extent also grassland). Several well-developed villages are here, and scattered settlement is characteristic at the periphery of the basin. This part of the LL belongs to the Alpine biogeographical region.  
+Most of the sampling points are located in the Zvolenská kotlina (Zvolen Basin), forming a cluster near the LUCAS point at coordinates 48.5271 N, 19.1894 E, not far from the town of Zvolen. The centre of this region is Zvolen (about 300 m a.s.l.), a town with the population of about 39,000 inhabitants.  The Zvolen basin is surrounded by mountain ranges covered by managed broadleaved and mixed forests. The highest mountain is Poľana (1457 m a.s.l.), one of the highest extinct volcanos in Central Europe. The dominated geological substrates are andesites and other volcanic rocks. Most soils are classified as various subtypes of Cambisols.  In central part of this region, in the bottom of the Zvolen basin, the geological substrates are quaternary alluvial sediments and loams with Fluvisols (at the rivers) and Planosols. Mean annual temperature near Zvolen is 8.0 °C (decreasing with increasing altitude toward the surrounding mountains). The dominant land use is agriculture (mainly cropland, and to a certain extent also grassland). Several well-developed villages are here, and scattered settlement is characteristic at the periphery of the basin. This part of the LL belongs to the Alpine biogeographical region.
 
-The contrasting part of the Living Lab is located in the south-western part of Slovakia, in the Danube lowland. The cluster of sampling points is situated in the Trnavská tabuľa (Trnava Table), centred around the LUCAS point at coordinates 48.5349 N, 17.6634 E, in the vicinity of the town of Trnava, which has a population of about 66,000 inhabitants (146 m a.s.l.). This town is one of important centres of intensive agriculture and the food industry ((although in recent decades, the automotive industry and the nearby nuclear power plant have also become significant from a socio-economic perspective). This part of the Danube lowland is called Trnava table. The geological substrate is loess or loess-loam, the most productive soils here are Chernozems, however, Luvisols are also significantly represented, and in areas with long-term intensive agricultural land use, some soils have degraded into Regosols (due to soil erosion). The mean annual temperature is 10.0 °C, and the mean annual precipitation is about 550 mm. This part of the LL belongs to the Pannonian biogeographical region.  
+The contrasting part of the Living Lab is located in the south-western part of Slovakia, in the Danube lowland. The cluster of sampling points is situated in the Trnavská tabuľa (Trnava Table), centred around the LUCAS point at coordinates 48.5349 N, 17.6634 E, in the vicinity of the town of Trnava, which has a population of about 66,000 inhabitants (146 m a.s.l.). This town is one of important centres of intensive agriculture and the food industry ((although in recent decades, the automotive industry and the nearby nuclear power plant have also become significant from a socio-economic perspective). This part of the Danube lowland is called Trnava table. The geological substrate is loess or loess-loam, the most productive soils here are Chernozems, however, Luvisols are also significantly represented, and in areas with long-term intensive agricultural land use, some soils have degraded into Regosols (due to soil erosion). The mean annual temperature is 10.0 °C, and the mean annual precipitation is about 550 mm. This part of the LL belongs to the Pannonian biogeographical region.
     `,
   },
 
-  // Finland
   {
     id: "ll-finland",
     title: "Living Lab in North Savo, Finland",
@@ -362,40 +327,38 @@ The contrasting part of the Living Lab is located in the south-western part of S
     image: LL_Finland,
     gallery: [],
     description: `
-The region of North Savo, or Pohjois-Savo in Finnish, is the sixth largest region of Finland and is spread over 17345 km2 of with 248190 of total population. It is located in Eastern Finland and borders with regions of South Savo, Central Finland, North Ostrobothnia and North Karelia. In the region there are 19 municipalities, and Kuopio is the biggest municipality with 124021 population. As per the population statistics, the population change from 2020 to 2023 in this region has been negative, - 0.01%. Over 62% of population in the region lives within and in the periphery of urban areas and about 56% of population share 18-64 working age group. 
+The region of North Savo, or Pohjois-Savo in Finnish, is the sixth largest region of Finland and is spread over 17345 km2 of with 248190 of total population. It is located in Eastern Finland and borders with regions of South Savo, Central Finland, North Ostrobothnia and North Karelia. In the region there are 19 municipalities, and Kuopio is the biggest municipality with 124021 population. As per the population statistics, the population change from 2020 to 2023 in this region has been negative, - 0.01%. Over 62% of population in the region lives within and in the periphery of urban areas and about 56% of population share 18-64 working age group.
 
 According to Köppen-Geiger climate classification the region of North Savo in Finland is categorized under continental subarctic climate (Dfc). Being situated in a northern latitude, North-Savo region experiences a large variation in air temperature within a year. The coldest months in the North-Savo region are January and February where air temperature can plummet down to -33 °C. The temperature starts to rise gradually with spring months and can reach up to 33 °C during June-July. The region has short growing seasons lasting about 150 days and expanding from May to September. While most of the precipitation in the region is in the form of snow during winter, July and August are the wettest months in the year where rainfall can reach up to 96 mm. The annual precipitation in the region is 617 mm per year.
 
-As the sixth largest county of Finland, North-Savo has a regional council and is a statutory joint authority representing inhabitant, municipalities and business interest nationally and internationally. All 19 municipalities of the region are members of the council. 
+As the sixth largest county of Finland, North-Savo has a regional council and is a statutory joint authority representing inhabitant, municipalities and business interest nationally and internationally. All 19 municipalities of the region are members of the council.
 
-Jointly with Ostrobothnia, the neighbouring region, North-Savo region is one of the largest milk and beef producing regions in Finland. Together, they are the biggest grass producing regions in Finland. Grass, milk and beef production is a crucial factor for socio-economic development of the region and the SUSGRASS Living Lab will play a major role towards achieving the sustainability of grassland-based livestock farming. 
+Jointly with Ostrobothnia, the neighbouring region, North-Savo region is one of the largest milk and beef producing regions in Finland. Together, they are the biggest grass producing regions in Finland. Grass, milk and beef production is a crucial factor for socio-economic development of the region and the SUSGRASS Living Lab will play a major role towards achieving the sustainability of grassland-based livestock farming.
     `,
   },
 
-  // Tuscany
   {
     id: "ll-tuscany",
     title: "Living Lab in Tuscany, Italy",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Tuscany,
     gallery: [],
     description: `
-‘Agro-SALUTE’ is a Living Lab of the SUS-SOIL network based in San Piero a Grado, Pisa. It is located at the Department of Veterinary Science (DSV) of the University of Pisa, in this centre students do their apprenticeships, researcher conduct various experiments but there are also productive fields. Pisa is one of the lowest density provinces in the region with 167 inhabitants per km2 for this reason it has strong agricultural traditions: cereals, sunflowers and forage crops are the most important crops of the area, olive groves and vineyards are also widespread as well as livestock farming. 
+‘Agro-SALUTE’ is a Living Lab of the SUS-SOIL network based in San Piero a Grado, Pisa. It is located at the Department of Veterinary Science (DSV) of the University of Pisa, in this centre students do their apprenticeships, researcher conduct various experiments but there are also productive fields. Pisa is one of the lowest density provinces in the region with 167 inhabitants per km2 for this reason it has strong agricultural traditions: cereals, sunflowers and forage crops are the most important crops of the area, olive groves and vineyards are also widespread as well as livestock farming.
 
 The location is found in central Tuscany, just 5 km from the see at it is located in a floodplain created by the Arno River, the second most important river in Central Italy. It presents a typical Mediterranean Climate causing rainfall to be concentrated in Spring and Autumn, and summer to be hot and dry.
 
-Agricultural practices in the area were heavily incentivized in the last century by land reclamation processes that involved huge areas of the Arno basin creating agricultural land from humid areas. The fluvial soil below the living lab fields is both clay soil and sandy soil enabling the Living Lab to be a perfect environment for experimentation. Agriculture in the area is at risk of extreme heat, scarcity of water but also floods and fires. 
+Agricultural practices in the area were heavily incentivized in the last century by land reclamation processes that involved huge areas of the Arno basin creating agricultural land from humid areas. The fluvial soil below the living lab fields is both clay soil and sandy soil enabling the Living Lab to be a perfect environment for experimentation. Agriculture in the area is at risk of extreme heat, scarcity of water but also floods and fires.
 
 The region Tuscany has dedicated many funds to agriculture related project within its boundaries, trough the PNRR and the RDP many activities related to agroforestry in mountains areas or funded farms to integrate activities related to environmental education, and community engagement. One third of the Tuscany farms is also certified as organic, Tuscany shows to be a thriving agricultural ecosystem and the Agro-SALUTE living lab aims to integrate the best environmental practices to farmers, following them during the course of the years and assist them in their transition.
     `,
   },
 
-  // Veneto (mapped to Continental)
   {
     id: "ll-veneto",
     title: "Living Lab in Veneto, Italy",
     regionId: "Continental",
-    image: "",
+    image: LL_Veneto,
     gallery: [],
     description: `
 The Living Lab "SUS-SOIL Agroforest Veneto" is located at Azienda Agricola Pettorina di Francesco da Schio, in Cambio di Villadose, within the Veneto region of northeastern Italy (coordinates: 45.090834, 11.929652) and within the Continental Biogeographical Region. This area lies in the fertile Po Valley, a vast and highly productive agricultural region between the Po and Adige rivers, two of the most significant waterways in northern Italy. Veneto is one of Italy’s twenty regions, with Venice as its capital, and is known for its strong agricultural, industrial, and tourism sectors. The province of Rovigo, where the Living Lab is situated, is characterized by extensive plains, a well-developed irrigation system, and a rural population density of approximately 130-140 inhabitants per km².
@@ -406,12 +369,11 @@ Politically, Veneto has a strong identity and has seen periodic pushes for great
     `,
   },
 
-  // Turkey
   {
     id: "ll-turkey",
     title: "Living Lab in Çukurova, Turkey",
     regionId: "Mediterranean",
-    image: "",
+    image: LL_Turkey,
     gallery: [],
     description: `
 The Central Taurus Mountains geographically border the Çukurova region to the north and west, the Amanos Mountains to the east, and the Mediterranean Sea to the south. Home to more than 7 million people, it also hosts some of Türkiye’s most significant cultural heritage sites.. The Çukurova plain is a geographical region known for its high agricultural potential. Çukurova is located in the top third of the most extensive agricultural plains. The Ceyhan, Seyhan, and Berdan Rivers irrigate the agricultural plains. Adana, one of the largest cities in the Çukurova plain, is primarily engaged in agriculture and related industries. With latitudes of approximately 37.053243°N and longitudes of 35.246517°E, the city has an approximate area of 13,844 km2 (2024 km²) and an elevation of approximately 133 meters above sea level.
@@ -422,13 +384,20 @@ Living Laboratories aim to protect and maintain the health of surface (0-30 cm) 
     `,
   },
 
-  // Netherlands (no detailed description provided beyond inclusion)
   {
     id: "ll-netherlands",
-    title: "Living Lab in the Netherlands",
+    title: "Living Lab in Gelderland, Netherlands",
     regionId: "Atlantic",
-    image: "",
+    image: LL_Netherlands,
     gallery: [],
-    description: "",
+    description: `
+The Netherlands is formed as the delta of the Rhine, Meuse and Scheldt river basins and therefore mainly has uncompacted Holocene soils consisting of sand, clay and peat in the North and West alongside the North Sea and bordering the elevated lands of the Pleistocene in the East and South towards Germany and Belgium.
+
+In the low part of The Netherlands soil compaction, salinization, soil ecology and climate change are the main challenges for the (sub)soil and in the higher parts especially drought and soil ecology. As The Netherlands is in the moderate sea climate of the Atlantic biogeographical region, extremes weather conditions tend to be toned down but are still noticeable.
+
+Different forested areas can be found amongst the Pleistocene ice pushed ridges in the East, where the Hondsrug Geopark is littered with Late Stone Age stone monuments and where continuity in the historical landscape in one of our finest national landscapes is showcased.
+
+While West-Netherlands is famous for its bulb fields, the North has potatoes and sugar beets. Potato seed potatoes from the northern clay area are exported to more than 90 countries. Dairy farming is the largest sector in the Northern Netherlands, accounting for 43% of the number of farms. Arable farms have a share of 24%, followed directly by the group of other grazing livestock farms with a share of 23%.
+    `,
   },
 ];
