@@ -1,6 +1,6 @@
 // ScrollToTop.jsx
 import { useLayoutEffect, useMemo, useState } from "react";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function prefersReducedMotion() {
   try {
@@ -10,78 +10,65 @@ function prefersReducedMotion() {
   }
 }
 
-function getScrollEl(containerSelector) {
-  if (containerSelector) return document.querySelector(containerSelector);
-  return document.scrollingElement || document.documentElement;
-}
-
-function scrollTopNow(containerSelector) {
-  const el = getScrollEl(containerSelector);
-  if (el) {
-    el.scrollTop = 0;
-    el.scrollLeft = 0;
-  }
+function scrollAllToTop() {
+  // 1) window
   window.scrollTo(0, 0);
+
+  // 2) scrolling element (Safari/Chrome)
+  const se = document.scrollingElement || document.documentElement;
+  if (se) se.scrollTop = 0;
+
+  // 3) cualquier contenedor con overflow que esté scrolleado
+  const nodes = document.querySelectorAll("body *");
+  for (const n of nodes) {
+    const st = n.scrollTop;
+    if (st > 0) {
+      const s = getComputedStyle(n);
+      if ((s.overflowY === "auto" || s.overflowY === "scroll") && n.scrollHeight > n.clientHeight + 5) {
+        n.scrollTop = 0;
+      }
+    }
+  }
 }
 
 export default function ScrollToTop({
-  containerSelector = null,
   enableFade = true,
   fadeMs = 140,
-
-  // ✅ nuevo: decide qué hacer en back/forward
-  scrollOnPop = true,
 } = {}) {
   const location = useLocation();
-  const navType = useNavigationType(); // PUSH / REPLACE / POP
   const [showOverlay, setShowOverlay] = useState(false);
-
   const reduceMotion = useMemo(() => prefersReducedMotion(), []);
 
   useLayoutEffect(() => {
-    // Evita “restauración” automática (a veces interfiere)
     try {
-      if ("scrollRestoration" in window.history) {
-        window.history.scrollRestoration = "manual";
-      }
+      if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
     } catch {}
 
-    // Si hay hash (#section), deja que el navegador salte al anchor
+    // Si hay hash (#section), no lo rompas
     if (location.hash) return;
 
-    // Si es POP y no quieres forzarlo, sales
-    if (navType === "POP" && !scrollOnPop) return;
-
     const doFade = enableFade && !reduceMotion;
-
     if (doFade) setShowOverlay(true);
 
-    scrollTopNow(containerSelector);
+    // 1) inmediato
+    scrollAllToTop();
 
-    const raf = requestAnimationFrame(() => {
-      scrollTopNow(containerSelector);
-    });
+    // 2) refuerzo 2 frames (layout + paint)
+    const raf1 = requestAnimationFrame(() => scrollAllToTop());
+    const raf2 = requestAnimationFrame(() => scrollAllToTop());
 
+    // 3) refuerzo corto
     const t = setTimeout(() => {
-      scrollTopNow(containerSelector);
+      scrollAllToTop();
       if (doFade) setShowOverlay(false);
     }, fadeMs);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
       clearTimeout(t);
     };
-  }, [
-    location.pathname,
-    location.search,
-    location.hash,
-    navType,
-    scrollOnPop,
-    containerSelector,
-    enableFade,
-    fadeMs,
-    reduceMotion,
-  ]);
+  }, [location.pathname, location.search, location.hash, enableFade, fadeMs, reduceMotion]);
 
   if (!enableFade || reduceMotion) return null;
 
