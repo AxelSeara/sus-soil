@@ -12,6 +12,7 @@ const ACTIVE_REGION_IDS = new Set([
   'Continental',
   'Pannonian',
   'Mediterranean',
+  'Alpine',
 ]);
 
 export default function LivingLabDetail() {

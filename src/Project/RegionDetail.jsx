@@ -1,7 +1,7 @@
 // src/Project/RegionDetail.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { regions } from '../data/regions';
+import { regions, livingLabs } from '../data/regions';
 
 const toSlug = (s) => s?.toLowerCase().replace(/\s+/g, '-');
 
@@ -32,7 +32,6 @@ export default function RegionDetail() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.title = region ? `${region.id} — Living Labs` : `Region not found — Living Labs`;
-    // 👉 solo mostramos "loading" si hay imagen
     setLoadingHero(!!region?.image);
   }, [region]);
 
@@ -67,6 +66,21 @@ export default function RegionDetail() {
   const colorStart = Array.isArray(region.color) ? region.color[0] : region.color || '#4b3a2f';
   const colorEnd   = Array.isArray(region.color) ? region.color[1] : '#ffffff';
   const hasHeroImage = !!region.image;
+
+  // ✅ Living Labs calculados por regionId / regionIds (multi-región)
+  const livingLabsInRegion = useMemo(() => {
+    const rid = region.id;
+
+    return (livingLabs || [])
+      .filter((lab) => {
+        const ids = Array.isArray(lab.regionIds)
+          ? lab.regionIds
+          : (lab.regionId ? [lab.regionId] : []);
+
+        return ids.includes(rid);
+      })
+      .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  }, [region]);
 
   return (
     <div className="container mx-auto px-6 py-16">
@@ -110,7 +124,7 @@ export default function RegionDetail() {
                 style={{ backgroundColor: bg }}
               >
                 {reg.id}
-            </Link>
+              </Link>
             );
           })}
         </div>
@@ -137,7 +151,6 @@ export default function RegionDetail() {
                 className="absolute inset-0 w-full h-full object-cover"
                 onLoad={() => setLoadingHero(false)}
               />
-              {/* Overlay suave para que el texto/label se lea bien */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-black/5" />
             </>
           ) : (
@@ -174,21 +187,21 @@ export default function RegionDetail() {
       )}
 
       {/* Living Labs Buttons */}
-      {Array.isArray(region.livingLabs) && region.livingLabs.length > 0 && (
+      {livingLabsInRegion.length > 0 && (
         <section className="max-w-3xl mx-auto mb-8">
           <h3 className="text-xl font-bold font-serif text-brown mb-4">Living Labs in this region</h3>
           <div className="flex flex-wrap gap-3">
-            {region.livingLabs.map((lab, idx) => {
-              const slug = toSlug(lab);
-              const to = `/living-labs/${toSlug(region.id)}/${slug}`;
+            {livingLabsInRegion.map((lab) => {
+              // Link estable usando lab.id (recomendado)
+              const to = `/living-labs/${toSlug(region.id)}/${lab.id}`;
               return (
                 <Link
-                  key={`${lab}-${idx}`}
+                  key={lab.id}
                   to={to}
                   className="px-4 py-2 rounded-full bg-gray-100 text-brown font-medium hover:bg-gray-100/80
                              focus:outline-none focus-visible:ring-2 ring-offset-2"
                 >
-                  {lab}
+                  {lab.title}
                 </Link>
               );
             })}
