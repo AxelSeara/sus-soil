@@ -6,7 +6,7 @@ import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.jpeg";
 import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.jpeg";
 import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.jpeg";
 import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.jpeg";
-import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.JPG";
+import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.jpg";
 import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.jpeg";
 import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.png";
 import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.jpeg";
