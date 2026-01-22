@@ -10,29 +10,27 @@ function prefersReducedMotion() {
   }
 }
 
+function getScrollEl(containerSelector) {
+  if (containerSelector) return document.querySelector(containerSelector);
+  return document.scrollingElement || document.documentElement;
+}
+
 function scrollTopNow(containerSelector) {
-  // Si tu app usa un contenedor con overflow (ej: main), pásalo por selector.
-  const el = containerSelector
-    ? document.querySelector(containerSelector)
-    : (document.scrollingElement || document.documentElement);
-
-  if (!el) return;
-
-  // “hard reset” (Safari a veces ignora el smooth/scrollTo simple)
-  el.scrollTop = 0;
-  el.scrollLeft = 0;
-
-  // Por si acaso el navegador está usando scroll en window:
+  const el = getScrollEl(containerSelector);
+  if (el) {
+    el.scrollTop = 0;
+    el.scrollLeft = 0;
+  }
   window.scrollTo(0, 0);
 }
 
 export default function ScrollToTop({
-  // Si NO tienes contenedor con overflow, déjalo como null.
   containerSelector = null,
-
-  // Fade muy sutil para que no parezca “misma página”.
   enableFade = true,
   fadeMs = 140,
+
+  // ✅ nuevo: decide qué hacer en back/forward
+  scrollOnPop = true,
 } = {}) {
   const location = useLocation();
   const navType = useNavigationType(); // PUSH / REPLACE / POP
@@ -41,43 +39,44 @@ export default function ScrollToTop({
   const reduceMotion = useMemo(() => prefersReducedMotion(), []);
 
   useLayoutEffect(() => {
-    // Recomendado para evitar que el browser restaure scroll por su cuenta.
+    // Evita “restauración” automática (a veces interfiere)
     try {
       if ("scrollRestoration" in window.history) {
         window.history.scrollRestoration = "manual";
       }
     } catch {}
 
-    // Si hay hash (#section) dejamos que el navegador gestione el scroll al anchor.
+    // Si hay hash (#section), deja que el navegador salte al anchor
     if (location.hash) return;
 
-    // Si vienes con back/forward (POP), normalmente es mejor respetar la posición.
-    // Si quieres forzar top incluso en back/forward, elimina este if.
-    if (navType === "POP") return;
+    // Si es POP y no quieres forzarlo, sales
+    if (navType === "POP" && !scrollOnPop) return;
 
     const doFade = enableFade && !reduceMotion;
 
     if (doFade) setShowOverlay(true);
 
-    // 1) scroll inmediato
     scrollTopNow(containerSelector);
 
-    // 2) refuerzo en el siguiente frame (evita que una imagen/layout te “devuelva” abajo)
-    requestAnimationFrame(() => {
+    const raf = requestAnimationFrame(() => {
       scrollTopNow(containerSelector);
     });
 
-    // 3) refuerzo corto tras layout/pintado (casos raros: fuentes, imágenes, etc.)
     const t = setTimeout(() => {
       scrollTopNow(containerSelector);
       if (doFade) setShowOverlay(false);
     }, fadeMs);
 
-    return () => clearTimeout(t);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(t);
+    };
   }, [
-    location.key,          // más fiable que pathname: cambia siempre en navegación nueva
+    location.pathname,
+    location.search,
     location.hash,
     navType,
+    scrollOnPop,
     containerSelector,
     enableFade,
     fadeMs,
