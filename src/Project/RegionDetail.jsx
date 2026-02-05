@@ -95,40 +95,7 @@ export default function RegionDetail() {
         </ol>
       </nav>
 
-      {/* Quick Menu */}
-      <div className="bg-white/80 backdrop-blur rounded-lg shadow-sm p-4 md:p-5 mb-8">
-        <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">Quick Menu</h2>
-        <div className="flex flex-wrap justify-center gap-3">
-          <Link
-            to="/living-labs"
-            className="px-4 py-2 rounded-full font-semibold shadow-sm transition hover:translate-y-[-1px]
-                       bg-white border border-brown/20 text-brown hover:bg-darkGreen hover:text-white
-                       focus:outline-none focus-visible:ring-2 ring-offset-2"
-          >
-            All Living Labs
-          </Link>
-
-          {quickRegions.map((reg) => {
-            const isActive = reg.id.toLowerCase() === region.id.toLowerCase();
-            const bg = isActive ? (Array.isArray(reg.color) ? reg.color[0] : reg.color) : '#f8f8f8';
-            const to = `/living-labs/${toSlug(reg.id)}`;
-
-            return (
-              <Link
-                key={reg.id}
-                to={to}
-                aria-current={isActive ? 'page' : undefined}
-                className={`px-4 py-2 rounded-full font-semibold shadow-sm transition hover:translate-y-[-1px]
-                            focus:outline-none focus-visible:ring-2 ring-offset-2
-                            ${isActive ? 'text-white' : 'text-brown hover:shadow-md'}`}
-                style={{ backgroundColor: bg }}
-              >
-                {reg.id}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      
 
       {/* Title + Info */}
       <header className="text-center mb-8">
