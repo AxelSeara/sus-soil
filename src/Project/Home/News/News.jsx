@@ -6,20 +6,20 @@ import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
 import { CardSkeleton } from '../../../components/Skeletons';
 
 const gridVariants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 1, y: 0 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { staggerChildren: 0.12, when: 'beforeChildren', duration: 0.45, ease: 'easeOut' }
+    transition: { staggerChildren: 0.08, when: 'beforeChildren', duration: 0.24, ease: 'easeOut' }
   }
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, scale: 0.96 },
+  hidden: { opacity: 1, scale: 1 },
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { type: 'spring', stiffness: 120, damping: 18 }
+    transition: { duration: 0.2, ease: 'easeOut' }
   }
 };
 
@@ -77,7 +77,7 @@ export default function NewsEventsHome() {
         if (cancelled) return;
         const sorted = [...allCat].sort((a, b) => new Date(b.date) - new Date(a.date));
         const latestNews = sorted.filter((p) => !isEventPost(p)).slice(0, 3);
-        const latestEvents = sorted.filter(isEventPost).slice(0, 4);
+        const latestEvents = sorted.filter(isEventPost).slice(0, 3);
         setNews(latestNews);
         setEvents(latestEvents);
       } catch (e) {
@@ -95,17 +95,17 @@ export default function NewsEventsHome() {
     return () => { cancelled = true; };
   }, [fetchAllCategory]);
 
-  const Card = ({ post }) => {
+  const Card = ({ post, featured = false, typeLabel }) => {
     const titleHtml = post.title?.rendered || 'Untitled';
     const titleText = stripHtml(titleHtml);
     const dateObj = new Date(post.date);
     const dateFormatted = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
     const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
-    const excerptText = shorten(stripHtml(post.excerpt?.rendered || ''), 140);
+    const excerptText = shorten(stripHtml(post.excerpt?.rendered || ''), featured ? 180 : 120);
 
     return (
       <motion.article
-        className="relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] overflow-hidden"
+        className={`relative group cursor-pointer bg-white p-5 md:p-6 rounded-2xl shadow-md border border-darkGreen/10 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-darkGreen flex flex-col overflow-hidden ${featured ? 'md:col-span-2 md:min-h-[27rem]' : 'min-h-[22rem]'}`}
         variants={cardVariants}
         aria-labelledby={`post-title-${post.id}`}
       >
@@ -130,6 +130,9 @@ export default function NewsEventsHome() {
         <p className="text-xs text-gray-500 mb-3 relative z-0">
           <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
         </p>
+        <span className="inline-flex w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full bg-lightGreen/25 text-darkGreen mb-3">
+          {typeLabel}
+        </span>
 
         {imgUrl ? (
           <div className="relative z-0">
@@ -137,16 +140,19 @@ export default function NewsEventsHome() {
               src={imgUrl}
               alt=""
               loading="lazy"
-              className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
+              className={`mb-4 rounded-xl object-cover w-full transition-transform duration-300 group-hover:scale-[1.03] ${featured ? 'h-52 md:h-56' : 'h-40'}`}
             />
           </div>
         ) : (
-          <div className="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4 relative z-0" aria-hidden="true">
+          <div className={`w-full bg-gray-200 flex items-center justify-center rounded-xl mb-4 relative z-0 ${featured ? 'h-52 md:h-56' : 'h-40'}`} aria-hidden="true">
             <span className="text-gray-500 text-xs">No image</span>
           </div>
         )}
 
         <p className="text-sm text-gray-700 mb-4 leading-relaxed relative z-0">{excerptText}</p>
+        <div className="mt-auto pt-3 border-t border-darkGreen/10 text-sm font-medium text-darkGreen">
+          Read article →
+        </div>
       </motion.article>
     );
   };
@@ -164,9 +170,14 @@ export default function NewsEventsHome() {
             <span className="text-brown text-3xl w-10 h-10 rounded-full bg-lightGreen/20 grid place-items-center" aria-hidden="true">
               {icon}
             </span>
-            <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-brown">
-              {title}
-            </h2>
+            <div>
+              <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-brown">
+                {title}
+              </h2>
+              {!loading && items.length > 0 && (
+                <p className="text-sm text-brown/70 mt-1">Latest 3 updates</p>
+              )}
+            </div>
           </div>
           {!loading && items.length > 0 && (
             <Link
@@ -184,15 +195,22 @@ export default function NewsEventsHome() {
 
         {/* Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[22rem]"
           variants={gridVariants}
-          initial="hidden"
+          initial={false}
           animate="visible"
           aria-live="polite"
         >
           {loading
             ? [...Array(3)].map((_, i) => <CardSkeleton key={i} />)
-            : items.map(p => <Card key={p.id} post={p} />)}
+            : items.map((p, idx) => (
+                <Card
+                  key={p.id}
+                  post={p}
+                  featured={idx === 0}
+                  typeLabel={title}
+                />
+              ))}
         </motion.div>
 
         {/* Error */}

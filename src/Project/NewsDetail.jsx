@@ -177,11 +177,26 @@ const isEventTag = (t) => {
 // Skeletons
 // ------------------------------
 const PostDetailSkeleton = () => (
-  <div className="container mx-auto px-4 py-6">
-    <Skeleton height={24} width="40%" className="mb-4" />
-    <Skeleton height={32} width="70%" className="mb-6" />
-    <Skeleton height={400} className="mb-6" />
-    <Skeleton count={5} />
+  <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-3 md:gap-8">
+    <div className="md:col-span-2">
+      <Skeleton height={14} width={260} className="mb-4" />
+      <Skeleton height={46} width="80%" className="mb-4" />
+      <Skeleton height={18} width="45%" className="mb-6" />
+      <Skeleton height={420} className="mb-8 rounded-md" />
+      <Skeleton height={16} count={7} className="mb-2" />
+    </div>
+    <aside className="md:col-span-1 mt-10 md:mt-0 space-y-8">
+      {[...Array(3)].map((_, idx) => (
+        <div key={idx}>
+          <Skeleton height={24} width={150} className="mb-4" />
+          <div className="space-y-3">
+            {[...Array(3)].map((__, i) => (
+              <RecentPostSkeleton key={`${idx}-${i}`} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </aside>
   </div>
 );
 const RecentPostSkeleton = () => (
@@ -532,7 +547,7 @@ export default function NewsDetail() {
   return (
     <div className="bg-white min-h-screen">
       {/* Progress */}
-      <div className="fixed left-0 right-0 top-0 h-1 z-40 bg-brown/10">
+      <div className="fixed left-0 right-0 top-16 h-1 z-40 bg-brown/10">
         <div className="h-full bg-brown transition-[width] duration-200" style={{ width: `${readProgress}%` }} aria-hidden="true" />
       </div>
 
@@ -546,11 +561,11 @@ export default function NewsDetail() {
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-3 md:gap-8">
         {/* MAIN */}
         <article ref={articleRef} className="md:col-span-2">
-          <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-3">
+          <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-4">
             <ol className="flex flex-wrap items-center gap-1">
-              <li><Link to="/" className="hover:underline">Home</Link></li>
+              <li><Link to="/" className="hover:text-darkGreen hover:underline">Home</Link></li>
               <li aria-hidden="true">/</li>
-              <li><Link to={isEvent ? "/news?filter=events" : "/news"} className="hover:underline">{isEvent ? 'Events' : 'News'}</Link></li>
+              <li><Link to={isEvent ? "/news?filter=events" : "/news"} className="hover:text-darkGreen hover:underline">{isEvent ? 'Events' : 'News'}</Link></li>
               <li aria-hidden="true">/</li>
               <li className="text-gray-700 line-clamp-1 max-w-[60ch]">{stripHtmlText(title)}</li>
             </ol>
@@ -651,7 +666,7 @@ export default function NewsDetail() {
             <div className="flex flex-wrap items-center gap-3 mt-6 mb-10">
               <button
                 onClick={handleShare}
-                className="bg-brown text-white px-4 py-2 rounded-full hover:bg-opacity-90 inline-flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+                className="bg-darkGreen text-white px-4 py-2 rounded-full hover:bg-darkGreen/90 inline-flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-darkGreen"
                 title="Share this post"
               >
                 <FaShareAlt />
@@ -667,7 +682,7 @@ export default function NewsDetail() {
                     setShareMsg('Copy failed');
                   }
                 }}
-                className="px-4 py-2 rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white inline-flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+                className="px-4 py-2 rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white inline-flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-darkGreen"
                 title="Copy link"
               >
                 <FaLink />
@@ -675,7 +690,7 @@ export default function NewsDetail() {
               </button>
               <Link
                 to={isEvent ? "/news?filter=events" : "/news"}
-                className="inline-flex items-center gap-2 bg-brown text-white py-2 px-6 rounded-full hover:bg-opacity-90 font-serif transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+                className="inline-flex items-center gap-2 bg-brown text-white py-2 px-6 rounded-full hover:bg-brown/90 font-serif transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-darkGreen"
               >
                 <FaArrowLeft />
                 Back to {isEvent ? 'Events' : 'News'}
@@ -735,11 +750,11 @@ export default function NewsDetail() {
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(rpTitle)}</div>
                         <div className="text-xs text-gray-500">{rpDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {rpTags.map((t) => (
-                            <Link key={t.id} to={`/news?filter=${encodeURIComponent(t.name)}`} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full hover:bg-darkGreen/10">
+                            <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
-                            </Link>
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -775,11 +790,11 @@ export default function NewsDetail() {
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(evTitle)}</div>
                         <div className="text-xs text-gray-500">{evDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {evTags.map((t) => (
-                            <Link key={t.id} to={`/news?filter=${encodeURIComponent(t.name)}`} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full hover:bg-darkGreen/10">
+                            <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
-                            </Link>
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -815,11 +830,11 @@ export default function NewsDetail() {
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(rTitle)}</div>
                         <div className="text-xs text-gray-500">{rDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {rTags.map((t) => (
-                            <Link key={t.id} to={`/news?filter=${encodeURIComponent(t.name)}`} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full hover:bg-darkGreen/10">
+                            <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
-                            </Link>
+                            </span>
                           ))}
                         </div>
                       </div>
