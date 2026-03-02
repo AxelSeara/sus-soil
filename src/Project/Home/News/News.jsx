@@ -1,21 +1,9 @@
 // src/components/NewsEventsHome.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
-
-function SkeletonCard() {
-  return (
-    <div
-      className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem] border border-gray-100"
-      aria-hidden="true"
-    >
-      <div className="h-6 bg-gray-200 rounded w-3/4" />
-      <div className="h-40 bg-gray-100 rounded" />
-      <div className="h-4 bg-gray-200 rounded w-1/2" />
-      <div className="h-10 bg-gray-200 rounded w-full mt-auto" />
-    </div>
-  );
-}
+import { CardSkeleton } from '../../../components/Skeletons';
 
 const gridVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -59,34 +47,7 @@ export default function NewsEventsHome() {
   const [errorNews, setErrorNews] = useState(null);
   const [errorEvents, setErrorEvents] = useState(null);
 
-  const perFetch = 12; // mantengo tu tamaño para News
-
-  // --- NEWS: sin tocar la lógica original (primer batch y 3 items) ---
-  const fetchBatch = useCallback(async () => {
-    const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&per_page=${perFetch}&_=${Date.now()}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Network error fetching posts');
-    return res.json();
-  }, [perFetch]);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const batch = await fetchBatch();
-        if (cancelled) return;
-        const newsPosts = batch.filter(p => !isEventPost(p)).slice(0, 3);
-        setNews(newsPosts);
-      } catch (e) {
-        if (!cancelled) setErrorNews(e.message);
-      } finally {
-        if (!cancelled) setLoadingNews(false);
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [fetchBatch]);
-
-  // --- EVENTS: paginar TODA la categoría 12 y filtrar por tag event/events ---
+  // --- NEWS y EVENTS: paginar categoría 12, ordenar por fecha y limitar ---
   const fetchAllCategory = useCallback(async (catId = 12) => {
     const perPage = 100; // máximo WP
     let page = 1;
@@ -114,12 +75,21 @@ export default function NewsEventsHome() {
       try {
         const allCat = await fetchAllCategory(12);
         if (cancelled) return;
-        const eventPosts = allCat.filter(isEventPost).sort((a, b) => new Date(b.date) - new Date(a.date));
-        setEvents(eventPosts); // ⬅️ TODOS los events
+        const sorted = [...allCat].sort((a, b) => new Date(b.date) - new Date(a.date));
+        const latestNews = sorted.filter((p) => !isEventPost(p)).slice(0, 3);
+        const latestEvents = sorted.filter(isEventPost).slice(0, 4);
+        setNews(latestNews);
+        setEvents(latestEvents);
       } catch (e) {
-        if (!cancelled) setErrorEvents(e.message);
+        if (!cancelled) {
+          setErrorNews(e.message);
+          setErrorEvents(e.message);
+        }
       } finally {
-        if (!cancelled) setLoadingEvents(false);
+        if (!cancelled) {
+          setLoadingNews(false);
+          setLoadingEvents(false);
+        }
       }
     })();
     return () => { cancelled = true; };
@@ -140,9 +110,9 @@ export default function NewsEventsHome() {
         aria-labelledby={`post-title-${post.id}`}
       >
         {/* stretched link: toda la tarjeta clickable con focus ring accesible */}
-        <a
-          href={`/news/${post.id}`}
-          className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
+        <Link
+          to={`/news/${post.id}`}
+          className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-darkGreen"
           aria-label={`Read more: ${titleText}`}
         />
 
@@ -184,7 +154,10 @@ export default function NewsEventsHome() {
   const Section = ({ title, icon, loading, items, error, seeAllHref }) => {
     if (!loading && items.length === 0 && !error) return null;
     return (
-      <section className="py-12 px-6 md:px-16 my-4" aria-labelledby={`${title.toLowerCase()}-heading`}>
+      <section
+        className="py-12 px-6 md:px-16 my-4 rounded-2xl border border-darkGreen/10 bg-white/70 backdrop-blur-sm shadow-[0_12px_32px_-24px_rgba(16,74,40,0.65)]"
+        aria-labelledby={`${title.toLowerCase()}-heading`}
+      >
         {/* Header */}
         <div className="flex items-center justify-center md:justify-between gap-6 mb-6">
           <div className="flex items-center gap-3">
@@ -196,13 +169,13 @@ export default function NewsEventsHome() {
             </h2>
           </div>
           {!loading && items.length > 0 && (
-            <a
-              href={seeAllHref}
+            <Link
+              to={seeAllHref}
               className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-brown text-brown hover:bg-brown hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
               aria-label={`Visit all ${title}`}
             >
               Visit all <FaArrowRight aria-hidden="true" />
-            </a>
+            </Link>
           )}
         </div>
 
@@ -218,7 +191,7 @@ export default function NewsEventsHome() {
           aria-live="polite"
         >
           {loading
-            ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
+            ? [...Array(3)].map((_, i) => <CardSkeleton key={i} />)
             : items.map(p => <Card key={p.id} post={p} />)}
         </motion.div>
 
@@ -231,7 +204,7 @@ export default function NewsEventsHome() {
   };
 
   return (
-    <>
+    <div className="max-w-screen-xl mx-auto px-2 md:px-4 py-6">
       <Section
         title="News"
         icon={<FaNewspaper />}
@@ -251,6 +224,6 @@ export default function NewsEventsHome() {
         error={errorEvents}
         seeAllHref="/news?filter=events"
       />
-    </>
+    </div>
   );
 }

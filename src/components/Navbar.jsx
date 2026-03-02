@@ -108,13 +108,28 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  // Close desktop dropdowns on outside click
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (!menus.project && !menus.resources) return;
+      const target = e.target;
+      const onProject = projectMenuRef.current?.contains(target);
+      const onResources = resourcesMenuRef.current?.contains(target);
+      if (!onProject && !onResources) {
+        setMenus({ project: false, resources: false });
+      }
+    }
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [menus.project, menus.resources]);
+
   const toggleMenu = (name) => {
     setMenus(prev => ({ project: false, resources: false, [name]: !prev[name] }));
   };
 
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
-  const navLinkClass = 'text-brown text-sm lg:text-base font-medium hover:text-darkGreen transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+  const navLinkClass = 'text-brown text-sm lg:text-base font-medium hover:text-darkGreen px-1 py-0.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white';
   const activeClass = 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4';
 
   const dropdownContainerClass = 'absolute left-0 top-full mt-2 bg-white text-brown rounded-md shadow-lg border border-gray-200 z-[1000] min-w-[220px] p-2 animate-fadeIn';
@@ -252,6 +267,14 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu Panel */}
+        {mobileOpen && (
+          <button
+            type="button"
+            className="lg:hidden fixed inset-0 top-16 bg-black/25 backdrop-blur-[1px] z-40"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu backdrop"
+          />
+        )}
         {mobileOpen && (
           <div
             id="mobile-nav-panel"

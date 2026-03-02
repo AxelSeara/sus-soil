@@ -35,12 +35,12 @@ export default function Footer() {
     location.pathname === path || location.pathname.startsWith(path + '/');
 
   const linkBase =
-    'flex items-center gap-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded';
+    'flex items-center gap-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded';
   const linkRest =
     'text-brown hover:text-white hover:bg-darkGreen/80 px-2 py-1 rounded-md';
-  const activeClass = 'underline decoration-2 underline-offset-4 text-white';
+  const activeClass = 'bg-darkGreen text-white';
   const socialBase =
-    'inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/80 text-brown shadow hover:bg-darkGreen hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white';
+    'inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/85 text-brown shadow hover:bg-darkGreen hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white';
 
   // Back to top
   const [showTop, setShowTop] = useState(false);
@@ -212,13 +212,16 @@ Your data, including personal information, may be stored on our servers. By usin
   };
 
   return (
-    <footer className="border-t border-gray-300 relative" aria-labelledby="footer-heading">
+    <footer
+      className="border-t border-darkGreen/20 relative bg-gradient-to-b from-[#eef8f0] via-[#f5fbf7] to-[#e8f4ec]"
+      aria-labelledby="footer-heading"
+    >
       <h2 id="footer-heading" className="sr-only">
         Site footer
       </h2>
 
       {/* Top Logos & Disclaimer */}
-      <div className="bg-white py-8 px-4">
+      <div className="py-10 px-4 bg-gradient-to-b from-white/70 to-[#eff8f1] border-b border-darkGreen/10">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           <div className="w-full flex flex-col md:flex-row justify-center items-center gap-16 mb-4">
             <img
@@ -250,10 +253,14 @@ Your data, including personal information, may be stored on our servers. By usin
 
       {/* Lower section */}
       <div
-        className="bg-cover bg-center bg-no-repeat px-6 py-14"
+        className="relative bg-cover bg-center bg-no-repeat px-6 py-14"
         style={{ backgroundImage: `url(${bgImage})` }}
       >
-        <div className="max-w-6xl mx-auto">
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#e7f5eb]/90 via-[#ecf8ef]/85 to-[#e0f0e6]/90"
+          aria-hidden="true"
+        />
+        <div className="relative max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Quick Links */}
             <nav aria-label="Quick links">
@@ -287,7 +294,7 @@ Your data, including personal information, may be stored on our servers. By usin
                 href="https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-brown text-white px-6 py-2 rounded-lg hover:bg-darkGreen transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white font-semibold text-sm"
+                className="inline-block bg-darkGreen text-white px-6 py-2 rounded-lg hover:bg-darkGreen/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white font-semibold text-sm"
                 aria-label="Subscribe to the SUS-SOIL newsletter (opens in a new tab)"
               >
                 Subscribe
@@ -330,7 +337,7 @@ Your data, including personal information, may be stored on our servers. By usin
               <button
                 type="button"
                 onClick={() => openModal('legal')}
-                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 Legal Notice
               </button>
@@ -338,7 +345,7 @@ Your data, including personal information, may be stored on our servers. By usin
               <button
                 type="button"
                 onClick={() => openModal('cookies')}
-                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 Cookie Policy
               </button>
@@ -346,7 +353,7 @@ Your data, including personal information, may be stored on our servers. By usin
               <button
                 type="button"
                 onClick={() => openModal('privacy')}
-                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 Privacy Policy
               </button>
@@ -357,14 +364,14 @@ Your data, including personal information, may be stored on our servers. By usin
 
       {/* Back to top */}
       <div
-        className={`fixed right-5 bottom-5 z-[1050] transition-opacity ${
+        className={`fixed right-5 bottom-5 z-[1050] transition-all duration-300 ${
           showTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <button
           type="button"
           onClick={scrollToTop}
-          className="group inline-flex items-center justify-center w-12 h-12 rounded-full bg-brown text-white shadow-lg hover:bg-darkGreen transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          className="group inline-flex items-center justify-center w-12 h-12 rounded-full bg-darkGreen text-white shadow-lg hover:bg-darkGreen/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           aria-label="Back to top"
         >
           <svg
@@ -387,7 +394,7 @@ Your data, including personal information, may be stored on our servers. By usin
       {/* Modal (Legal / Cookies / Privacy) - responsive con scroll y botón cerrar */}
       {modal.open && modal.type && (
         <div
-          className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-[1100] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
           role="dialog"
           aria-modal="true"
           aria-labelledby="legal-modal-title"
@@ -414,7 +421,7 @@ Your data, including personal information, may be stored on our servers. By usin
                 ref={closeBtnRef}
                 type="button"
                 onClick={closeModal}
-                className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-brown/20 text-brown hover:bg-darkGreen hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="inline-flex items-center justify-center w-9 h-9 rounded-md border border-brown/20 text-brown hover:bg-darkGreen hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 aria-label="Close"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -435,7 +442,7 @@ Your data, including personal information, may be stored on our servers. By usin
               <button
                 type="button"
                 onClick={closeModal}
-                className="w-full px-5 py-2 rounded-md bg-brown text-white font-medium hover:bg-darkGreen transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                className="w-full px-5 py-2 rounded-md bg-darkGreen text-white font-medium hover:bg-darkGreen/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
                 Close
               </button>
@@ -447,7 +454,6 @@ Your data, including personal information, may be stored on our servers. By usin
       {/* JSON-LD */}
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
       />
     </footer>

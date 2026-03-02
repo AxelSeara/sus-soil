@@ -97,7 +97,7 @@ function UnderConstruction() {
       <img src={logo} alt="Logo" className="w-32 mb-6" />
 
       <h1 className="text-3xl md:text-4xl font-bold mb-2 font-serif">
-        We're getting ready!
+        We&apos;re getting ready!
       </h1>
       <p className="text-lg md:text-xl mb-8">
         Our website is under construction.

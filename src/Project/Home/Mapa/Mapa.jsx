@@ -3,14 +3,14 @@ import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-import mapBase from '../../../assets/regions/map.png'; // fallback
-import noMap from '../../../assets/regions/Nomap.png';
-import borealImage from '../../../assets/regions/Boreal.png';
-import atlanticImage from '../../../assets/regions/Atlantic.png';
-import continentalImage from '../../../assets/regions/Continental.png';
-import pannonianImage from '../../../assets/regions/Pannonian.png';
-import mediterraneanImage from '../../../assets/regions/Mediterranean.png';
-import alpineImage from '../../../assets/regions/Alpine.png';
+import mapBase from '../../../assets/regions/map.webp'; // fallback
+import noMap from '../../../assets/regions/Nomap.webp';
+import borealImage from '../../../assets/regions/Boreal.webp';
+import atlanticImage from '../../../assets/regions/Atlantic.webp';
+import continentalImage from '../../../assets/regions/Continental.webp';
+import pannonianImage from '../../../assets/regions/Pannonian.webp';
+import mediterraneanImage from '../../../assets/regions/Mediterranean.webp';
+import alpineImage from '../../../assets/regions/Alpine.webp';
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -69,7 +69,7 @@ export default function Mapa() {
   };
 
   return (
-    <section className="relative py-24 px-4 bg-gradient-to-b from-lightGreen to-white">
+    <section className="relative py-24 px-4 bg-gradient-to-b from-white via-[#f5fbf7] to-[#edf8f1]">
       <div className="max-w-screen-xl mx-auto">
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
@@ -80,7 +80,7 @@ export default function Mapa() {
         >
           {/* Left column */}
           <motion.div
-            className="rounded-xl bg-white/70 backdrop-blur-lg shadow-md p-6 md:p-10"
+            className="rounded-2xl border border-darkGreen/10 bg-white/80 backdrop-blur-lg shadow-[0_18px_38px_-28px_rgba(20,64,37,0.7)] p-6 md:p-10"
             variants={itemVariants}
           >
             <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown mb-4">
@@ -156,7 +156,7 @@ export default function Mapa() {
               <Link
                 to={ctaTo}
                 aria-label={activeRegion ? `Go to ${regionData?.label}` : 'Go to Living Labs'}
-                className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 ring-offset-2"
+                className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen ring-offset-2"
                 style={{ backgroundColor: ctaBg }}
               >
                 {ctaLabel}
@@ -178,7 +178,7 @@ export default function Mapa() {
                 className="absolute inset-0 w-full h-full object-cover"
                 loading="eager"
                 decoding="async"
-                fetchpriority="high"
+                fetchPriority="high"
               />
               <AnimatePresence mode="wait">
                 {overlayImg && (

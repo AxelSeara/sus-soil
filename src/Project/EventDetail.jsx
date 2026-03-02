@@ -1,27 +1,12 @@
 // EventDetail.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import {
-  FaCamera,
   FaShareAlt,
   FaCalendarPlus,
 } from 'react-icons/fa';
-
-// Ícono X para Twitter
-const XIcon = ({ size = 16 }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M4.3,2.3L12,10l7.7-7.7c0.4-0.4,1-0.4,1.4,0l1.3,1.3c0.4,0.4,0.4,1,0,1.4L14,12l7.7,7.7
-      c0.4,0.4,0.4,1,0,1.4l-1.3,1.3c-0.4,0.4-1,0.4-1.4,0L12,14l-7.7,7.7c-0.4,0.4-1,0.4-1.4,0L1.6,20.3
-      c-0.4-0.4-0.4-1,0-1.4L9.3,12L1.6,4.3c-0.4-0.4-0.4-1,0-1.4l1.3-1.3C3.3,1.9,3.9,1.9,4.3,2.3z" />
-  </svg>
-);
+import { HeroSectionSkeleton } from '../components/Skeletons';
 
 // Helper: format date for Google Calendar (full day).
 const formatDateForCalendar = (dateStr) => {
@@ -67,11 +52,9 @@ export default function EventDetail() {
           text: `Check out this event: ${event.acf?.title}`,
           url: window.location.href,
         });
-      } catch (error) {
-        console.log('Sharing failed', error);
+      } catch {
+        // User cancelled share or platform failed silently.
       }
-    } else {
-      console.log('Web Share API not supported in this browser.');
     }
   };
 
@@ -109,18 +92,7 @@ export default function EventDetail() {
   }, [event, navigate]);
 
   if (loadingEvent) {
-    return (
-      <div className="container mx-auto px-4 py-6">
-        {/* Basic skeleton */}
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
-          <div className="w-full h-64 bg-gray-200 rounded mb-4"></div>
-          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-5/6 mb-4"></div>
-        </div>
-      </div>
-    );
+    return <HeroSectionSkeleton />;
   }
 
   if (!event) {
@@ -207,7 +179,7 @@ export default function EventDetail() {
           {/* Description */}
           <div
             className="text-brown leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: description }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
           ></div>
         </div>
 

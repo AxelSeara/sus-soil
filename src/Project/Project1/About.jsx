@@ -6,7 +6,7 @@ import { FiTarget, FiDatabase, FiTrendingUp, FiLayers, FiTool, FiShield } from '
 export default function About() {
   // Variants
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: {
       opacity: 1,
       transition: { when: 'beforeChildren', staggerChildren: 0.12 },
@@ -56,7 +56,10 @@ export default function About() {
   ];
 
   return (
-    <section className="max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8 py-16 text-brown relative">
+    <section
+      aria-labelledby="about-title"
+      className="max-w-screen-xl mx-auto px-4 md:px-6 lg:px-8 py-16 text-brown relative"
+    >
       {/* Background subtle pattern overlay (optional) */}
       <div
         aria-hidden="true"
@@ -65,9 +68,15 @@ export default function About() {
 
       {/* Título principal */}
       <div className="relative">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center tracking-tight">
+        <h1
+          id="about-title"
+          className="text-4xl md:text-5xl font-extrabold text-center tracking-tight"
+        >
           About SUS-SOIL
         </h1>
+        <p className="mt-4 text-center text-brown/75 max-w-2xl mx-auto">
+          Mission, approach, and expected outcomes.
+        </p>
         <div className="mt-4 mx-auto h-1 w-36 rounded-full bg-gradient-to-r from-lightGreen via-darkGreen to-lightGreen" />
       </div>
 
@@ -96,15 +105,20 @@ export default function About() {
       </div>
 
       {/* Subtítulo */}
-      <h2 className="text-3xl md:text-4xl font-semibold text-center mb-10">
+      <h2
+        id="about-outcomes-title"
+        className="text-3xl md:text-4xl font-semibold text-center mb-10"
+      >
         Main Outcomes
       </h2>
 
       {/* Grid animado */}
       <motion.div
+        role="list"
+        aria-labelledby="about-outcomes-title"
         className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 md:gap-8"
         variants={containerVariants}
-        initial="hidden"
+        initial={false}
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
       >
@@ -112,7 +126,8 @@ export default function About() {
           const Icon = o.icon || FiTarget;
             return (
             <motion.div
-              key={i}
+              role="listitem"
+              key={o.text}
               variants={cardVariants}
               className={
                 `group relative overflow-hidden rounded-2xl p-6 md:p-7 ` +
@@ -120,6 +135,7 @@ export default function About() {
                 `border border-lightGreen/40 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.12)] ` +
                 `transition-all duration-300 hover:shadow-[0_6px_22px_-4px_rgba(0,0,0,0.18)] ` +
                 `hover:border-lightGreen/60 hover:-translate-y-1 focus-within:-translate-y-1 focus-within:shadow-lg ` +
+                `motion-reduce:transform-none motion-reduce:transition-none ` +
                 (o.featured ? 'lg:col-span-2' : '')
               }
             >

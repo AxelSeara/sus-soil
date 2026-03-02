@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import DOMPurify from 'dompurify';
-import { FaShareAlt, FaArrowLeft, FaLink, FaArrowUp, FaArrowRight } from 'react-icons/fa';
+import { FaShareAlt, FaArrowLeft, FaLink, FaArrowRight } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import parse from 'html-react-parser';
@@ -12,6 +12,13 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import {
+  fetchPostById,
+  fetchRecentPosts,
+  fetchRecentEvents,
+  fetchRelatedPosts,
+  fetchPrevNextForPost,
+} from '../services/wpApi';
 
 // ------------------------------
 // Helpers búsqueda recursiva
@@ -41,8 +48,8 @@ function findFirstTag(node, tagName) {
 // Procesamiento HTML
 // ------------------------------
 function parseLeafletScriptForCoords(scriptText) {
-  const latMatch = scriptText.match(/"latitude":"([0-9.\-]+)"/);
-  const lngMatch = scriptText.match(/"longitude":"([0-9.\-]+)"/);
+  const latMatch = scriptText.match(/"latitude":"([0-9.-]+)"/);
+  const lngMatch = scriptText.match(/"longitude":"([0-9.-]+)"/);
   if (!latMatch || !lngMatch) return null;
   return { lat: latMatch[1], lng: lngMatch[1] };
 }
@@ -290,7 +297,6 @@ export default function NewsDetail() {
 
   // State
   const [post, setPost] = useState(undefined);
-  const [loadingPost, setLoadingPost] = useState(true);
 
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
@@ -303,12 +309,10 @@ export default function NewsDetail() {
 
   const [prevPost, setPrevPost] = useState(null);
   const [nextPost, setNextPost] = useState(null);
-  const [loadingPrevNext, setLoadingPrevNext] = useState(false);
 
   const [shareMsg, setShareMsg] = useState('');
   const [readProgress, setReadProgress] = useState(0);
   const [headings, setHeadings] = useState([]);
-  const [showTop, setShowTop] = useState(false);
 
   const articleRef = useRef(null);
 
@@ -323,32 +327,20 @@ export default function NewsDetail() {
 
     const fetchPost = async () => {
       setPost(undefined);
-      setLoadingPost(true);
       try {
-        const resp = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts/${numericId}?_embed&_=${Date.now()}`,
-          { signal: acPost.signal }
-        );
-        if (resp.status === 404) { setPost(null); return; }
-        const data = await resp.json();
+        const data = await fetchPostById(numericId, { signal: acPost.signal });
         setPost(data);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
         if (err.name !== 'AbortError') console.error('Error fetching post:', err);
-      } finally {
-        setLoadingPost(false);
       }
     };
 
-    const fetchRecentPosts = async () => {
+    const fetchRecent = async () => {
       setLoadingRecent(true);
       try {
-        const resp = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&per_page=5&order=desc&orderby=date&_embed&_=${Date.now()}`,
-          { signal: acRecent.signal }
-        );
-        const data = await resp.json();
-        setRecentPosts(Array.isArray(data) ? data : []);
+        const data = await fetchRecentPosts({ categoryId: CATEGORY_ID, perPage: 5, signal: acRecent.signal });
+        setRecentPosts(data);
       } catch (err) {
         if (err.name !== 'AbortError') console.error('Error fetching recent posts:', err);
       } finally {
@@ -356,15 +348,16 @@ export default function NewsDetail() {
       }
     };
 
-    const fetchRecentEvents = async () => {
+    const fetchEvents = async () => {
       setLoadingEvents(true);
       try {
-        const resp = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&tags=${EVENT_TAG_ID}&per_page=3&order=desc&orderby=date&_embed&_=${Date.now()}`,
-          { signal: acEvents.signal }
-        );
-        const data = await resp.json();
-        setRecentEvents(Array.isArray(data) ? data : []);
+        const data = await fetchRecentEvents({
+          categoryId: CATEGORY_ID,
+          eventTagId: EVENT_TAG_ID,
+          perPage: 3,
+          signal: acEvents.signal,
+        });
+        setRecentEvents(data);
       } catch (err) {
         if (err.name !== 'AbortError') console.error('Error fetching events:', err);
       } finally {
@@ -373,8 +366,8 @@ export default function NewsDetail() {
     };
 
     fetchPost();
-    fetchRecentPosts();
-    fetchRecentEvents();
+    fetchRecent();
+    fetchEvents();
 
     return () => {
       acPost.abort();
@@ -389,14 +382,9 @@ export default function NewsDetail() {
     if (tagArray.length === 0) return;
 
     const acRel = new AbortController();
-    const tagIds = tagArray.map((t) => t.id).join(',');
-
+    const tagIds = tagArray.map((t) => t.id);
     setLoadingRelated(true);
-    fetch(
-      `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=${tagIds}&per_page=3&exclude=${post.id}&_embed&_=${Date.now()}`,
-      { signal: acRel.signal }
-    )
-      .then((resp) => resp.json())
+    fetchRelatedPosts({ tagIds, excludeId: post.id, perPage: 3, signal: acRel.signal })
       .then((data) => setRelatedPosts(Array.isArray(data) ? data : []))
       .catch((err) => {
         if (err.name !== 'AbortError') console.error('Error fetching related:', err);
@@ -411,27 +399,19 @@ export default function NewsDetail() {
     const acPN = new AbortController();
 
     const run = async () => {
-      setLoadingPrevNext(true);
       try {
         const isEv = (post._embedded?.['wp:term']?.[1] || []).some(isEventTag);
-        const base = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}`;
-        const tagParam = isEv ? `&tags=${EVENT_TAG_ID}` : '';
-        const dateISO = encodeURIComponent(post.date);
-
-        const prevUrl = `${base}${tagParam}&before=${dateISO}&exclude=${post.id}&per_page=1&orderby=date&order=desc&_embed&_=${Date.now()}`;
-        const nextUrl = `${base}${tagParam}&after=${dateISO}&exclude=${post.id}&per_page=1&orderby=date&order=asc&_embed&_=${Date.now()}`;
-
-        const [prevResp, nextResp] = await Promise.all([
-          fetch(prevUrl, { signal: acPN.signal }),
-          fetch(nextUrl, { signal: acPN.signal }),
-        ]);
-        const [prevArr, nextArr] = await Promise.all([prevResp.json(), nextResp.json()]);
-        setPrevPost(Array.isArray(prevArr) && prevArr.length ? prevArr[0] : null);
-        setNextPost(Array.isArray(nextArr) && nextArr.length ? nextArr[0] : null);
+        const { prev, next } = await fetchPrevNextForPost({
+          post,
+          categoryId: CATEGORY_ID,
+          eventTagId: EVENT_TAG_ID,
+          isEvent: isEv,
+          signal: acPN.signal,
+        });
+        setPrevPost(prev);
+        setNextPost(next);
       } catch (err) {
         if (err.name !== 'AbortError') console.error('Prev/Next error:', err);
-      } finally {
-        setLoadingPrevNext(false);
       }
     };
 
@@ -450,13 +430,6 @@ export default function NewsDetail() {
       const pct = total > 0 ? (scrolled / total) * 100 : 0;
       setReadProgress(Math.max(0, Math.min(100, pct)));
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => setShowTop((typeof window !== 'undefined' ? window.scrollY : 0) > 600);
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
@@ -859,16 +832,6 @@ export default function NewsDetail() {
         </aside>
       </div>
 
-      {/* Back to top */}
-      {showTop && (
-        <button
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg bg-brown text-white p-3 hover:bg-opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
-          aria-label="Back to top"
-        >
-          <FaArrowUp />
-        </button>
-      )}
     </div>
   );
 }

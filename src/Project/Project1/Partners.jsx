@@ -20,8 +20,6 @@ import p16 from '../../../src/assets/partners/16.png'; // PEFC Italia
 import p17 from '../../../src/assets/partners/17.png'; // FEUGA
 import p18 from '../../../src/assets/partners/18.png'; // CIHEAM
 import p19 from '../../../src/assets/partners/19.png'; // Cukurova
-import p20 from '../../../src/assets/partners/20.png'; // senseen (optional)
-import p21 from '../../../src/assets/partners/21.png'; // wetsus (optional)
 import p22 from '../../../src/assets/partners/22.png'; // Heliopolis
 import p23 from '../../../src/assets/partners/23.png'; // A Carqueixa
 import p24 from '../../../src/assets/partners/24.png'; // Asociación Forestal de Galicia

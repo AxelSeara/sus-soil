@@ -13,7 +13,7 @@ const exts = new Set(['.png', '.jpg', '.jpeg']);
 // Ajusta calidades (buenos defaults)
 const WEBP_QUALITY = 78;  // 0–100 (75–82 suele ir bien)
 const AVIF_QUALITY = 50;  // 0–100 (35–55 suele ir bien)
-const MAKE_AVIF = true;   // si no quieres AVIF, pon false
+const MAKE_AVIF = false;  // usar solo WebP para evitar duplicados innecesarios
 
 async function* walk(dir) {
   let entries;

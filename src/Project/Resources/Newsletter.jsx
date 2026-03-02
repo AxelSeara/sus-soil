@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { ExternalLink } from 'lucide-react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
@@ -7,12 +8,20 @@ export default function Newsletter() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const newsletterCategoryId = 14;
+  const subscribeUrl =
+    'https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4';
 
   const fetchPosts = () => {
     fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100&_embed&_=${Date.now()}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error('Error fetching newsletter posts');
+        return res.json();
+      })
       .then((data) => {
-        setPosts(data);
+        const sorted = Array.isArray(data)
+          ? [...data].sort((a, b) => new Date(b.date) - new Date(a.date))
+          : [];
+        setPosts(sorted);
         setLoading(false);
       })
       .catch((err) => {
@@ -23,10 +32,6 @@ export default function Newsletter() {
 
   useEffect(() => {
     fetchPosts();
-    const interval = setInterval(() => {
-      fetchPosts();
-    }, 60000);
-    return () => clearInterval(interval);
   }, []);
 
   const formatDate = (dateString) => {
@@ -38,8 +43,27 @@ export default function Newsletter() {
     });
   };
 
+  const stripHtml = (html = '') => html.replace(/<[^>]+>/g, '').trim();
+
+  const SubscribeCard = ({ className = '' }) => (
+    <div className={`bg-white/90 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] p-6 border border-darkGreen/10 ${className}`}>
+      <h3 className="text-2xl font-serif font-semibold mb-4">Join Our Mailing List</h3>
+      <p className="text-sm text-brown mb-6">
+        Click the button below to sign up and receive project updates:
+      </p>
+      <a
+        href={subscribeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block bg-darkGreen hover:bg-darkGreen/90 text-white font-semibold px-6 py-3 rounded-full text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      >
+        Subscribe Now
+      </a>
+    </div>
+  );
+
   return (
-    <div className="bg-gradient-to-b from-lightGreen to-white py-20 px-4">
+    <section className="bg-gradient-to-b from-white via-[#f6fcf7] to-[#edf8f1] py-20 px-4">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start text-brown">
         
         {/* Columna izquierda */}
@@ -50,20 +74,7 @@ export default function Newsletter() {
           </p>
 
           {/* Caja de suscripción (móvil) */}
-          <div className="lg:hidden bg-white rounded-xl shadow-lg p-6 border border-brown/10 mb-10">
-            <h3 className="text-2xl font-serif font-semibold mb-4">Join Our Mailing List</h3>
-            <p className="text-sm text-brown mb-6">
-              Click the button below to sign up and receive project updates:
-            </p>
-            <a
-              href="https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-brown hover:bg-opacity-80 text-white font-semibold px-6 py-3 rounded-full text-center transition-all"
-            >
-              Subscribe Now
-            </a>
-          </div>
+          <SubscribeCard className="lg:hidden mb-10" />
 
           {/* Lista completa sin scroll interno */}
           <div className="flex-1 pr-2">
@@ -84,13 +95,16 @@ export default function Newsletter() {
               <ul className="space-y-12">
                 {posts.map((post) => {
                   const thumbnail = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+                  const cleanTitle = stripHtml(post.title?.rendered || 'Newsletter issue');
                   return (
-                    <li key={post.id} className="max-w-md">
+                    <li key={post.id} className="max-w-md rounded-2xl border border-darkGreen/10 bg-white/70 p-4 shadow-[0_12px_30px_-24px_rgba(20,66,38,0.7)]">
                       {thumbnail && (
                         <img
                           src={thumbnail}
-                          alt={post.title.rendered}
+                          alt={cleanTitle}
                           className="w-full aspect-square object-cover rounded-xl mb-4"
+                          loading="lazy"
+                          decoding="async"
                         />
                       )}
                       <a
@@ -99,14 +113,14 @@ export default function Newsletter() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-2xl font-semibold hover:underline hover:text-brown transition-colors"
                       >
-                        {post.title.rendered}
+                        {cleanTitle}
                         <ExternalLink size={16} />
                       </a>
                       <p className="text-sm text-gray-500 mt-1">{formatDate(post.date)}</p>
                       {post.excerpt?.rendered && (
                         <div
                           className="mt-3 text-base text-brown/80"
-                          dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt.rendered) }}
                         />
                       )}
                     </li>
@@ -122,21 +136,8 @@ export default function Newsletter() {
         </div>
 
         {/* Caja fija (escritorio) */}
-        <div className="hidden lg:block sticky top-20 self-start bg-white rounded-xl shadow-lg p-8 border border-brown/10 h-fit">
-          <h3 className="text-2xl font-serif font-semibold mb-4">Join Our Mailing List</h3>
-          <p className="text-sm text-brown mb-6">
-            Click the button below to sign up and receive project updates:
-          </p>
-          <a
-            href="https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-brown hover:bg-opacity-80 text-white font-semibold px-6 py-3 rounded-full text-center transition-all"
-          >
-            Subscribe Now
-          </a>
-        </div>
+        <SubscribeCard className="hidden lg:block sticky top-20 self-start h-fit p-8" />
       </div>
-    </div>
+    </section>
   );
 }

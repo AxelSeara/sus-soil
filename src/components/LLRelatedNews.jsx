@@ -1,21 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { FaNewspaper } from "react-icons/fa";
+import { CardSkeleton } from "./Skeletons";
 
 const stripHtml = (html = "") => (html ? html.replace(/<[^>]+>/g, "") : "");
 const shorten = (txt = "", n = 140) =>
   txt.length > n ? txt.slice(0, n).trimEnd() + "…" : txt;
-
-function SkeletonCard() {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[22rem] border border-gray-100">
-      <div className="h-6 bg-gray-200 rounded w-3/4" />
-      <div className="h-40 bg-gray-100 rounded" />
-      <div className="h-4 bg-gray-200 rounded w-1/2" />
-      <div className="h-10 bg-gray-200 rounded w-full mt-auto" />
-    </div>
-  );
-}
 
 const cardVariants = {
   hidden: { opacity: 0, scale: 0.96 },
@@ -117,7 +108,7 @@ export default function LLRelatedNews({
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[...Array(3)].map((_, i) => (
-            <SkeletonCard key={i} />
+            <CardSkeleton key={i} minHeight="min-h-[22rem]" />
           ))}
         </div>
       ) : (
@@ -151,9 +142,9 @@ export default function LLRelatedNews({
                 variants={cardVariants}
                 className="relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 flex flex-col min-h-[23rem] overflow-hidden"
               >
-                <a
-                  href={`/news/${post.id}`}
-                  className="absolute inset-0 z-10 rounded-xl"
+                <Link
+                  to={`/news/${post.id}`}
+                  className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
                   aria-label={`Read more: ${titleText}`}
                 />
 

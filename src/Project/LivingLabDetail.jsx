@@ -1,8 +1,8 @@
 // src/Project/LivingLabDetail.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { regions, livingLabs } from '../data/regions';
 import LLRelatedNews from "../components/LLRelatedNews";
+import { HeroSectionSkeleton } from '../components/Skeletons';
 
 const toSlug = (s) => s?.toString().trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -18,25 +18,46 @@ const ACTIVE_REGION_IDS = new Set([
 export default function LivingLabDetail() {
   const { regionId, labId } = useParams();
   const [loadingHero, setLoadingHero] = useState(true);
+  const [regionsData, setRegionsData] = useState([]);
+  const [livingLabsData, setLivingLabsData] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Lazy-load static regions/livingLabs data
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingData(true);
+    import('../data/regions')
+      .then((mod) => {
+        if (cancelled) return;
+        setRegionsData(mod.regions || []);
+        setLivingLabsData(mod.livingLabs || []);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingData(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const region = useMemo(() => {
-    if (!regionId) return null;
+    if (!regionId || !regionsData.length) return null;
     const found =
-      regions.find(
+      regionsData.find(
         (r) =>
           r.id.toLowerCase() === regionId.toLowerCase() ||
           toSlug(r.id) === regionId
       ) || null;
     if (!found) return null;
     return ACTIVE_REGION_IDS.has(found.id) ? found : null;
-  }, [regionId]);
+  }, [regionId, regionsData]);
 
   const lab = useMemo(() => {
-    if (!labId) return null;
+    if (!labId || !livingLabsData.length) return null;
     return (
-      livingLabs.find((l) => l.id === labId || toSlug(l.id) === labId) || null
+      livingLabsData.find((l) => l.id === labId || toSlug(l.id) === labId) || null
     );
-  }, [labId]);
+  }, [labId, livingLabsData]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -44,6 +65,15 @@ export default function LivingLabDetail() {
     const titleRegion = region?.id ? ` — ${region.id}` : '';
     document.title = `${titleLab}${titleRegion}`;
   }, [lab, region]);
+
+  const quickRegions = useMemo(
+    () => regionsData.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
+    [regionsData]
+  );
+
+  if (loadingData) {
+    return <HeroSectionSkeleton />;
+  }
 
   if (!lab || !region) {
     return (
@@ -63,11 +93,6 @@ export default function LivingLabDetail() {
     ? region.color[0]
     : region.color || '#4b3a2f';
   const colorEnd = Array.isArray(region.color) ? region.color[1] : '#ffffff';
-
-  const quickRegions = useMemo(
-    () => regions.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
-    []
-  );
 
   // 🔗 Tag slug para buscar noticias relacionadas en WP
   // Asumimos que el slug del tag en WP coincide con lab.id (ej: "ll-galicia")

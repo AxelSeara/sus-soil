@@ -1,18 +1,10 @@
 // src/components/News.jsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
-
-function SkeletonCard() {
-  return (
-    <div className="bg-white p-6 rounded-xl shadow-md animate-pulse flex flex-col space-y-4 min-h-[24rem]" aria-hidden="true">
-      <div className="h-6 bg-gray-300 rounded w-3/4" />
-      <div className="h-40 bg-gray-200 rounded" />
-      <div className="h-4 bg-gray-300 rounded w-1/2" />
-      <div className="h-10 bg-gray-300 rounded w-full mt-auto" />
-    </div>
-  );
-}
+import { fetchCategoryPage, fetchAllCategory } from '../services/wpApi';
+import { CardSkeleton } from '../components/Skeletons';
 
 const gridVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -69,7 +61,9 @@ export default function News() {
       const params = new URLSearchParams(window.location.search);
       const initial = params.get('filter');
       if (initial && initial.toLowerCase() === 'events') setFilterTag('events');
-    } catch {}
+    } catch {
+      // Ignore malformed URL params.
+    }
   }, []);
 
   // Fetch una página (carga incremental por defecto)
@@ -81,19 +75,12 @@ export default function News() {
       } else {
         setFetchingMore(true);
       }
-      const perPage = 12;
-      const response = await fetch(
-        `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=12&_embed&per_page=${perPage}&page=${requestedPage}&_=${Date.now()}`
-      );
-      if (!response.ok) {
-        if (response.status === 400 || response.status === 404) {
-          setHasMore(false);
-          return;
-        }
-        throw new Error('Error fetching posts');
-      }
-      const newPosts = await response.json();
-      if (newPosts.length < perPage) setHasMore(false);
+      const { posts: newPosts, hasMore } = await fetchCategoryPage({
+        categoryId: 12,
+        page: requestedPage,
+        perPage: 12,
+      });
+      setHasMore(hasMore);
       setPosts((prev) => (requestedPage === 1 ? newPosts : [...prev, ...newPosts]));
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -103,27 +90,6 @@ export default function News() {
       setLoadingPosts(false);
       setFetchingMore(false);
     }
-  }, []);
-
-  // Carga completa de TODA la categoría (para Events)
-  const fetchAllCategory = useCallback(async (catId = 12) => {
-    const perPage = 100;
-    let pageNum = 1;
-    let out = [];
-    while (true) {
-      const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${catId}&_embed&per_page=${perPage}&page=${pageNum}&_=${Date.now()}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        if (res.status === 400 || res.status === 404) break;
-        throw new Error('Error fetching full list');
-      }
-      const chunk = await res.json();
-      out = out.concat(chunk);
-      const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '0', 10);
-      if (!totalPages || pageNum >= totalPages) break;
-      pageNum += 1;
-    }
-    return out;
   }, []);
 
   // Carga inicial (página 1)
@@ -139,7 +105,7 @@ export default function News() {
         try {
           setLoadingPosts(true);
           setError(null);
-          const allCat = await fetchAllCategory(12);
+          const allCat = await fetchAllCategory({ categoryId: 12 });
           allCat.sort((a, b) => new Date(b.date) - new Date(a.date));
           setPosts(allCat);
           setHasMore(false);
@@ -154,7 +120,7 @@ export default function News() {
         }
       })();
     }
-  }, [filterTag, allLoaded, fetchAllCategory]);
+  }, [filterTag, allLoaded]);
 
   const loadMore = () => {
     if (!hasMore || fetchingMore) return;
@@ -268,16 +234,21 @@ export default function News() {
           </div>
         </div>
 
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          variants={gridVariants}
-          initial="hidden"
-          animate="visible"
-          aria-live="polite"
-        >
-          {loading
-            ? [...Array(3)].map((_, i) => <SkeletonCard key={i} />)
-            : items.map((post) => {
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8" aria-live="polite">
+            {[...Array(3)].map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={gridVariants}
+            initial={false}
+            animate="visible"
+            aria-live="polite"
+          >
+            {items.map((post) => {
                 const titleHtml = post.title?.rendered || 'No Title';
                 const titleText = titleHtml.replace(/<[^>]+>/g, '');
                 const date = new Date(post.date);
@@ -295,8 +266,8 @@ export default function News() {
                     aria-labelledby={`post-title-${post.id}`}
                   >
                     {/* stretched link: toda la tarjeta clickable con focus ring accesible */}
-                    <a
-                      href={`/news/${post.id}`}
+                    <Link
+                      to={`/news/${post.id}`}
                       className="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
                       aria-label={`Read more: ${titleText}`}
                     />
@@ -352,7 +323,8 @@ export default function News() {
                   </motion.article>
                 );
               })}
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* Load More Button */}
         {!loading && hasMore && (

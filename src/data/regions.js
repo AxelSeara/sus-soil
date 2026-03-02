@@ -1,26 +1,26 @@
 // src/data/regions.js
-import LL_France        from "../assets/thumbnails/ll/LL_France.jpg";
-import LL_Germany       from "../assets/thumbnails/ll/LL_Germany.png";
-import LL_Spain_Galicia from "../assets/thumbnails/ll/LL_Spain_Galicia.jpeg";
-import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.jpeg";
-import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.jpeg";
-import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.jpeg";
-import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.jpeg";
-import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.jpg";
-import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.jpeg";
-import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.png";
-import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.jpeg";
-import LL_Turkey        from "../assets/thumbnails/ll/LL_Turkey.jpeg";
-import LL_Netherlands   from "../assets/thumbnails/ll/LL_Netherlands.jpeg";
-import LL_Egypt         from "../assets/thumbnails/ll/LL_Egypt.jpeg";
-import LL_Portugal      from "../assets/thumbnails/ll/LL_Portugal.jpeg";
+import LL_France        from "../assets/thumbnails/ll/LL_France.webp";
+import LL_Germany       from "../assets/thumbnails/ll/LL_Germany.webp";
+import LL_Spain_Galicia from "../assets/thumbnails/ll/LL_Spain_Galicia.webp";
+import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.webp";
+import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.webp";
+import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.webp";
+import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.webp";
+import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.webp";
+import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.webp";
+import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.webp";
+import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.webp";
+import LL_Turkey        from "../assets/thumbnails/ll/LL_Turkey.webp";
+import LL_Netherlands   from "../assets/thumbnails/ll/LL_Netherlands.webp";
+import LL_Egypt         from "../assets/thumbnails/ll/LL_Egypt.webp";
+import LL_Portugal      from "../assets/thumbnails/ll/LL_Portugal.webp";
 
-import Region_Alpine        from "../assets/thumbnails/regions/Alpine.jpg";
-import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.jpg";
-import Region_Boreal        from "../assets/thumbnails/regions/Boreal.jpg";
-import Region_Continental   from "../assets/thumbnails/regions/Continental.jpg";
-import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.jpg";
-import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.jpg";
+import Region_Alpine        from "../assets/thumbnails/regions/Alpine.webp";
+import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.webp";
+import Region_Boreal        from "../assets/thumbnails/regions/Boreal.webp";
+import Region_Continental   from "../assets/thumbnails/regions/Continental.webp";
+import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.webp";
+import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.webp";
 
 // Biogeographic regions (texts exactly as provided)
 export const regions = [
@@ -313,8 +313,8 @@ The selection of Ilidža, Bugojno, and Živinice within the SUS-SOIL project ref
   gallery: [],
   description: `
   The Slovak Living Lab is located in two regions (or districts):  Zvolen and Trnava.  They differ in geology, relief, history of land use and socio-economic parameters. Sample point locations were selected to meet the requirements and objectives of the project, while also representing the landscape, geological, soil, land use, and socio-economic diversity of the region.
-Most of the sampling points are located in the Zvolenská kotlina (Zvolen Basin), forming a cluster near the LUCAS point at coordinates 48.5271 N, 19.1894 E, not far from the town of Zvolen. The centre of this region is Zvolen (about 300 m a.s.l.), a town with the population of about 39,000 inhabitants.  The Zvolen basin is surrounded by mountain ranges covered by managed broadleaved and mixed forests. The highest mountain is Poľana (1457 m a.s.l.), one of the highest extinct volcanos in Central Europe. The dominated geological substrates are andesites and other volcanic rocks. Most soils are classified as various subtypes of Cambisols.  In central part of this region, in the bottom of the Zvolen basin, the geological substrates are quaternary alluvial sediments and loams with Fluvisols (at the rivers) and Planosols. Mean annual temperature near Zvolen is 8.0 °C (decreasing with increasing altitude toward the surrounding mountains). The dominant land use is agriculture (mainly cropland, and to a certain extent also grassland). Several well-developed villages are here, and scattered settlement is characteristic at the periphery of the basin. This part of the LL belongs to the Alpine biogeographical region.  
-The contrasting part of the Living Lab is located in the south-western part of Slovakia, in the Danube lowland. The cluster of sampling points is situated in the Trnavská tabuľa (Trnava Table), centred around the LUCAS point at coordinates 48.5349 N, 17.6634 E, in the vicinity of the town of Trnava, which has a population of about 66,000 inhabitants (146 m a.s.l.). This town is one of important centres of intensive agriculture and the food industry ((although in recent decades, the automotive industry and the nearby nuclear power plant have also become significant from a socio-economic perspective). This part of the Danube lowland is called Trnava table. The geological substrate is loess or loess-loam, the most productive soils here are Chernozems, however, Luvisols are also significantly represented, and in areas with long-term intensive agricultural land use, some soils have degraded into Regosols (due to soil erosion). The mean annual temperature is 10.0 °C, and the mean annual precipitation is about 550 mm. This part of the LL belongs to the Pannonian biogeographical region.
+Most of the sampling points are located in the Zvolenska kotlina (Zvolen Basin), forming a cluster near the LUCAS point at coordinates 48.5271 N, 19.1894 E, not far from the town of Zvolen. The centre of this region is Zvolen (about 300 m a.s.l.), a town with the population of about 39,000 inhabitants. The Zvolen basin is surrounded by mountain ranges covered by managed broadleaved and mixed forests. The highest mountain is Polana (1457 m a.s.l.), one of the highest extinct volcanos in Central Europe. The dominated geological substrates are andesites and other volcanic rocks. Most soils are classified as various subtypes of Cambisols. In central part of this region, in the bottom of the Zvolen basin, the geological substrates are quaternary alluvial sediments and loams with Fluvisols (at the rivers) and Planosols. Mean annual temperature near Zvolen is 8.0 C (decreasing with increasing altitude toward the surrounding mountains). The dominant land use is agriculture (mainly cropland, and to a certain extent also grassland). Several well-developed villages are here, and scattered settlement is characteristic at the periphery of the basin. This part of the LL belongs to the Alpine biogeographical region.
+The contrasting part of the Living Lab is located in the south-western part of Slovakia, in the Danube lowland. The cluster of sampling points is situated in the Trnavska tabula (Trnava Table), centred around the LUCAS point at coordinates 48.5349 N, 17.6634 E, in the vicinity of the town of Trnava, which has a population of about 66,000 inhabitants (146 m a.s.l.). This town is one of important centres of intensive agriculture and the food industry (although in recent decades, the automotive industry and the nearby nuclear power plant have also become significant from a socio-economic perspective). This part of the Danube lowland is called Trnava table. The geological substrate is loess or loess-loam, the most productive soils here are Chernozems, however, Luvisols are also significantly represented, and in areas with long-term intensive agricultural land use, some soils have degraded into Regosols (due to soil erosion). The mean annual temperature is 10.0 C, and the mean annual precipitation is about 550 mm. This part of the LL belongs to the Pannonian biogeographical region.
 `,
 },
 

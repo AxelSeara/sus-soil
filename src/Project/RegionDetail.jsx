@@ -1,7 +1,7 @@
 // src/Project/RegionDetail.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { regions, livingLabs } from '../data/regions';
+import { HeroSectionSkeleton } from '../components/Skeletons';
 
 const toSlug = (s) => s?.toLowerCase().replace(/\s+/g, '-');
 
@@ -18,15 +18,36 @@ const ACTIVE_REGION_IDS = new Set([
 export default function RegionDetail() {
   const { regionId } = useParams();
   const [loadingHero, setLoadingHero] = useState(false);
+  const [regionsData, setRegionsData] = useState([]);
+  const [livingLabsData, setLivingLabsData] = useState([]);
+  const [loadingData, setLoadingData] = useState(true);
+
+  // Lazy-load static regions/livingLabs data to keep initial bundle smaller
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingData(true);
+    import('../data/regions')
+      .then((mod) => {
+        if (cancelled) return;
+        setRegionsData(mod.regions || []);
+        setLivingLabsData(mod.livingLabs || []);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingData(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Encontrar región (case-insensitive) y validar que esté activa
   const region = useMemo(() => {
-    if (!regionId) return null;
+    if (!regionId || !regionsData.length) return null;
     const found =
-      regions.find((r) => r.id.toLowerCase() === regionId.toLowerCase()) || null;
+      regionsData.find((r) => r.id.toLowerCase() === regionId.toLowerCase()) || null;
     if (!found) return null;
     return ACTIVE_REGION_IDS.has(found.id) ? found : null;
-  }, [regionId]);
+  }, [regionId, regionsData]);
 
   // UX: scroll arriba, actualizar título y estado de carga del hero
   useEffect(() => {
@@ -34,6 +55,26 @@ export default function RegionDetail() {
     document.title = region ? `${region.id} — Living Labs` : `Region not found — Living Labs`;
     setLoadingHero(!!region?.image);
   }, [region]);
+
+  // ✅ Living Labs calculados por regionId / regionIds (multi-región)
+  const livingLabsInRegion = useMemo(() => {
+    if (!region) return [];
+    const rid = region.id;
+
+    return (livingLabsData || [])
+      .filter((lab) => {
+        const ids = Array.isArray(lab.regionIds)
+          ? lab.regionIds
+          : (lab.regionId ? [lab.regionId] : []);
+
+        return ids.includes(rid);
+      })
+      .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+  }, [region, livingLabsData]);
+
+  if (loadingData) {
+    return <HeroSectionSkeleton />;
+  }
 
   if (!region) {
     return (
@@ -57,30 +98,9 @@ export default function RegionDetail() {
     );
   }
 
-  // 🎯 Solo regiones activas en el Quick Menu
-  const quickRegions = useMemo(
-    () => regions.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
-    []
-  );
-
   const colorStart = Array.isArray(region.color) ? region.color[0] : region.color || '#4b3a2f';
   const colorEnd   = Array.isArray(region.color) ? region.color[1] : '#ffffff';
   const hasHeroImage = !!region.image;
-
-  // ✅ Living Labs calculados por regionId / regionIds (multi-región)
-  const livingLabsInRegion = useMemo(() => {
-    const rid = region.id;
-
-    return (livingLabs || [])
-      .filter((lab) => {
-        const ids = Array.isArray(lab.regionIds)
-          ? lab.regionIds
-          : (lab.regionId ? [lab.regionId] : []);
-
-        return ids.includes(rid);
-      })
-      .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-  }, [region]);
 
   return (
     <div className="container mx-auto px-6 py-16">

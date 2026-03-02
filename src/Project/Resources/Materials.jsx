@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import {
   FaFilePdf,
   FaFileImage,
@@ -157,7 +158,7 @@ export default function Materials() {
 
                 <div
                   className="prose prose-sm max-w-none text-gray-700 mb-4"
-                  dangerouslySetInnerHTML={{ __html: m.content }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.content) }}
                 />
 
                 {m.file.url && (

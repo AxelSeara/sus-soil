@@ -42,7 +42,9 @@ export default function ScrollToTop({
   useLayoutEffect(() => {
     try {
       if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
-    } catch {}
+    } catch {
+      // No-op for browsers that block scrollRestoration assignment.
+    }
 
     // Si hay hash (#section), no lo rompas
     if (location.hash) return;

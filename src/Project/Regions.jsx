@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import portadaLLs from '../assets/regions/Mapa sección LLs.png';
+import portadaLLs from '../assets/regions/Mapa sección LLs.webp';
 
 // ✅ IMPORTAR DESDE DATA (fuente única)
 import { regions } from '../data/regions';

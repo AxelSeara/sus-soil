@@ -72,13 +72,13 @@ export default function Contact() {
   const messageLimit = 1000;
 
   return (
-    <section className="py-16 px-4 bg-gradient-to-b from-lightGreen to-white">
+    <section className="py-16 px-4 bg-gradient-to-b from-white via-[#f6fcf7] to-[#edf8f1]">
       <div className="max-w-screen-xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Columna izquierda: texto + redes */}
         <motion.div
           className="text-center lg:text-left"
           variants={fadeIn}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true }}
         >
@@ -127,7 +127,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group rounded-xl bg-white/80 p-4 shadow-sm ring-1 ring-black/5 hover:shadow-md transition
-                           text-brown hover:text-darkGreen focus:outline-none focus-visible:ring-2 ring-offset-2 flex items-center justify-center"
+                           text-brown hover:text-darkGreen focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen ring-offset-2 ring-offset-white flex items-center justify-center"
                 title={label}
               >
                 <Icon className="text-2xl" />
@@ -146,9 +146,9 @@ export default function Contact() {
         {/* Columna derecha: formulario */}
         <motion.form
           onSubmit={handleSubmit}
-          className="bg-white/90 backdrop-blur p-6 md:p-8 rounded-2xl shadow-md ring-1 ring-black/5 w-full"
+          className="bg-white/90 backdrop-blur p-6 md:p-8 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] border border-darkGreen/10 w-full"
           variants={fadeIn}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true }}
           noValidate

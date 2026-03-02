@@ -22,7 +22,6 @@ import logo17 from '../../../assets/partners/17.png';
 import logo18 from '../../../assets/partners/18.png';
 import logo19 from '../../../assets/partners/19.png';
 import logo20 from '../../../assets/partners/20.png';
-import logo21 from '../../../assets/partners/21.png';
 import logo22 from '../../../assets/partners/22.png';
 import logo23 from '../../../assets/partners/23.png';
 import logo24 from '../../../assets/partners/24.png';
@@ -60,7 +59,7 @@ const collaborators = [
 
 export default function Colaboradores() {
   return (
-    <section className="container mx-auto px-6 py-16 bg-white rounded-lg shadow-md mb-16">
+    <section className="max-w-screen-xl mx-auto px-6 py-16 bg-white/80 border border-darkGreen/10 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] mb-16">
       {/* Título */}
       <h2 className="text-3xl font-bold text-center mb-8 text-brown">
         Consortium
@@ -68,21 +67,21 @@ export default function Colaboradores() {
 
       {/* Grid de logos */}
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
-        {collaborators.map((collab, index) => (
+        {collaborators.map((collab) => (
           <a
-            key={index}
+            key={collab.alt}
             href={collab.url}
             target="_blank"
             rel="noopener noreferrer"
             title={collab.alt}
-            className="flex items-center justify-center p-2 bg-white 
-                       hover:bg-lightGreen/20 transition-colors
-                       rounded-md transform hover:scale-105"
+            className="flex items-center justify-center p-3 bg-white border border-darkGreen/10 hover:bg-lightGreen/20 transition-all duration-200 rounded-lg hover:scale-[1.03] hover:shadow-sm"
           >
             <img
               src={collab.logo}
               alt={collab.alt}
               className="h-16 md:h-20 object-contain"
+              loading="lazy"
+              decoding="async"
             />
           </a>
         ))}
