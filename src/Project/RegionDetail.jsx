@@ -26,11 +26,11 @@ export default function RegionDetail() {
   useEffect(() => {
     let cancelled = false;
     setLoadingData(true);
-    import('../data/regions')
-      .then((mod) => {
+    Promise.all([import('../data/regions'), import('../data/livingLabs')])
+      .then(([regionsMod, labsMod]) => {
         if (cancelled) return;
-        setRegionsData(mod.regions || []);
-        setLivingLabsData(mod.livingLabs || []);
+        setRegionsData(regionsMod.regions || []);
+        setLivingLabsData(labsMod.livingLabs || []);
       })
       .finally(() => {
         if (!cancelled) setLoadingData(false);
