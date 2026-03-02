@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 import { fetchCategoryPage, fetchAllCategory } from '../services/wpApi';
 import { CardSkeleton } from '../components/Skeletons';
+import SEO from '../components/SEO';
 
 const gridVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -54,6 +55,7 @@ export default function News() {
   const [hasMore, setHasMore] = useState(true);
   const [fetchingMore, setFetchingMore] = useState(false);
   const [allLoaded, setAllLoaded] = useState(false); // true cuando ya cargamos TODAS las páginas
+  const SITE_URL = (import.meta.env.VITE_SITE_URL || 'https://sus-soil.eu').replace(/\/+$/, '');
 
   // si viene ?filter=events en la URL, aplicarlo al montar
   useEffect(() => {
@@ -166,6 +168,36 @@ export default function News() {
     });
   }, [posts, filterTag, orderAsc]);
 
+  const isEventsView = filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event';
+  const pageTitle = isEventsView ? 'Events | SUS-SOIL' : 'News & Events | SUS-SOIL';
+  const pageDescription = isEventsView
+    ? 'Discover upcoming and recent SUS-SOIL events, workshops, and stakeholder activities.'
+    : 'Read the latest SUS-SOIL news and events on sustainable soil and subsoil management.';
+  const canonicalPath = isEventsView ? '/news?filter=events' : '/news';
+
+  const listStructuredData = useMemo(() => {
+    const itemListElement = filteredPosts.slice(0, 12).map((post, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${SITE_URL}/news/${post.id}`,
+      name: (post.title?.rendered || 'Untitled').replace(/<[^>]+>/g, ''),
+    }));
+
+    if (!itemListElement.length) return null;
+
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: pageTitle,
+      description: pageDescription,
+      url: `${SITE_URL}${canonicalPath}`,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement,
+      },
+    };
+  }, [filteredPosts, pageTitle, pageDescription, canonicalPath, SITE_URL]);
+
   const getExcerptText = (html) => {
     if (!html) return '';
     const text = html.replace(/<[^>]+>/g, '');
@@ -186,8 +218,6 @@ export default function News() {
       }
       return null;
     }
-
-    const isEventsView = filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event';
 
     return (
       <section className="py-12 px-6 md:px-16 my-8" aria-labelledby="news-heading">
@@ -291,7 +321,7 @@ export default function News() {
                       <div className="relative z-0">
                         <img
                           src={imgUrl}
-                          alt=""
+                          alt={titleText}
                           loading="lazy"
                           className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
                         />
@@ -355,5 +385,16 @@ export default function News() {
     );
   };
 
-  return <>{renderSection(filteredPosts, loadingPosts, 'News & Events')}</>;
+  return (
+    <>
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        canonicalPath={canonicalPath}
+        keywords="SUS-SOIL news, SUS-SOIL events, sustainable soil management, agroecology updates"
+        structuredData={listStructuredData}
+      />
+      {renderSection(filteredPosts, loadingPosts, 'News & Events')}
+    </>
+  );
 }

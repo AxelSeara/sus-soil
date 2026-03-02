@@ -138,7 +138,7 @@ export default function NewsEventsHome() {
           <div className="relative z-0">
             <img
               src={imgUrl}
-              alt=""
+              alt={`${typeLabel}: ${titleText}`}
               loading="lazy"
               className={`mb-4 rounded-xl object-cover w-full transition-transform duration-300 group-hover:scale-[1.03] ${featured ? 'h-52 md:h-56' : 'h-40'}`}
             />

@@ -1,12 +1,13 @@
 // EventDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import {
   FaShareAlt,
   FaCalendarPlus,
 } from 'react-icons/fa';
 import { HeroSectionSkeleton } from '../components/Skeletons';
+import SEO from '../components/SEO';
 
 // Helper: format date for Google Calendar (full day).
 const formatDateForCalendar = (dateStr) => {
@@ -33,8 +34,10 @@ const generateSlug = (title, date) => {
 };
 
 export default function EventDetail() {
-  const { id } = useParams();
+  const { id: routeId } = useParams();
   const navigate = useNavigate();
+  const routerLocation = useLocation();
+  const numericId = String(routeId || '').split('-')[0];
 
   const [event, setEvent] = useState(null);
   const [loadingEvent, setLoadingEvent] = useState(true);
@@ -64,7 +67,7 @@ export default function EventDetail() {
       try {
         setLoadingEvent(true);
         const response = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/event/${id}?_embed`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/event/${numericId}?_embed`
         );
         const data = await response.json();
         setEvent(data);
@@ -76,7 +79,7 @@ export default function EventDetail() {
       }
     };
     fetchEvent();
-  }, [id]);
+  }, [numericId]);
 
   // Once the event is loaded, update URL with slug
   useEffect(() => {
@@ -107,18 +110,53 @@ export default function EventDetail() {
   const title = event.acf?.title || event.title?.rendered || 'No Title';
   const imageUrl = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
   const date = event.acf?.date || event.date;
-  const location = event.acf?.location || '';
+  const eventLocation = event.acf?.location || '';
   const description = event.acf?.description || '';
+  const plainDescription = description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const canonical = `${window.location.origin}${routerLocation.pathname}`;
+  const eventStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: title,
+    startDate: date,
+    endDate: date,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: eventLocation
+      ? {
+          '@type': 'Place',
+          name: eventLocation,
+          address: eventLocation,
+        }
+      : undefined,
+    image: imageUrl || undefined,
+    description: plainDescription || `SUS-SOIL event: ${title}`,
+    organizer: {
+      '@type': 'Organization',
+      name: 'SUS-SOIL',
+      url: 'https://sus-soil.eu',
+    },
+    url: canonical,
+  };
 
   // Calendar link
   const calendarLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
     title
   )}&dates=${formatDateForCalendar(date)}/${formatDateForCalendar(date)}&details=${encodeURIComponent(
     description
-  )}&location=${encodeURIComponent(location)}`;
+  )}&location=${encodeURIComponent(eventLocation)}`;
 
   return (
     <div className="bg-white min-h-screen">
+      <SEO
+        title={`${title} | SUS-SOIL Event`}
+        description={plainDescription || `Details about the SUS-SOIL event: ${title}`}
+        canonicalUrl={canonical}
+        image={imageUrl || '/logo.webp'}
+        type="article"
+        keywords="SUS-SOIL event, soil conference, agroecology event, sustainable soil management"
+        structuredData={eventStructuredData}
+      />
       <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8">
         {/* LEFT COLUMN (1/4): date, Add to Calendar, share */}
         <div className="md:col-span-1 flex flex-col space-y-6 mt-16">
@@ -157,9 +195,9 @@ export default function EventDetail() {
           </h1>
 
           {/* Location (below title) */}
-          {location && (
+          {eventLocation && (
             <p className="text-brown text-sm mb-2">
-              <span className="font-semibold">Location:</span> {location}
+              <span className="font-semibold">Location:</span> {eventLocation}
             </p>
           )}
 
@@ -186,7 +224,7 @@ export default function EventDetail() {
         {/* RIGHT COLUMN (1/4): Google Maps, newsletter, back button */}
         <div className="md:col-span-1 flex flex-col space-y-6 mt- md:mt-0">
           {/* Google Maps */}
-          {location && (
+          {eventLocation && (
             <div>
               <h2 className="text-xl font-bold font-serif text-brown mb-2">
                 Event Location
@@ -194,7 +232,7 @@ export default function EventDetail() {
               <div className="border rounded-lg overflow-hidden shadow-lg">
                 <iframe
                   title="Event Location"
-                  src={`https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`}
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(eventLocation)}&output=embed`}
                   allowFullScreen
                   className="w-full h-64"
                 ></iframe>

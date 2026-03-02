@@ -554,7 +554,18 @@ export default function NewsDetail() {
       <Helmet>
         <title>{stripHtmlText(title)} | SUS-SOIL {isEvent ? 'Events' : 'News'}</title>
         <meta name="description" content={stripHtmlText(post.excerpt?.rendered) || 'News article'} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonical} />
+        <meta property="og:type" content={isEvent ? 'article' : 'article'} />
+        <meta property="og:site_name" content="SUS-SOIL" />
+        <meta property="og:title" content={`${stripHtmlText(title)} | SUS-SOIL`} />
+        <meta property="og:description" content={stripHtmlText(post.excerpt?.rendered) || 'News article'} />
+        <meta property="og:url" content={canonical} />
+        {imageUrl ? <meta property="og:image" content={imageUrl} /> : null}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${stripHtmlText(title)} | SUS-SOIL`} />
+        <meta name="twitter:description" content={stripHtmlText(post.excerpt?.rendered) || 'News article'} />
+        {imageUrl ? <meta name="twitter:image" content={imageUrl} /> : null}
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
