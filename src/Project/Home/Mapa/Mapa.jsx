@@ -57,8 +57,8 @@ export default function Mapa() {
   };
 
   return (
-    <section className="relative py-24 px-4 bg-gradient-to-b from-white via-[#f5fbf7] to-[#edf8f1]">
-      <div className="max-w-screen-xl mx-auto">
+    <section className="section-shell relative bg-gradient-to-b from-white via-[#f5fbf7] to-[#edf8f1]">
+      <div className="content-shell">
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           variants={containerVariants}
@@ -158,7 +158,7 @@ export default function Mapa() {
           </motion.div>
 
           {/* Right column: map */}
-          <motion.div className="w-full max-w-lg mx-auto lg:mx-0" variants={itemVariants}>
+          <motion.div className="motion-stable w-full max-w-lg mx-auto lg:mx-0" variants={itemVariants}>
             <div className="relative w-full aspect-square rounded-[28px] overflow-hidden shadow-sm">
               <img
                 src={noMap}
@@ -168,14 +168,14 @@ export default function Mapa() {
                 decoding="async"
                 fetchPriority="high"
               />
-              <AnimatePresence>
+              <AnimatePresence initial={false} mode="wait">
                 {overlayImg && (
                   <motion.img
                     key={overlayKey}
                     src={overlayImg}
                     alt={regionData ? `${regionData.label} overlay` : 'Map overlay'}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    initial={imageFadeScale.initial}
+                    className="motion-stable absolute inset-0 w-full h-full object-cover"
+                    initial={false}
                     animate={imageFadeScale.animate}
                     exit={imageFadeScale.exit}
                     transition={imageFadeScale.transition}

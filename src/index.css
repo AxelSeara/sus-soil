@@ -14,7 +14,7 @@
   }
 
   p, blockquote {
-    @apply text-base font-normal leading-relaxed;
+    @apply text-[15px] md:text-base font-normal leading-7;
   }
 
   /* Variables CSS */
@@ -49,6 +49,9 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   a,
@@ -63,6 +66,28 @@
 }
 
 @layer utilities {
+  .content-shell {
+    @apply mx-auto w-full max-w-screen-xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-shell {
+    @apply py-14 sm:py-16 lg:py-20;
+  }
+
+  .card-elevated {
+    @apply rounded-2xl border border-darkGreen/10 bg-white/80 shadow-[0_14px_34px_-26px_rgba(20,66,38,0.72)] backdrop-blur-[2px];
+  }
+
+  .meta-chip {
+    @apply inline-flex items-center rounded-full border border-darkGreen/20 bg-lightGreen/20 px-2.5 py-1 text-[11px] font-semibold leading-none text-darkGreen;
+  }
+
+  .motion-stable {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+  }
+
   .animate-fadeIn {
     animation: fadeIn 0.16s ease-out;
   }
@@ -75,7 +100,7 @@
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(2px);
+      transform: translateY(1px);
     }
     to {
       opacity: 1;

@@ -89,7 +89,7 @@ export default function LivingLabDetail() {
 
   if (!lab || !region || !labBelongsToRegion) {
     return (
-      <div className="container mx-auto px-6 py-16 text-center">
+      <div className="content-shell section-shell py-12 sm:py-14 text-center">
         <nav aria-label="Breadcrumb" className="mb-4">
           <ol className="inline-flex items-center gap-2 text-sm text-brown/70">
             <li><Link to="/living-labs" className="underline">Living Labs</Link></li>
@@ -119,7 +119,7 @@ export default function LivingLabDetail() {
   const llTagSlug = lab.id?.toLowerCase();
 
   return (
-    <div className="container mx-auto px-6 py-16">
+    <div className="content-shell section-shell py-12 sm:py-14">
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-6">
         <ol className="inline-flex items-center gap-2 text-sm text-brown/80">
@@ -149,7 +149,7 @@ export default function LivingLabDetail() {
       </nav>
 
       {/* Quick Menu */}
-      <div className="bg-white/80 backdrop-blur rounded-lg shadow-sm p-4 md:p-5 mb-8">
+      <div className="card-elevated rounded-lg p-4 md:p-5 mb-8">
         <h2 className="w-full text-center text-brown font-serif text-xl font-bold mb-4">
           Quick Menu
         </h2>

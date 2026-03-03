@@ -1,42 +1,42 @@
 export const EASE_STANDARD = [0.22, 1, 0.36, 1];
 
 export const sectionReveal = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0.01, y: 10 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: EASE_STANDARD },
+    transition: { duration: 0.42, ease: EASE_STANDARD },
   },
 };
 
 export const cardReveal = {
-  hidden: { opacity: 0, y: 16, scale: 0.985 },
+  hidden: { opacity: 0.01, y: 10, scale: 0.992 },
   visible: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { duration: 0.38, ease: EASE_STANDARD },
+    transition: { duration: 0.32, ease: EASE_STANDARD },
   },
 };
 
 export const listReveal = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0.01 },
   visible: {
     opacity: 1,
     transition: {
       when: 'beforeChildren',
-      staggerChildren: 0.1,
-      duration: 0.35,
+      staggerChildren: 0.08,
+      duration: 0.25,
       ease: EASE_STANDARD,
     },
   },
 };
 
 export const imageFadeScale = {
-  initial: { opacity: 0, scale: 0.985 },
+  initial: { opacity: 1, scale: 1 },
   animate: { opacity: 1, scale: 1 },
-  exit: { opacity: 0, scale: 0.985 },
-  transition: { duration: 0.35, ease: EASE_STANDARD },
+  exit: { opacity: 0.01, scale: 0.997 },
+  transition: { duration: 0.22, ease: EASE_STANDARD },
 };
 
 export const hoverLift = {

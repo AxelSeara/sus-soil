@@ -74,7 +74,7 @@ export default function NewsEventsHome() {
 
     return (
       <motion.article
-        className={`relative group cursor-pointer bg-white p-5 md:p-6 rounded-2xl shadow-md border border-darkGreen/10 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-darkGreen flex flex-col overflow-hidden ${featured ? 'md:col-span-2 md:min-h-[27rem]' : 'min-h-[22rem]'}`}
+        className={`motion-stable relative group cursor-pointer rounded-2xl border border-darkGreen/10 bg-white p-5 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl focus-within:shadow-xl focus-within:ring-2 focus-within:ring-darkGreen flex flex-col overflow-hidden ${featured ? 'md:col-span-2 md:min-h-[27rem]' : 'min-h-[22rem]'}`}
         variants={cardVariants}
         aria-labelledby={`post-title-${post.id}`}
       >
@@ -85,29 +85,25 @@ export default function NewsEventsHome() {
           aria-label={`Read more: ${titleText}`}
         />
 
-        <h3
-          id={`post-title-${post.id}`}
-          className="text-xl font-serif mb-2 text-brown font-semibold leading-tight relative z-0"
-        >
+        <div className="relative z-0 mb-3 flex flex-wrap items-center gap-2">
+          <span className="meta-chip">{typeLabel}</span>
+          <p className="text-xs text-gray-500">
+            <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
+          </p>
+        </div>
+
+        <h3 id={`post-title-${post.id}`} className="relative z-0 mb-3 text-xl font-serif font-semibold leading-tight text-brown">
           <span className="relative inline-block">
             <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
-            {/* subrayado animado limpio (no text-decoration) */}
             <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-brown scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
           </span>
         </h3>
 
-        <p className="text-xs text-gray-500 mb-3 relative z-0">
-          <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
-        </p>
-        <span className="inline-flex w-fit text-[11px] font-semibold px-2.5 py-1 rounded-full bg-lightGreen/25 text-darkGreen mb-3">
-          {typeLabel}
-        </span>
-
         {imageProps?.src ? (
-          <div className="relative z-0">
+          <div className="relative z-0 overflow-hidden rounded-xl">
             <img
               {...imageProps}
-              className={`mb-4 rounded-xl object-cover w-full transition-transform duration-300 group-hover:scale-[1.03] ${featured ? 'h-52 md:h-56' : 'h-40'}`}
+              className={`mb-4 w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] ${featured ? 'h-52 md:h-56' : 'h-40'}`}
             />
           </div>
         ) : (
@@ -116,8 +112,8 @@ export default function NewsEventsHome() {
           </div>
         )}
 
-        <p className="text-sm text-gray-700 mb-4 leading-relaxed relative z-0">{excerptText}</p>
-        <div className="mt-auto pt-3 border-t border-darkGreen/10 text-sm font-medium text-darkGreen">
+        <p className="relative z-0 mb-4 text-sm leading-relaxed text-gray-700">{excerptText}</p>
+        <div className="mt-auto border-t border-darkGreen/10 pt-3 text-sm font-medium text-darkGreen">
           Read article →
         </div>
       </motion.article>
@@ -128,21 +124,21 @@ export default function NewsEventsHome() {
     if (!loading && items.length === 0 && !error) return null;
     return (
       <section
-        className="py-12 px-6 md:px-16 my-4 rounded-2xl border border-darkGreen/10 bg-white/70 backdrop-blur-sm shadow-[0_12px_32px_-24px_rgba(16,74,40,0.65)]"
+        className="card-elevated my-4 p-5 sm:p-6 lg:p-8"
         aria-labelledby={`${title.toLowerCase()}-heading`}
       >
         {/* Header */}
-        <div className="flex items-center justify-center md:justify-between gap-6 mb-6">
+        <div className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <span className="text-brown text-3xl w-10 h-10 rounded-full bg-lightGreen/20 grid place-items-center" aria-hidden="true">
               {icon}
             </span>
             <div>
-              <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl md:text-4xl font-medium font-serif text-brown">
+              <h2 id={`${title.toLowerCase()}-heading`} className="text-3xl font-medium font-serif text-brown md:text-4xl">
                 {title}
               </h2>
               {!loading && items.length > 0 && (
-                <p className="text-sm text-brown/70 mt-1">Latest 3 updates</p>
+                <p className="mt-1 text-sm text-brown/70">Latest 3 updates</p>
               )}
             </div>
           </div>
@@ -158,11 +154,11 @@ export default function NewsEventsHome() {
         </div>
 
         {/* Divider suave */}
-        <div className="h-px bg-gradient-to-r from-transparent via-darkGreen/30 to-transparent mb-8" aria-hidden="true" />
+        <div className="mb-8 h-px bg-gradient-to-r from-transparent via-darkGreen/30 to-transparent" aria-hidden="true" />
 
         {/* Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-4 gap-6 min-h-[22rem]"
+          className="grid min-h-[22rem] grid-cols-1 gap-5 md:grid-cols-4 md:gap-6"
           variants={gridVariants}
           initial={false}
           animate="visible"
@@ -189,7 +185,7 @@ export default function NewsEventsHome() {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto px-2 md:px-4 py-6">
+    <div className="content-shell section-shell py-12 sm:py-14 lg:py-16">
       <Section
         title="News"
         icon={<FaNewspaper />}

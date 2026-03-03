@@ -188,7 +188,7 @@ export default function News() {
     if (!loading && items.length === 0) {
       if (filterTag.toLowerCase() === 'events' || filterTag.toLowerCase() === 'event') {
         return (
-          <section className="py-12 px-6 md:px-16 my-8">
+          <section className="content-shell section-shell py-10 sm:py-12">
             <h2 className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown mb-6">{title}</h2>
             <p className="text-center text-sm text-gray-500">No events found.</p>
           </section>
@@ -198,8 +198,8 @@ export default function News() {
     }
 
     return (
-      <section className="py-12 px-6 md:px-16 my-8" aria-labelledby="news-heading">
-        <div className="mb-10 rounded-2xl border border-darkGreen/10 bg-white/70 px-4 py-5 md:px-6 md:py-6 shadow-[0_10px_24px_-22px_rgba(20,66,38,0.8)]">
+      <section className="content-shell section-shell py-10 sm:py-12" aria-labelledby="news-heading">
+        <div className="card-elevated mb-8 px-4 py-5 md:px-6 md:py-6">
           <div className="flex flex-col gap-5">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
               <h2 id="news-heading" className="text-3xl md:text-4xl font-medium font-serif text-brown leading-tight">
@@ -250,14 +250,14 @@ export default function News() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8" aria-live="polite">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-7" aria-live="polite">
             {[...Array(3)].map((_, i) => (
               <CardSkeleton key={i} />
             ))}
           </div>
         ) : (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-7"
             variants={gridVariants}
             initial={false}
             animate="visible"
@@ -279,7 +279,7 @@ export default function News() {
                 return (
                   <motion.article
                     key={post.id}
-                    className="relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] overflow-hidden"
+                    className="motion-stable relative group cursor-pointer bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brown flex flex-col min-h-[24rem] overflow-hidden"
                     variants={cardVariants}
                     aria-labelledby={`post-title-${post.id}`}
                   >
@@ -290,10 +290,16 @@ export default function News() {
                       aria-label={`Read more: ${titleText}`}
                     />
 
-                    <h3
-                      id={`post-title-${post.id}`}
-                      className="text-xl font-serif mb-2 text-brown font-semibold leading-tight relative z-0"
-                    >
+                    <div className="relative z-0 mb-3 flex flex-wrap items-center gap-2">
+                      <span className="text-xs text-gray-500">
+                        <time dateTime={date.toISOString()}>{dateFormatted}</time>
+                      </span>
+                      {postTags.slice(0, 2).map((t) => (
+                        <span key={t.id} className="meta-chip">{t.name}</span>
+                      ))}
+                    </div>
+
+                    <h3 id={`post-title-${post.id}`} className="text-xl font-serif mb-3 text-brown font-semibold leading-tight relative z-0">
                       <span className="relative inline-block">
                         <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
                         {/* subrayado animado limpio */}
@@ -301,15 +307,11 @@ export default function News() {
                       </span>
                     </h3>
 
-                    <p className="text-xs text-gray-500 mb-3 relative z-0">
-                      <time dateTime={date.toISOString()}>{dateFormatted}</time>
-                    </p>
-
                     {imageProps?.src ? (
-                      <div className="relative z-0">
+                      <div className="relative z-0 overflow-hidden rounded-lg">
                         <img
                           {...imageProps}
-                          className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
+                          className="mb-4 object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       </div>
                     ) : (
@@ -325,9 +327,9 @@ export default function News() {
                       {excerptText}
                     </p>
 
-                    {postTags.length > 0 && (
+                    {postTags.length > 2 && (
                       <ul className="flex flex-wrap gap-2 mt-auto relative z-0" aria-label="Tags">
-                        {postTags.map((t) => (
+                        {postTags.slice(2).map((t) => (
                           <li key={t.id}>
                             <span className="inline-block bg-lightGreen/20 text-darkGreen text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
