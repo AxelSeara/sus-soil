@@ -43,10 +43,6 @@ export default function EventDetail() {
   const [event, setEvent] = useState(null);
   const [loadingEvent, setLoadingEvent] = useState(true);
 
-  // For newsletter form
-  const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterSuccess, setNewsletterSuccess] = useState('');
-
   // OS-based share
   const handleNativeShare = async () => {
     if (navigator.share && event) {
@@ -271,35 +267,14 @@ export default function EventDetail() {
               Stay Updated
             </h2>
             <p className="text-gray-600 mb-4 text-sm">
-              Join our newsletter to receive the latest updates on upcoming events.
+              Follow project updates and upcoming activities from the SUS-SOIL team.
             </p>
-            <form
-              className="flex flex-col space-y-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Placeholder subscription logic
-                setNewsletterSuccess('Subscribed successfully!');
-                setTimeout(() => setNewsletterSuccess(''), 3000);
-              }}
+            <Link
+              to="/resources/newsletter"
+              className="inline-flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2"
             >
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-700 text-sm"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors text-sm"
-              >
-                Subscribe Now
-              </button>
-            </form>
-            {newsletterSuccess && (
-              <p className="mt-2 text-green-600 text-sm">{newsletterSuccess}</p>
-            )}
+              Open Newsletter Archive
+            </Link>
           </div>
 
           {/* Back to events/news */}

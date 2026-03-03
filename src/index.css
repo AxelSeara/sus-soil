@@ -55,6 +55,11 @@
   button {
     @apply transition-colors duration-200;
   }
+
+  :focus-visible {
+    outline: 2px solid #1f6b4f;
+    outline-offset: 2px;
+  }
 }
 
 @layer utilities {
@@ -99,4 +104,22 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  transform: translateY(-140%);
+  background: #1f6b4f;
+  color: #ffffff;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  z-index: 60;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0.6rem);
 }

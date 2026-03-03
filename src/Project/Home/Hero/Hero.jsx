@@ -1,5 +1,5 @@
 // src/components/Hero.jsx
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import bgImage from '../../../assets/bg2.svg';
@@ -8,19 +8,6 @@ import { EASE_STANDARD, hoverLift, sectionReveal } from '../../../lib/motion';
 const MotionLink = motion(Link);
 
 export default function Hero() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Función para determinar si la pantalla es móvil
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <motion.div
       initial={false}
@@ -29,12 +16,11 @@ export default function Hero() {
       transition={{ duration: 0.6, ease: EASE_STANDARD }}
       style={{
         backgroundImage: `url(${bgImage})`,
-        backgroundAttachment: isMobile ? 'scroll' : 'fixed',
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
-      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden bg-scroll md:bg-fixed"
     >
       <div
         className="absolute inset-0 bg-gradient-to-b from-[#eff8f0]/45 via-[#f6fbf6]/30 to-white/50"

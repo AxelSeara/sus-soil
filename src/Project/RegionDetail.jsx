@@ -136,6 +136,8 @@ export default function RegionDetail() {
                 src={region.image}
                 alt={`${region.id} region`}
                 className="absolute inset-0 w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
                 onLoad={() => setLoadingHero(false)}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-black/5" />

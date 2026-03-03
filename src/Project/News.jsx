@@ -199,46 +199,53 @@ export default function News() {
 
     return (
       <section className="py-12 px-6 md:px-16 my-8" aria-labelledby="news-heading">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
-          <h2 id="news-heading" className="text-3xl md:text-4xl font-medium font-serif text-center md:text-left text-brown">
-            {title}
-          </h2>
-
-          <div className="flex flex-wrap justify-center md:justify-end gap-4">
-            <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Filter posts by tag">
-              {allTags.map((tag) => {
-                const value = tag.toLowerCase() === 'event' ? 'Events' : tag;
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => {
-                      setFilterTag(value);
-                      if ((value.toLowerCase() === 'events' || value.toLowerCase() === 'event') && !allLoaded) {
-                        setHasMore(false);
-                        setPage(1);
-                      }
-                    }}
-                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown ${
-                      filterTag.toLowerCase() === value.toLowerCase()
-                        ? 'bg-brown text-white'
-                        : 'bg-gray-100 text-brown hover:bg-brown hover:text-white'
-                    }`}
-                    aria-pressed={filterTag.toLowerCase() === value.toLowerCase()}
-                  >
-                    {value}
-                  </button>
-                );
-              })}
+        <div className="mb-10 rounded-2xl border border-darkGreen/10 bg-white/70 px-4 py-5 md:px-6 md:py-6 shadow-[0_10px_24px_-22px_rgba(20,66,38,0.8)]">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-2">
+              <h2 id="news-heading" className="text-3xl md:text-4xl font-medium font-serif text-brown leading-tight">
+                {title}
+              </h2>
+              <p className="text-sm text-brown/70">
+                {filteredPosts.length} {filteredPosts.length === 1 ? 'entry' : 'entries'}
+              </p>
             </div>
 
-            <button
-              onClick={toggleOrder}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white font-semibold text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown"
-              aria-label={orderAsc ? 'Orden cronológico descendente (más recientes primero)' : 'Orden cronológico ascendente (más antiguas primero)'}
-            >
-              {orderAsc ? <FaSortAmountUp aria-hidden="true" /> : <FaSortAmountDown aria-hidden="true" />}
-              <span>{orderAsc ? 'Oldest → Newest' : 'Newest → Oldest'}</span>
-            </button>
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3">
+              <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Filter posts by tag">
+                {allTags.map((tag) => {
+                  const value = tag.toLowerCase() === 'event' ? 'Events' : tag;
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => {
+                        setFilterTag(value);
+                        if ((value.toLowerCase() === 'events' || value.toLowerCase() === 'event') && !allLoaded) {
+                          setHasMore(false);
+                          setPage(1);
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold leading-none min-h-[38px] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown ${
+                        filterTag.toLowerCase() === value.toLowerCase()
+                          ? 'bg-brown text-white'
+                          : 'bg-gray-100 text-brown hover:bg-brown hover:text-white'
+                      }`}
+                      aria-pressed={filterTag.toLowerCase() === value.toLowerCase()}
+                    >
+                      {value}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                onClick={toggleOrder}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white font-semibold text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown self-start xl:self-auto"
+                aria-label={orderAsc ? 'Orden cronológico descendente (más recientes primero)' : 'Orden cronológico ascendente (más antiguas primero)'}
+              >
+                {orderAsc ? <FaSortAmountUp aria-hidden="true" /> : <FaSortAmountDown aria-hidden="true" />}
+                <span>{orderAsc ? 'Oldest → Newest' : 'Newest → Oldest'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -356,8 +363,16 @@ export default function News() {
         )}
 
         {error && (
-          <div className="text-center text-red-600 mt-8" role="alert">
-            {error}
+          <div className="mt-8 rounded-xl border border-red-200 bg-red-50 px-4 py-5 text-center" role="alert">
+            <p className="text-red-700 font-medium">Could not load content right now.</p>
+            <p className="text-sm text-red-600 mt-1">{error}</p>
+            <button
+              type="button"
+              onClick={() => fetchPosts(1)}
+              className="mt-4 inline-flex items-center rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2"
+            >
+              Try again
+            </button>
           </div>
         )}
       </section>

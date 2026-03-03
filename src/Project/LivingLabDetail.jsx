@@ -59,12 +59,24 @@ export default function LivingLabDetail() {
     );
   }, [labId, livingLabsData]);
 
+  const labBelongsToRegion = useMemo(() => {
+    if (!lab || !region) return false;
+    const ids = Array.isArray(lab.regionIds)
+      ? lab.regionIds
+      : (lab.regionId ? [lab.regionId] : []);
+    return ids.includes(region.id);
+  }, [lab, region]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const titleLab = lab?.title || 'Living Lab';
     const titleRegion = region?.id ? ` — ${region.id}` : '';
     document.title = `${titleLab}${titleRegion}`;
   }, [lab, region]);
+
+  useEffect(() => {
+    setLoadingHero(true);
+  }, [lab?.id]);
 
   const quickRegions = useMemo(
     () => regionsData.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
@@ -75,13 +87,21 @@ export default function LivingLabDetail() {
     return <HeroSectionSkeleton />;
   }
 
-  if (!lab || !region) {
+  if (!lab || !region || !labBelongsToRegion) {
     return (
       <div className="container mx-auto px-6 py-16 text-center">
+        <nav aria-label="Breadcrumb" className="mb-4">
+          <ol className="inline-flex items-center gap-2 text-sm text-brown/70">
+            <li><Link to="/living-labs" className="underline">Living Labs</Link></li>
+            <li aria-hidden="true">/</li>
+            <li className="text-brown font-semibold">Not found</li>
+          </ol>
+        </nav>
         <h2 className="text-2xl font-bold text-red-500 mb-3">Living Lab not found</h2>
+        <p className="text-brown/80 mb-6">The requested Living Lab does not belong to this region or does not exist.</p>
         <Link
           to="/living-labs"
-          className="inline-block bg-brown text-white py-2 px-6 rounded-lg hover:bg-opacity-90"
+          className="inline-block bg-brown text-white py-2 px-6 rounded-lg hover:bg-opacity-90 focus:outline-none focus-visible:ring-2 ring-offset-2"
         >
           Back to Living Labs
         </Link>
@@ -184,6 +204,8 @@ export default function LivingLabDetail() {
                 src={lab.image}
                 alt={lab.title}
                 className="absolute inset-0 w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
                 onLoad={() => setLoadingHero(false)}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';

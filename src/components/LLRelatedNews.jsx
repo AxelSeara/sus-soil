@@ -18,7 +18,7 @@ export default function LLRelatedNews({
   llTagSlug,
   // opcional: si algún día prefieres pasar el ID directamente
   llTagId,
-  perPage = 100,
+  perPage = 12,
 }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
