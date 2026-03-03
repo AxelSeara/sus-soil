@@ -81,26 +81,44 @@ export default function Navbar() {
     setMobileOpen(false);
   }, []);
 
-  useEscape(closeAllMenus);
+  const closeMobileMenu = useCallback((restoreFocus = false) => {
+    setMenus({ project: false, resources: false });
+    setMobileOpen(false);
+    if (restoreFocus) {
+      requestAnimationFrame(() => mobileMenuButtonRef.current?.focus());
+    }
+  }, []);
+
+  const handleEscape = useCallback(() => {
+    const wasMobileOpen = mobileOpen;
+    closeAllMenus();
+    if (wasMobileOpen) {
+      requestAnimationFrame(() => mobileMenuButtonRef.current?.focus());
+    }
+  }, [mobileOpen, closeAllMenus]);
+
+  useEscape(handleEscape);
   useFocusTrap(mobileOpen, mobileMenuRef, firstMobileLinkRef);
 
   // Disable body scroll while mobile menu open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : 'auto';
-    return () => { document.body.style.overflow = 'auto'; };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = mobileOpen ? 'hidden' : prevOverflow || '';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
   }, [mobileOpen]);
 
   // Close mobile menu if resized to desktop
   useEffect(() => {
     function handleResize() {
       if (window.innerWidth >= 1024) {
-        setMobileOpen(false);
-        document.body.style.overflow = 'auto';
+        closeMobileMenu();
       }
     }
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [closeMobileMenu]);
 
   // Close dropdowns when navigating
   useEffect(() => {
@@ -120,7 +138,11 @@ export default function Navbar() {
       }
     }
     document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
   }, [menus.project, menus.resources]);
 
   const toggleMenu = (name) => {
@@ -150,7 +172,7 @@ export default function Navbar() {
               ref={mobileMenuButtonRef}
               type="button"
               className="lg:hidden p-2 text-gray-600 rounded-md hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white transition-colors duration-200"
-              onClick={() => setMobileOpen(o => !o)}
+              onClick={() => (mobileOpen ? closeMobileMenu(true) : setMobileOpen(true))}
               aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
               aria-controls="mobile-nav-panel"
@@ -163,7 +185,7 @@ export default function Navbar() {
           <div className="hidden lg:flex lg:pl-8">
             <ul className="flex items-center gap-6" role="menubar" aria-label="Primary">
               <li>
-                <Link to="/" className={`${navLinkClass} ${isActive('/') ? activeClass : ''}`}>Home</Link>
+                <Link to="/" className={`${navLinkClass} ${isActive('/') ? activeClass : ''}`} aria-current={isActive('/') ? 'page' : undefined}>Home</Link>
               </li>
               <li className="relative" ref={projectMenuRef}>
                 <button
@@ -216,13 +238,13 @@ export default function Navbar() {
                 )}
               </li>
               <li>
-                <Link to="/living-labs" className={`${navLinkClass} ${isActive('/living-labs') ? activeClass : ''}`}>Living Labs</Link>
+                <Link to="/living-labs" className={`${navLinkClass} ${isActive('/living-labs') ? activeClass : ''}`} aria-current={isActive('/living-labs') ? 'page' : undefined}>Living Labs</Link>
               </li>
               <li>
-                <Link to="/news" className={`${navLinkClass} ${isActive('/news') ? activeClass : ''}`}>News</Link>
+                <Link to="/news" className={`${navLinkClass} ${isActive('/news') ? activeClass : ''}`} aria-current={isActive('/news') ? 'page' : undefined}>News</Link>
               </li>
               <li>
-                <Link to="/contact" className={`${navLinkClass} ${isActive('/contact') ? activeClass : ''}`}>Contact</Link>
+                <Link to="/contact" className={`${navLinkClass} ${isActive('/contact') ? activeClass : ''}`} aria-current={isActive('/contact') ? 'page' : undefined}>Contact</Link>
               </li>
               <li className="flex items-center space-x-4 ml-4" aria-label="Social media">
                 <a
@@ -271,7 +293,7 @@ export default function Navbar() {
           <button
             type="button"
             className="lg:hidden fixed inset-0 top-16 bg-black/25 backdrop-blur-[1px] z-40"
-            onClick={() => setMobileOpen(false)}
+            onClick={() => closeMobileMenu(true)}
             aria-label="Close menu backdrop"
           />
         )}
@@ -279,7 +301,7 @@ export default function Navbar() {
           <div
             id="mobile-nav-panel"
             ref={mobileMenuRef}
-            className="lg:hidden absolute top-16 left-0 w-full bg-white border-t border-gray-200 shadow-md z-50 origin-top animate-slideDown"
+            className="lg:hidden absolute top-16 left-0 w-full max-h-[calc(100vh-4rem)] overflow-y-auto bg-white border-t border-gray-200 shadow-md z-50 origin-top animate-slideDown"
             role="dialog"
             aria-modal="true"
             aria-label="Mobile navigation"
@@ -290,6 +312,7 @@ export default function Navbar() {
                   ref={firstMobileLinkRef}
                   to="/"
                   className={`${navLinkClass} ${isActive('/') ? activeClass : ''}`}
+                  aria-current={isActive('/') ? 'page' : undefined}
                 >
                   Home
                 </Link>
@@ -326,6 +349,7 @@ export default function Navbar() {
                 <Link
                   to="/living-labs"
                   className={`${navLinkClass} ${isActive('/living-labs') ? activeClass : ''}`}
+                  aria-current={isActive('/living-labs') ? 'page' : undefined}
                 >
                   Living Labs
                 </Link>
@@ -362,6 +386,7 @@ export default function Navbar() {
                 <Link
                   to="/news"
                   className={`${navLinkClass} ${isActive('/news') ? activeClass : ''}`}
+                  aria-current={isActive('/news') ? 'page' : undefined}
                 >
                   News
                 </Link>
@@ -370,6 +395,7 @@ export default function Navbar() {
                 <Link
                   to="/contact"
                   className={`${navLinkClass} ${isActive('/contact') ? activeClass : ''}`}
+                  aria-current={isActive('/contact') ? 'page' : undefined}
                 >
                   Contact
                 </Link>
@@ -415,7 +441,7 @@ export default function Navbar() {
               <li>
                 <button
                   type="button"
-                  onClick={() => { setMobileOpen(false); mobileMenuButtonRef.current?.focus(); }}
+                  onClick={() => closeMobileMenu(true)}
                   className="mt-4 w-full px-4 py-2 text-center text-sm text-brown bg-gray-100 hover:bg-gray-200 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                 >
                   Close menu

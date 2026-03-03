@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { HeroSectionSkeleton } from '../components/Skeletons';
 import SEO from '../components/SEO';
+import { getFeaturedMedia, getWpImageProps } from '../lib/imageSeo';
 
 // Helper: format date for Google Calendar (full day).
 const formatDateForCalendar = (dateStr) => {
@@ -63,22 +64,41 @@ export default function EventDetail() {
 
   // Fetch the event
   useEffect(() => {
+    if (!numericId) {
+      setEvent(null);
+      setLoadingEvent(false);
+      return;
+    }
+
+    const controller = new AbortController();
     const fetchEvent = async () => {
       try {
         setLoadingEvent(true);
         const response = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/event/${numericId}?_embed`
+          `https://admin.sus-soil.eu/wp-json/wp/v2/event/${numericId}?_embed`,
+          { signal: controller.signal }
         );
+        if (response.status === 404) {
+          setEvent(null);
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Error fetching event: ${response.status}`);
+        }
         const data = await response.json();
         setEvent(data);
       } catch (error) {
-        console.error('Error fetching event:', error);
+        if (error?.name !== 'AbortError') {
+          console.error('Error fetching event:', error);
+          setEvent(null);
+        }
       } finally {
         setLoadingEvent(false);
         window.scrollTo(0, 0);
       }
     };
     fetchEvent();
+    return () => controller.abort();
   }, [numericId]);
 
   // Once the event is loaded, update URL with slug
@@ -108,7 +128,13 @@ export default function EventDetail() {
 
   // Extract event data
   const title = event.acf?.title || event.title?.rendered || 'No Title';
-  const imageUrl = event._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+  const eventImageProps = getWpImageProps(getFeaturedMedia(event), {
+    altFallback: title,
+    sizes: '(max-width: 1024px) 100vw, 60vw',
+    loading: 'eager',
+    fetchPriority: 'high',
+  });
+  const imageUrl = eventImageProps?.src || null;
   const date = event.acf?.date || event.date;
   const eventLocation = event.acf?.location || '';
   const description = event.acf?.description || '';
@@ -157,9 +183,9 @@ export default function EventDetail() {
         keywords="SUS-SOIL event, soil conference, agroecology event, sustainable soil management"
         structuredData={eventStructuredData}
       />
-      <div className="container mx-auto px-4 py-12 md:grid md:grid-cols-4 md:gap-8">
+      <div className="container mx-auto px-4 py-8 md:py-12 lg:grid lg:grid-cols-4 lg:gap-8">
         {/* LEFT COLUMN (1/4): date, Add to Calendar, share */}
-        <div className="md:col-span-1 flex flex-col space-y-6 mt-16">
+        <div className="order-2 lg:order-1 lg:col-span-1 flex flex-col space-y-6 mt-8 lg:mt-16">
           {/* Date */}
           <div className="text-sm text-gray-600">
             <span className="font-semibold">Date:</span>{' '}
@@ -188,9 +214,9 @@ export default function EventDetail() {
         </div>
 
         {/* CENTER COLUMN (2/4): Title, location, image, description */}
-        <div className="md:col-span-2">
+        <div className="order-1 lg:order-2 lg:col-span-2">
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-4 mt-16">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-medium text-brown mb-4 mt-2 lg:mt-16">
             {title}
           </h1>
 
@@ -204,12 +230,11 @@ export default function EventDetail() {
           {/* Main Image */}
           {imageUrl ? (
             <img
-              src={imageUrl}
-              alt={title}
+              {...eventImageProps}
               className="w-full h-auto max-h-[600px] object-cover rounded-lg mb-4"
             />
           ) : (
-            <div className="w-full h-[400px] bg-gray-200 rounded-lg flex items-center justify-center mb-4">
+            <div className="w-full h-56 sm:h-72 md:h-80 bg-gray-200 rounded-lg flex items-center justify-center mb-4">
               <span className="text-gray-500 text-xl">Here flyer image</span>
             </div>
           )}
@@ -222,7 +247,7 @@ export default function EventDetail() {
         </div>
 
         {/* RIGHT COLUMN (1/4): Google Maps, newsletter, back button */}
-        <div className="md:col-span-1 flex flex-col space-y-6 mt- md:mt-0">
+        <div className="order-3 lg:order-3 lg:col-span-1 flex flex-col space-y-6 mt-8 lg:mt-0">
           {/* Google Maps */}
           {eventLocation && (
             <div>
@@ -234,7 +259,7 @@ export default function EventDetail() {
                   title="Event Location"
                   src={`https://www.google.com/maps?q=${encodeURIComponent(eventLocation)}&output=embed`}
                   allowFullScreen
-                  className="w-full h-64"
+                  className="w-full h-56 sm:h-64"
                 ></iframe>
               </div>
             </div>

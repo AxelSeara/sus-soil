@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { getWpImageProps } from '../../lib/imageSeo';
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY;
 
@@ -37,8 +38,7 @@ export default function Materials() {
     const fetchMaterials = async () => {
       try {
         const res = await fetch(
-          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&acf_format=standard&_=${Date.now()}`,
-          { cache: 'no-cache' }
+          `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${CATEGORY_ID}&_embed&acf_format=standard`
         );
         let posts = [];
         try {
@@ -60,7 +60,7 @@ export default function Materials() {
               url: file.url || '',
               mime: file.mime_type || '',
             },
-            featured: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
+            featuredMedia: post._embedded?.['wp:featuredmedia']?.[0] || null,
           };
         });
 
@@ -117,20 +117,22 @@ export default function Materials() {
               </div>
             ))
           ) : materials.length > 0 ? (
-            materials.map((m) => (
-              <article
-                key={m.id}
-                className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300"
-              >
+            materials.map((m) => {
+              const imageProps = getWpImageProps(m.featuredMedia, {
+                altFallback: m.title,
+                sizes: '(max-width: 1024px) 100vw, 50vw',
+              });
+              return (
+                <article
+                  key={m.id}
+                  className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-300"
+                >
                 {/* Media: 16:9 area */}
                 <div className="relative w-full rounded-lg overflow-hidden mb-4">
                   <div className="aspect-[16/9] w-full bg-gray-100">
-                    {m.featured ? (
+                    {imageProps?.src ? (
                       <img
-                        src={m.featured}
-                        alt={m.title}
-                        loading="lazy"
-                        decoding="async"
+                        {...imageProps}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -175,7 +177,8 @@ export default function Materials() {
                   </a>
                 )}
               </article>
-            ))
+            );
+            })
           ) : (
             <p className="text-center text-gray-500">
               No materials available at the moment.

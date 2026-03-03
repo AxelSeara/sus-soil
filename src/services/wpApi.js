@@ -11,16 +11,15 @@ const recentPostsCache = new Map();       // key -> posts[]
 const recentEventsCache = new Map();      // key -> events[]
 const relatedPostsCache = new Map();      // key -> posts[]
 const prevNextCache = new Map();          // key -> { prev, next }
+const tagIdBySlugCache = new Map();       // slug -> tagId | null
+const postsByTagCache = new Map();        // key -> posts[]
 
 /**
  * Envuelve fetch contra la API de WP.
  * Devuelve el Response para que el llamador decida cómo tratar 400/404.
  */
 export async function wpFetch(path, { signal } = {}) {
-  const hasQuery = path.includes('?');
-  const cacheBust = `_=${Date.now()}`;
-  const url = `${WP_BASE}${path}${hasQuery ? '&' : '?'}${cacheBust}`;
-
+  const url = `${WP_BASE}${path}`;
   const resp = await fetch(url, { signal });
   return resp;
 }
@@ -175,7 +174,17 @@ export async function fetchPrevNextForPost({ post, categoryId, eventTagId, isEve
     wpFetch(nextPath, { signal }),
   ]);
 
-  const [prevArr, nextArr] = await Promise.all([prevResp.json(), nextResp.json()]);
+  if (!prevResp.ok && prevResp.status !== 400 && prevResp.status !== 404) {
+    throw new Error('Error fetching previous post');
+  }
+  if (!nextResp.ok && nextResp.status !== 400 && nextResp.status !== 404) {
+    throw new Error('Error fetching next post');
+  }
+
+  const [prevArr, nextArr] = await Promise.all([
+    prevResp.ok ? prevResp.json() : [],
+    nextResp.ok ? nextResp.json() : [],
+  ]);
 
   const prev = Array.isArray(prevArr) && prevArr.length ? prevArr[0] : null;
   const next = Array.isArray(nextArr) && nextArr.length ? nextArr[0] : null;
@@ -183,4 +192,37 @@ export async function fetchPrevNextForPost({ post, categoryId, eventTagId, isEve
   const result = { prev, next };
   prevNextCache.set(cacheKey, result);
   return result;
+}
+
+export async function fetchTagIdBySlug({ slug, signal } = {}) {
+  const normalizedSlug = (slug || '').trim().toLowerCase();
+  if (!normalizedSlug) return null;
+  if (tagIdBySlugCache.has(normalizedSlug)) {
+    return tagIdBySlugCache.get(normalizedSlug);
+  }
+
+  const resp = await wpFetch(`/tags?slug=${encodeURIComponent(normalizedSlug)}`, { signal });
+  if (!resp.ok) throw new Error('Error fetching tag id by slug');
+  const data = await resp.json();
+  const tagId = Array.isArray(data) && data[0]?.id ? data[0].id : null;
+  tagIdBySlugCache.set(normalizedSlug, tagId);
+  return tagId;
+}
+
+export async function fetchPostsByTagId({ tagId, perPage = 100, signal } = {}) {
+  if (!tagId) return [];
+  const cacheKey = `${tagId}|${perPage}`;
+  if (postsByTagCache.has(cacheKey)) {
+    return postsByTagCache.get(cacheKey);
+  }
+
+  const resp = await wpFetch(
+    `/posts?tags=${encodeURIComponent(tagId)}&_embed&per_page=${perPage}&order=desc&orderby=date`,
+    { signal }
+  );
+  if (!resp.ok) throw new Error('Error fetching posts by tag');
+  const data = await resp.json();
+  const normalized = Array.isArray(data) ? data : [];
+  postsByTagCache.set(cacheKey, normalized);
+  return normalized;
 }

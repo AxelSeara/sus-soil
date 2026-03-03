@@ -19,6 +19,7 @@ import {
   fetchRelatedPosts,
   fetchPrevNextForPost,
 } from '../services/wpApi';
+import { getFeaturedMedia, getWpImageProps } from '../lib/imageSeo';
 
 // ------------------------------
 // Helpers búsqueda recursiva
@@ -482,7 +483,13 @@ export default function NewsDetail() {
    );
  }
 
-  const featured = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+  const heroImageProps = getWpImageProps(getFeaturedMedia(post), {
+    altFallback: stripHtmlText(title),
+    sizes: '(max-width: 1024px) 100vw, 70vw',
+    loading: 'eager',
+    fetchPriority: 'high',
+  });
+  const featured = heroImageProps?.src || null;
   const fallbackImg = extractFirstImageFromHTML(fixedContent);
   const imageUrl = featured || fallbackImg || null;
   const dateFormatted = (() => {
@@ -608,10 +615,15 @@ export default function NewsDetail() {
             {imageUrl && (
               <img
                 src={imageUrl}
-                alt={stripHtmlText(title)}
+                alt={heroImageProps?.alt || stripHtmlText(title)}
+                srcSet={heroImageProps?.srcSet}
+                sizes={heroImageProps?.sizes}
+                width={heroImageProps?.width}
+                height={heroImageProps?.height}
                 className="w-full max-h-[600px] object-cover rounded-md mb-6 transition-transform duration-300 hover:scale-105"
-                loading="lazy"
+                loading={heroImageProps ? 'eager' : 'lazy'}
                 decoding="async"
+                fetchPriority={heroImageProps ? 'high' : undefined}
               />
             )}
           </div>
@@ -749,12 +761,16 @@ export default function NewsDetail() {
                 {recentPosts.map((rp) => {
                   const rpTitle = rp.title?.rendered || 'No Title';
                   const rpDate = new Date(rp.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-                  const rpImg = rp._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                  const rpImageProps = getWpImageProps(getFeaturedMedia(rp), {
+                    altFallback: stripHtmlText(rpTitle),
+                    sizes: '48px',
+                    preferOrder: ['thumbnail', 'medium', 'medium_large', 'large'],
+                  });
                   const rpTags = rp._embedded?.['wp:term']?.[1] || [];
                   return (
                     <Link key={rp.id} to={`/news/${generateNewsSlug(rp.id, rpTitle, rp.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
-                      {rpImg ? (
-                        <img src={rpImg} alt={stripHtmlText(rpTitle)} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" loading="lazy" decoding="async" />
+                      {rpImageProps?.src ? (
+                        <img {...rpImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
@@ -789,12 +805,16 @@ export default function NewsDetail() {
                 {recentEvents.map((ev) => {
                   const evTitle = ev.title?.rendered || 'Untitled';
                   const evDate = new Date(ev.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-                  const evImg = ev._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                  const evImageProps = getWpImageProps(getFeaturedMedia(ev), {
+                    altFallback: stripHtmlText(evTitle),
+                    sizes: '48px',
+                    preferOrder: ['thumbnail', 'medium', 'medium_large', 'large'],
+                  });
                   const evTags = ev._embedded?.['wp:term']?.[1] || [];
                   return (
                     <Link key={ev.id} to={`/news/${generateNewsSlug(ev.id, evTitle, ev.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
-                      {evImg ? (
-                        <img src={evImg} alt={stripHtmlText(evTitle)} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" loading="lazy" decoding="async" />
+                      {evImageProps?.src ? (
+                        <img {...evImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
@@ -829,12 +849,16 @@ export default function NewsDetail() {
                 {relatedPosts.map((r) => {
                   const rTitle = r.title?.rendered || 'No Title';
                   const rDate = new Date(r.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-                  const rImg = r._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                  const relatedImageProps = getWpImageProps(getFeaturedMedia(r), {
+                    altFallback: stripHtmlText(rTitle),
+                    sizes: '48px',
+                    preferOrder: ['thumbnail', 'medium', 'medium_large', 'large'],
+                  });
                   const rTags = r._embedded?.['wp:term']?.[1] || [];
                   return (
                     <Link key={r.id} to={`/news/${generateNewsSlug(r.id, rTitle, r.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
-                      {rImg ? (
-                        <img src={rImg} alt={stripHtmlText(rTitle)} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" loading="lazy" decoding="async" />
+                      {relatedImageProps?.src ? (
+                        <img {...relatedImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}

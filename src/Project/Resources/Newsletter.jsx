@@ -3,6 +3,7 @@ import DOMPurify from 'dompurify';
 import { ExternalLink } from 'lucide-react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { getFeaturedMedia, getWpImageProps, stripHtml } from '../../lib/imageSeo';
 
 export default function Newsletter() {
   const [posts, setPosts] = useState([]);
@@ -12,7 +13,7 @@ export default function Newsletter() {
     'https://gmail.us11.list-manage.com/subscribe?u=6fbd6e1c74aa5e4a311896dcc&id=826cb744b4';
 
   const fetchPosts = () => {
-    fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100&_embed&_=${Date.now()}`)
+    fetch(`https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${newsletterCategoryId}&per_page=100&_embed`)
       .then((res) => {
         if (!res.ok) throw new Error('Error fetching newsletter posts');
         return res.json();
@@ -42,8 +43,6 @@ export default function Newsletter() {
       year: 'numeric',
     });
   };
-
-  const stripHtml = (html = '') => html.replace(/<[^>]+>/g, '').trim();
 
   const SubscribeCard = ({ className = '' }) => (
     <div className={`bg-white/90 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] p-6 border border-darkGreen/10 ${className}`}>
@@ -94,17 +93,17 @@ export default function Newsletter() {
             ) : posts.length ? (
               <ul className="space-y-12">
                 {posts.map((post) => {
-                  const thumbnail = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
                   const cleanTitle = stripHtml(post.title?.rendered || 'Newsletter issue');
+                  const imageProps = getWpImageProps(getFeaturedMedia(post), {
+                    altFallback: cleanTitle,
+                    sizes: '(max-width: 1024px) 100vw, 400px',
+                  });
                   return (
                     <li key={post.id} className="max-w-md rounded-2xl border border-darkGreen/10 bg-white/70 p-4 shadow-[0_12px_30px_-24px_rgba(20,66,38,0.7)]">
-                      {thumbnail && (
+                      {imageProps?.src && (
                         <img
-                          src={thumbnail}
-                          alt={cleanTitle}
+                          {...imageProps}
                           className="w-full aspect-square object-cover rounded-xl mb-4"
-                          loading="lazy"
-                          decoding="async"
                         />
                       )}
                       <a

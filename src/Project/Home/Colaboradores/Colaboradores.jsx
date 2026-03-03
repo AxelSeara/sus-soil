@@ -59,14 +59,14 @@ const collaborators = [
 
 export default function Colaboradores() {
   return (
-    <section className="max-w-screen-xl mx-auto px-6 py-16 bg-white/80 border border-darkGreen/10 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] mb-16">
+    <section className="max-w-screen-xl mx-auto px-4 sm:px-6 py-12 md:py-16 bg-white/80 border border-darkGreen/10 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] mb-16">
       {/* Título */}
       <h2 className="text-3xl font-bold text-center mb-8 text-brown">
         Consortium
       </h2>
 
       {/* Grid de logos */}
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4 lg:grid-cols-6">
         {collaborators.map((collab) => (
           <a
             key={collab.alt}
@@ -79,7 +79,7 @@ export default function Colaboradores() {
             <img
               src={collab.logo}
               alt={collab.alt}
-              className="h-16 md:h-20 object-contain"
+              className="h-12 sm:h-14 md:h-20 object-contain"
               loading="lazy"
               decoding="async"
             />

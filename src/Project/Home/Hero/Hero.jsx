@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import bgImage from '../../../assets/bg2.svg';
+import { EASE_STANDARD, hoverLift, sectionReveal } from '../../../lib/motion';
 
 const MotionLink = motion(Link);
 
@@ -22,9 +23,10 @@ export default function Hero() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.75, ease: 'easeOut' }}
+      initial={false}
+      animate="visible"
+      variants={sectionReveal}
+      transition={{ duration: 0.6, ease: EASE_STANDARD }}
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundAttachment: isMobile ? 'scroll' : 'fixed',
@@ -53,8 +55,8 @@ export default function Hero() {
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           <MotionLink
-            whileHover={{ scale: 1.03, y: -1 }}
-            whileTap={{ scale: 0.99 }}
+            whileHover={hoverLift.whileHover}
+            whileTap={hoverLift.whileTap}
             to="/project/about"
             className="px-6 py-3 bg-darkGreen text-white font-bold rounded-full hover:bg-darkGreen/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-md"
           >

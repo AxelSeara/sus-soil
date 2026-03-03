@@ -2,34 +2,19 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import portadaLLs from '../assets/regions/Mapa sección LLs.webp';
+import { cardReveal, listReveal } from '../lib/motion';
 
 // ✅ IMPORTAR DESDE DATA (fuente única)
 import { regions } from '../data/regions';
 
-// Animaciones
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { when: 'beforeChildren', staggerChildren: 0.1 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.985 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.35, ease: 'easeOut' },
-  },
-};
+const containerVariants = listReveal;
+const cardVariants = cardReveal;
 
 export default function LivingLabs() {
   return (
     <main className="w-full bg-white">
       {/* Portada */}
-      <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] bg-white">
+      <section className="w-full bg-white">
         <div className="mx-auto w-full px-4 sm:px-6 py-4 sm:py-6">
           <img
             src={portadaLLs}
@@ -42,7 +27,7 @@ export default function LivingLabs() {
 
       {/* Cabecera */}
       <header className="mx-auto px-6 py-8 text-center max-w-3xl">
-        <h1 className="text-4xl font-bold text-brown font-serif">Living Labs</h1>
+        <h1 className="text-3xl md:text-4xl font-bold text-brown font-serif">Living Labs</h1>
         <p className="mt-4 text-gray-700 leading-relaxed">
           Welcome to our Living Labs section! Each region below represents a unique
           ecosystem and set of challenges for soil management.
@@ -52,12 +37,12 @@ export default function LivingLabs() {
       {/* Listado */}
       <section
         aria-label="Living Labs regions"
-        className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]"
+        className="w-full"
       >
         <motion.div
           className="flex flex-col gap-4 sm:gap-5"
           variants={containerVariants}
-          initial="hidden"
+          initial={false}
           animate="visible"
         >
           {regions.map((region) => (

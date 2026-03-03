@@ -223,11 +223,11 @@ Your data, including personal information, may be stored on our servers. By usin
       {/* Top Logos & Disclaimer */}
       <div className="py-10 px-4 bg-gradient-to-b from-white/70 to-[#eff8f1] border-b border-darkGreen/10">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
-          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-16 mb-4">
+          <div className="w-full flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 mb-4">
             <img
               src={susSoilLogo}
               alt="SUS-SOIL project logo"
-              className="h-36 w-auto"
+              className="h-20 sm:h-24 md:h-36 w-auto"
               loading="lazy"
               width={288}
               height={144}
@@ -235,7 +235,7 @@ Your data, including personal information, may be stored on our servers. By usin
             <img
               src={euLogo}
               alt="Funded by the European Union"
-              className="h-16 w-auto"
+              className="h-12 sm:h-14 md:h-16 w-auto"
               loading="lazy"
               width={256}
               height={64}

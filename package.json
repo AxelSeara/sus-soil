@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/optimize-images.mjs",
+    "prebuild": "npm run images:opt && npm run sitemap:gen",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "images:opt": "node scripts/optimize-images.mjs"
+    "images:opt": "node scripts/optimize-images.mjs",
+    "sitemap:gen": "node scripts/generate-sitemap.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

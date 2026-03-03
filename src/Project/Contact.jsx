@@ -3,12 +3,7 @@ import { motion } from 'framer-motion';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 import { FiUser, FiMail, FiMessageCircle } from 'react-icons/fi';
 import { FaXTwitter } from 'react-icons/fa6';
-
-// Animaciones
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
+import { sectionReveal } from '../lib/motion';
 
 const isEmail = (v) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').toLowerCase());
@@ -77,7 +72,7 @@ export default function Contact() {
         {/* Columna izquierda: texto + redes */}
         <motion.div
           className="text-center lg:text-left"
-          variants={fadeIn}
+          variants={sectionReveal}
           initial={false}
           whileInView="visible"
           viewport={{ once: true }}
@@ -147,7 +142,7 @@ export default function Contact() {
         <motion.form
           onSubmit={handleSubmit}
           className="bg-white/90 backdrop-blur p-6 md:p-8 rounded-2xl shadow-[0_18px_34px_-24px_rgba(20,66,38,0.7)] border border-darkGreen/10 w-full"
-          variants={fadeIn}
+          variants={sectionReveal}
           initial={false}
           whileInView="visible"
           viewport={{ once: true }}

@@ -56,8 +56,8 @@ export default function Deliverables() {
         setLoading(true);
         setError(null);
 
-        const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${DELIVERABLES_CATEGORY_ID}&_embed&acf_format=standard&per_page=100&_=${Date.now()}`;
-        const res = await fetch(url, { cache: 'no-cache' });
+        const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${DELIVERABLES_CATEGORY_ID}&_embed&acf_format=standard&per_page=100`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Error fetching deliverables');
 
         let posts = await res.json();

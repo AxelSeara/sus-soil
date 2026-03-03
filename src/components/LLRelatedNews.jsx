@@ -3,19 +3,15 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FaNewspaper } from "react-icons/fa";
 import { CardSkeleton } from "./Skeletons";
+import { cardReveal, listReveal } from "../lib/motion";
+import { fetchTagIdBySlug, fetchPostsByTagId } from "../services/wpApi";
+import { getFeaturedMedia, getWpImageProps } from "../lib/imageSeo";
 
 const stripHtml = (html = "") => (html ? html.replace(/<[^>]+>/g, "") : "");
 const shorten = (txt = "", n = 140) =>
   txt.length > n ? txt.slice(0, n).trimEnd() + "…" : txt;
 
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.96 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: "spring", stiffness: 120, damping: 18 },
-  },
-};
+const cardVariants = cardReveal;
 
 export default function LLRelatedNews({
   // ✅ usa slug (ej: "ll-galicia") — esto es lo que tú tienes ahora en LivingLabDetail
@@ -44,19 +40,10 @@ export default function LLRelatedNews({
             return;
           }
 
-          // Endpoint: resolver tag por slug
-          const tagUrl = `https://admin.sus-soil.eu/wp-json/wp/v2/tags?slug=${encodeURIComponent(
-            llTagSlug
-          )}&_=${Date.now()}`;
-
-          const tagRes = await fetch(tagUrl, {
-            cache: "no-cache",
+          tagId = await fetchTagIdBySlug({
+            slug: llTagSlug,
             signal: controller.signal,
           });
-          if (!tagRes.ok) throw new Error("Error fetching tag ID");
-
-          const tagData = await tagRes.json();
-          tagId = Array.isArray(tagData) && tagData[0]?.id ? tagData[0].id : null;
 
           // Si no existe el tag, no mostramos nada
           if (!tagId) {
@@ -66,15 +53,11 @@ export default function LLRelatedNews({
         }
 
         // 2) Buscar posts con ese tag ID
-        const postsUrl = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?tags=${tagId}&_embed&per_page=${perPage}&_=${Date.now()}`;
-
-        const res = await fetch(postsUrl, {
-          cache: "no-cache",
+        const data = await fetchPostsByTagId({
+          tagId,
+          perPage,
           signal: controller.signal,
         });
-        if (!res.ok) throw new Error("Error fetching related posts");
-
-        const data = await res.json();
         const arr = Array.isArray(data) ? data : [];
 
         setPosts(arr.sort((a, b) => new Date(b.date) - new Date(a.date)));
@@ -114,9 +97,9 @@ export default function LLRelatedNews({
       ) : (
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          initial="hidden"
+          initial={false}
           animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
+          variants={listReveal}
         >
           {posts.map((post) => {
             const titleHtml = post.title?.rendered || "Untitled";
@@ -128,8 +111,10 @@ export default function LLRelatedNews({
               day: "numeric",
             });
 
-            const imgUrl =
-              post._embedded?.["wp:featuredmedia"]?.[0]?.source_url || null;
+            const imageProps = getWpImageProps(getFeaturedMedia(post), {
+              altFallback: titleText,
+              sizes: '(max-width: 768px) 100vw, 33vw',
+            });
 
             const excerptText = shorten(
               stripHtml(post.excerpt?.rendered || ""),
@@ -156,10 +141,9 @@ export default function LLRelatedNews({
                   <time dateTime={dateObj.toISOString()}>{dateFormatted}</time>
                 </p>
 
-                {imgUrl ? (
+                {imageProps?.src ? (
                   <img
-                    src={imgUrl}
-                    alt=""
+                    {...imageProps}
                     className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
                   />
                 ) : (

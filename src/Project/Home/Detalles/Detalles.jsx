@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { cardReveal, listReveal, sectionReveal } from '../../../lib/motion';
 
 import AwarenessIcon from '../../../assets/icons/Awareness.svg';
 import EcosystemIcon from '../../../assets/icons/Ecosystem.svg';
@@ -13,32 +14,6 @@ const objectives = [
   { title: 'Water security & climate', icon: WaterIcon },
 ];
 
-// Animación para tiles (2 desde izquierda, 2 desde derecha)
-const getTileVariant = (groupIndex) => {
-  const direction = groupIndex < 2 ? -100 : 100;
-  return {
-    hidden: { opacity: 0, x: direction },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 1,
-        ease: [0.25, 0.1, 0.25, 1], // cubic-bezier for smoothness
-      },
-    },
-  };
-};
-
-// Animación principal para "The Project"
-const mainCardVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
-  },
-};
-
 export default function Detalles() {
   return (
     <section className="relative py-20 px-4 bg-gradient-to-b from-[#eaf7ed] via-[#f3fbf5] to-white">
@@ -46,7 +21,7 @@ export default function Detalles() {
         {/* Título principal centrado */}
         <motion.div
           className="w-full mb-12 p-6 md:p-10 rounded-2xl border border-darkGreen/10 bg-white/75 backdrop-blur-lg text-center shadow-[0_14px_38px_-28px_rgba(25,80,45,0.7)]"
-          variants={mainCardVariants}
+          variants={sectionReveal}
           initial={false}
           whileInView="visible"
           viewport={{ once: true }}
@@ -57,17 +32,19 @@ export default function Detalles() {
         </motion.div>
 
         {/* Grid de tiles */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          variants={listReveal}
+          initial={false}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           {objectives.map((obj, index) => {
-            const variant = getTileVariant(index);
             return (
               <motion.div
                 key={index}
                 className="aspect-square bg-white/95 rounded-2xl p-6 flex flex-col justify-center items-center text-center border border-darkGreen/10 shadow-[0_10px_26px_-20px_rgba(20,66,38,0.7)] hover:shadow-[0_18px_30px_-22px_rgba(20,66,38,0.7)] hover:-translate-y-0.5 transition-all duration-300"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.5 }}
-                variants={variant}
+                variants={cardReveal}
               >
                 <img
                   src={obj.icon}
@@ -80,7 +57,7 @@ export default function Detalles() {
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

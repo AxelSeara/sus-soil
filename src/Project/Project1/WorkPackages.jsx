@@ -150,7 +150,7 @@ export default function WorkPackages() {
             <motion.div
               key={index}
               className="p-2"
-              initial="hidden"
+              initial={false}
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={slideIn(direction)}

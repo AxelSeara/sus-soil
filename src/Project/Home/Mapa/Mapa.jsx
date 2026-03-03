@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { cardReveal, imageFadeScale, listReveal, sectionReveal, hoverLift } from '../../../lib/motion';
 
 import mapBase from '../../../assets/regions/map.webp'; // fallback
 import noMap from '../../../assets/regions/Nomap.webp';
@@ -12,21 +13,8 @@ import pannonianImage from '../../../assets/regions/Pannonian.webp';
 import mediterraneanImage from '../../../assets/regions/Mediterranean.webp';
 import alpineImage from '../../../assets/regions/Alpine.webp';
 
-const containerVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1, y: 0,
-    transition: { when: 'beforeChildren', staggerChildren: 0.18, ease: 'easeInOut', duration: 0.55 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, scale: 1 },
-  visible: {
-    opacity: 1, scale: 1,
-    transition: { type: 'spring', stiffness: 80, damping: 16 },
-  },
-};
+const containerVariants = listReveal;
+const itemVariants = cardReveal;
 
 // Only the requested regions
 const regions = [
@@ -74,7 +62,7 @@ export default function Mapa() {
         <motion.div
           className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           variants={containerVariants}
-          initial="hidden"
+          initial={false}
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
         >
@@ -83,7 +71,7 @@ export default function Mapa() {
             className="rounded-2xl border border-darkGreen/10 bg-white/80 backdrop-blur-lg shadow-[0_18px_38px_-28px_rgba(20,64,37,0.7)] p-6 md:p-10"
             variants={itemVariants}
           >
-            <h2 className="text-4xl md:text-5xl font-medium font-serif text-brown mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium font-serif text-brown mb-4">
               Consortium & Living Labs
             </h2>
             <p className="text-lg md:text-xl text-brown/90 font-serif mb-6 leading-relaxed">
@@ -93,7 +81,7 @@ export default function Mapa() {
 
             {/* Region chips (mejorados para evitar desborde) */}
             <div
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3"
               role="toolbar"
               aria-label="Toggle region overlays"
             >
@@ -126,9 +114,9 @@ export default function Mapa() {
                       boxShadow: isActive ? '0 6px 18px rgba(0,0,0,.12)' : undefined,
                       outline: isActive ? `2px solid ${r.color}33` : 'none',
                     }}
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                    whileHover={hoverLift.whileHover}
+                    whileTap={hoverLift.whileTap}
+                    transition={{ duration: 0.22 }}
                   >
                     <span className="inline-flex w-full items-center justify-center gap-1.5">
                       <span
@@ -149,9 +137,9 @@ export default function Mapa() {
             {/* Primary CTA (always visible) */}
             <motion.div
               className="mt-8 flex justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: 'easeOut' }}
+              variants={sectionReveal}
+              initial={false}
+              animate="visible"
             >
               <Link
                 to={ctaTo}
@@ -180,17 +168,17 @@ export default function Mapa() {
                 decoding="async"
                 fetchPriority="high"
               />
-              <AnimatePresence mode="wait">
+              <AnimatePresence>
                 {overlayImg && (
                   <motion.img
                     key={overlayKey}
                     src={overlayImg}
                     alt={regionData ? `${regionData.label} overlay` : 'Map overlay'}
                     className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.35, ease: 'easeInOut' }}
+                    initial={imageFadeScale.initial}
+                    animate={imageFadeScale.animate}
+                    exit={imageFadeScale.exit}
+                    transition={imageFadeScale.transition}
                     loading="lazy"
                     decoding="async"
                   />

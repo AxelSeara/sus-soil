@@ -1,27 +1,15 @@
 // src/components/NewsEventsHome.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaArrowRight, FaCalendarAlt, FaNewspaper } from 'react-icons/fa';
 import { CardSkeleton } from '../../../components/Skeletons';
+import { cardReveal, listReveal } from '../../../lib/motion';
+import { fetchAllCategory } from '../../../services/wpApi';
+import { getFeaturedMedia, getWpImageProps } from '../../../lib/imageSeo';
 
-const gridVariants = {
-  hidden: { opacity: 1, y: 0 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.08, when: 'beforeChildren', duration: 0.24, ease: 'easeOut' }
-  }
-};
-
-const cardVariants = {
-  hidden: { opacity: 1, scale: 1 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.2, ease: 'easeOut' }
-  }
-};
+const gridVariants = listReveal;
+const cardVariants = cardReveal;
 
 const stripHtml = (html) => (html ? html.replace(/<[^>]+>/g, '') : '');
 const shorten = (txt, n) => (txt.length > n ? txt.slice(0, n - 1).trimEnd() + '…' : txt);
@@ -47,33 +35,11 @@ export default function NewsEventsHome() {
   const [errorNews, setErrorNews] = useState(null);
   const [errorEvents, setErrorEvents] = useState(null);
 
-  // --- NEWS y EVENTS: paginar categoría 12, ordenar por fecha y limitar ---
-  const fetchAllCategory = useCallback(async (catId = 12) => {
-    const perPage = 100; // máximo WP
-    let page = 1;
-    let out = [];
-    // loop con cabecera X-WP-TotalPages
-    while (true) {
-      const url = `https://admin.sus-soil.eu/wp-json/wp/v2/posts?categories=${catId}&_embed&per_page=${perPage}&page=${page}&_=${Date.now()}`;
-      const res = await fetch(url);
-      if (!res.ok) {
-        if (res.status === 400) break; // fin de páginas
-        throw new Error('Network error fetching events');
-      }
-      const chunk = await res.json();
-      out = out.concat(chunk);
-      const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '0', 10);
-      if (!totalPages || page >= totalPages) break;
-      page += 1;
-    }
-    return out;
-  }, []);
-
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const allCat = await fetchAllCategory(12);
+        const allCat = await fetchAllCategory({ categoryId: 12 });
         if (cancelled) return;
         const sorted = [...allCat].sort((a, b) => new Date(b.date) - new Date(a.date));
         const latestNews = sorted.filter((p) => !isEventPost(p)).slice(0, 3);
@@ -93,14 +59,17 @@ export default function NewsEventsHome() {
       }
     })();
     return () => { cancelled = true; };
-  }, [fetchAllCategory]);
+  }, []);
 
   const Card = ({ post, featured = false, typeLabel }) => {
     const titleHtml = post.title?.rendered || 'Untitled';
     const titleText = stripHtml(titleHtml);
     const dateObj = new Date(post.date);
     const dateFormatted = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+    const imageProps = getWpImageProps(getFeaturedMedia(post), {
+      altFallback: `${typeLabel}: ${titleText}`,
+      sizes: featured ? '(max-width: 768px) 100vw, 66vw' : '(max-width: 768px) 100vw, 33vw',
+    });
     const excerptText = shorten(stripHtml(post.excerpt?.rendered || ''), featured ? 180 : 120);
 
     return (
@@ -134,12 +103,10 @@ export default function NewsEventsHome() {
           {typeLabel}
         </span>
 
-        {imgUrl ? (
+        {imageProps?.src ? (
           <div className="relative z-0">
             <img
-              src={imgUrl}
-              alt={`${typeLabel}: ${titleText}`}
-              loading="lazy"
+              {...imageProps}
               className={`mb-4 rounded-xl object-cover w-full transition-transform duration-300 group-hover:scale-[1.03] ${featured ? 'h-52 md:h-56' : 'h-40'}`}
             />
           </div>

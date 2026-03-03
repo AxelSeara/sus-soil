@@ -6,33 +6,11 @@ import { FaSortAmountDown, FaSortAmountUp } from 'react-icons/fa';
 import { fetchCategoryPage, fetchAllCategory } from '../services/wpApi';
 import { CardSkeleton } from '../components/Skeletons';
 import SEO from '../components/SEO';
+import { cardReveal, listReveal } from '../lib/motion';
+import { getFeaturedMedia, getWpImageProps, stripHtml } from '../lib/imageSeo';
 
-const gridVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      staggerChildren: 0.15,
-      when: 'beforeChildren',
-      duration: 0.5,
-      ease: 'easeInOut',
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
+const gridVariants = listReveal;
+const cardVariants = cardReveal;
 
 // helper: detectar posts con tag "event"/"events" (no categorías)
 const isEventPost = (post) => {
@@ -280,11 +258,14 @@ export default function News() {
           >
             {items.map((post) => {
                 const titleHtml = post.title?.rendered || 'No Title';
-                const titleText = titleHtml.replace(/<[^>]+>/g, '');
+                const titleText = stripHtml(titleHtml);
                 const date = new Date(post.date);
                 const dateFormatted = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
                 const excerptText = getExcerptText(post.excerpt?.rendered);
-                const imgUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+                const imageProps = getWpImageProps(getFeaturedMedia(post), {
+                  altFallback: titleText,
+                  sizes: '(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw',
+                });
                 const postTags =
                   (post._embedded?.['wp:term'] && post._embedded['wp:term'].flat().filter((t) => t.taxonomy !== 'category')) || [];
 
@@ -317,12 +298,10 @@ export default function News() {
                       <time dateTime={date.toISOString()}>{dateFormatted}</time>
                     </p>
 
-                    {imgUrl ? (
+                    {imageProps?.src ? (
                       <div className="relative z-0">
                         <img
-                          src={imgUrl}
-                          alt={titleText}
-                          loading="lazy"
+                          {...imageProps}
                           className="mb-4 rounded-lg object-cover w-full h-40 transition-transform duration-300 group-hover:scale-[1.03]"
                         />
                       </div>
