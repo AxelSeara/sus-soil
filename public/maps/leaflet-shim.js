@@ -428,6 +428,20 @@
     .ml-popup-body { padding: 14px 10px 10px; }
     .ml-popup iframe { width: min(290px, 74vw); height: 320px; border: 0; }
     .ml-popup-mini { padding: 2px 4px; font-size: 12px; color: #36454f; }
+    .ml-popup-card { min-width: 220px; max-width: 280px; padding: 2px; color: #24313b; }
+    .ml-popup-title { font-size: 13px; font-weight: 700; margin: 0 0 6px; }
+    .ml-popup-sub { font-size: 12px; margin: 0 0 8px; color: #475661; }
+    .ml-popup-links { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ml-popup-links a {
+      font-size: 11px;
+      text-decoration: none;
+      color: #0f5f8f;
+      background: #eef5fb;
+      border: 1px solid #d1e4f3;
+      border-radius: 999px;
+      padding: 3px 8px;
+    }
+    .ml-popup-links a:hover { background: #e3f0fa; }
     .ml-layer-control { position: absolute; top: 10px; right: 10px; z-index: 30; background: rgba(255,255,255,0.92); border: 1px solid #c7d2da; border-radius: 8px; padding: 6px; }
     .ml-select { border: 1px solid #c7d2da; border-radius: 6px; padding: 4px 6px; font-size: 12px; }
     .ml-zoom { position: absolute; left: 10px; top: 10px; z-index: 30; display: grid; gap: 4px; }
