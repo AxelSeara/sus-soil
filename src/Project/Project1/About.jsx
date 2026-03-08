@@ -1,12 +1,31 @@
 // src/Project/Project1/About.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiTarget, FiDatabase, FiTrendingUp, FiLayers, FiTool, FiShield } from 'react-icons/fi';
-import mapPreview from '../../assets/regions/map.webp';
+import SamplingPointsMap from '../../components/SamplingPointsMap';
 
 export default function About() {
-  const [loadSamplingMap, setLoadSamplingMap] = useState(false);
-  const samplingMapUrl = `${import.meta.env.BASE_URL}maps/sampling-points-map.html`;
+  const mapSectionRef = useRef(null);
+  const [shouldRenderMap, setShouldRenderMap] = useState(false);
+
+  useEffect(() => {
+    const node = mapSectionRef.current;
+    if (!node) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          setShouldRenderMap(true);
+          observer.disconnect();
+        }
+      },
+      { root: null, rootMargin: '220px 0px', threshold: 0.12 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   // Variants
   const containerVariants = {
@@ -183,56 +202,55 @@ export default function About() {
       </h2>
 
       <div className="relative bg-white/85 backdrop-blur-sm border border-lightGreen/30 shadow-sm rounded-2xl p-4 sm:p-5 md:p-6">
-        <p className="text-brown/80 text-center mb-4">
-          Interactive map with SUS-SOIL sampling points.
+        <p className="text-brown/80 text-center mb-1.5">
+          Interactive map with SUS-SOIL sampling points
+        </p>
+        <p className="text-brown/65 text-center text-sm mb-4">
+          Each circle groups nearby sampling points by density. Zoom in to inspect individual points and full metadata.
         </p>
 
-        <div className="w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-white">
+        <div ref={mapSectionRef} className="w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-white">
           <div className="relative w-full pb-[62%] sm:pb-[58%] md:pb-[52%]">
-            {!loadSamplingMap ? (
-              <div className="absolute inset-0">
-                <img
-                  src={mapPreview}
-                  alt="Sampling points map preview"
-                  className="h-full w-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center p-4">
-                  <div className="w-full max-w-xl rounded-2xl border border-white/40 bg-black/35 backdrop-blur-[2px] px-4 py-4 text-center">
-                    <p className="text-white text-sm font-medium mb-3">
-                      Open the interactive sampling map
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setLoadSamplingMap(true)}
-                        className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/90 px-4 py-2 text-sm font-semibold text-brown hover:bg-white transition-colors"
-                      >
-                        Load in this page
-                      </button>
-                      <a
-                        href={samplingMapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-full border border-white/70 bg-darkGreen/85 px-4 py-2 text-sm font-semibold text-white hover:bg-darkGreen transition-colors"
-                      >
-                        Open in new tab
-                      </a>
-                    </div>
-                  </div>
+            {shouldRenderMap ? (
+              <motion.div
+                className="absolute inset-0"
+                initial={{ opacity: 0, scale: 0.985 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.42, ease: [0.16, 0.68, 0.43, 0.99] }}
+              >
+                <SamplingPointsMap />
+              </motion.div>
+            ) : (
+              <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_22%_18%,#f6fbf4_0%,#e8f2e3_40%,#dfe9d8_100%)]">
+                <div className="flex flex-col items-center gap-3 text-brown/80">
+                  <div className="h-8 w-8 rounded-full border-2 border-brown/40 border-t-transparent animate-spin" />
+                  <p className="text-sm font-medium">Loading interactive map...</p>
                 </div>
               </div>
-            ) : (
-              <iframe
-                title="SUS-SOIL Sampling Points Map"
-                src={samplingMapUrl}
-                className="absolute inset-0 h-full w-full"
-                loading="lazy"
-              />
             )}
           </div>
         </div>
+        <p className="mt-3 text-[11px] text-brown/65 text-right">
+          Map credit:{' '}
+          <a
+            href="https://orcid.org/0000-0003-3200-6303"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-darkGreen hover:underline"
+          >
+            J.J. SANTIAGO-FREIJANES
+          </a>
+          {' '}(
+          <a
+            href="https://orcid.org/0000-0003-3200-6303"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-darkGreen/80 hover:underline"
+          >
+            ORCID
+          </a>
+          )
+        </p>
       </div>
     </section>
   );

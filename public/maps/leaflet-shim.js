@@ -418,34 +418,103 @@
   const style = document.createElement('style');
   style.textContent = `
     html, body { margin: 0; height: 100%; }
-    .ml-map-root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #e6eef5; cursor: grab; }
+    .ml-map-root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at 20% 10%, #f6fbf4 0%, #e8f2e3 38%, #dfe9d8 100%);
+      cursor: grab;
+    }
     .ml-map-root:active { cursor: grabbing; }
     .ml-tile-pane, .ml-marker-pane, .ml-popup-pane { position: absolute; inset: 0; }
     .ml-tile { position: absolute; user-select: none; pointer-events: none; }
-    .ml-marker { position: absolute; width: 10px; height: 10px; border: 2px solid #fff; border-radius: 999px; background: #cf3a2b; box-shadow: 0 1px 6px rgba(0,0,0,0.35); transform: translate(-5px, -5px); cursor: pointer; z-index: 10; }
-    .ml-popup { position: absolute; z-index: 20; background: #fff; border: 1px solid #ccd6dd; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); max-width: min(320px, 80vw); }
-    .ml-popup-close { position: absolute; top: 6px; right: 6px; border: 0; background: #eef3f7; border-radius: 999px; width: 22px; height: 22px; cursor: pointer; }
-    .ml-popup-body { padding: 14px 10px 10px; }
+    .ml-marker {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border: 2px solid #fff;
+      border-radius: 999px;
+      background: #5e3319;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+      transform: translate(-5px, -5px);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .ml-popup {
+      position: absolute;
+      z-index: 20;
+      background: #fff;
+      border: 1px solid #d4dfcf;
+      border-radius: 12px;
+      box-shadow: 0 12px 28px rgba(21, 32, 16, 0.24);
+      max-width: min(340px, 82vw);
+    }
+    .ml-popup-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: 1px solid #d4dfcf;
+      background: #f2f8ee;
+      border-radius: 999px;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      color: #5e3319;
+    }
+    .ml-popup-body { padding: 14px 12px 12px; }
     .ml-popup iframe { width: min(290px, 74vw); height: 320px; border: 0; }
     .ml-popup-mini { padding: 2px 4px; font-size: 12px; color: #36454f; }
-    .ml-popup-card { min-width: 220px; max-width: 280px; padding: 2px; color: #24313b; }
-    .ml-popup-title { font-size: 13px; font-weight: 700; margin: 0 0 6px; }
-    .ml-popup-sub { font-size: 12px; margin: 0 0 8px; color: #475661; }
+    .ml-popup-card {
+      min-width: 230px;
+      max-width: 300px;
+      padding: 2px;
+      color: #24313b;
+    }
+    .ml-popup-title { font-size: 15px; font-weight: 800; margin: 0 0 6px; color: #5e3319; }
+    .ml-popup-sub { font-size: 13px; margin: 0 0 8px; color: #3e5342; }
     .ml-popup-links { display: flex; flex-wrap: wrap; gap: 6px; }
     .ml-popup-links a {
       font-size: 11px;
       text-decoration: none;
-      color: #0f5f8f;
-      background: #eef5fb;
-      border: 1px solid #d1e4f3;
+      color: #2f4b34;
+      background: #edf5e8;
+      border: 1px solid #cfe1c4;
       border-radius: 999px;
-      padding: 3px 8px;
+      padding: 3px 9px;
     }
-    .ml-popup-links a:hover { background: #e3f0fa; }
-    .ml-layer-control { position: absolute; top: 10px; right: 10px; z-index: 30; background: rgba(255,255,255,0.92); border: 1px solid #c7d2da; border-radius: 8px; padding: 6px; }
-    .ml-select { border: 1px solid #c7d2da; border-radius: 6px; padding: 4px 6px; font-size: 12px; }
+    .ml-popup-links a:hover { background: #e4f0dc; }
+    .ml-layer-control {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 30;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid #d4dfcf;
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow: 0 6px 18px rgba(32, 48, 30, 0.14);
+    }
+    .ml-select {
+      border: 1px solid #cddbc5;
+      border-radius: 7px;
+      padding: 4px 6px;
+      font-size: 12px;
+      color: #2f4b34;
+    }
     .ml-zoom { position: absolute; left: 10px; top: 10px; z-index: 30; display: grid; gap: 4px; }
-    .ml-zoom-btn { width: 30px; height: 30px; border: 1px solid #c7d2da; border-radius: 6px; background: rgba(255,255,255,0.92); font-size: 20px; line-height: 1; cursor: pointer; }
+    .ml-zoom-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #cddbc5;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.94);
+      color: #2f4b34;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(32, 48, 30, 0.14);
+    }
     .ml-reset-btn { font-size: 14px; font-weight: 700; }
   `;
   document.head.appendChild(style);
