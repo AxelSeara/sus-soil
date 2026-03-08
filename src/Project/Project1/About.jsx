@@ -1,9 +1,12 @@
 // src/Project/Project1/About.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiTarget, FiDatabase, FiTrendingUp, FiLayers, FiTool, FiShield } from 'react-icons/fi';
+import mapPreview from '../../assets/regions/map.webp';
 
 export default function About() {
+  const [loadSamplingMap, setLoadSamplingMap] = useState(false);
+
   // Variants
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -185,12 +188,36 @@ export default function About() {
 
         <div className="w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-white">
           <div className="relative w-full pb-[62%] sm:pb-[58%] md:pb-[52%]">
-            <iframe
-              title="SUS-SOIL Sampling Points Map"
-              src="/maps/sampling-points-map.html"
-              className="absolute inset-0 h-full w-full"
-              loading="lazy"
-            />
+            {!loadSamplingMap ? (
+              <div className="absolute inset-0">
+                <img
+                  src={mapPreview}
+                  alt="Sampling points map preview"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <p className="text-white text-sm font-medium">
+                    Load the full interactive map on demand.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setLoadSamplingMap(true)}
+                    className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/90 px-4 py-2 text-sm font-semibold text-brown hover:bg-white transition-colors"
+                  >
+                    Load interactive map
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <iframe
+                title="SUS-SOIL Sampling Points Map"
+                src="/maps/sampling-points-map.html"
+                className="absolute inset-0 h-full w-full"
+                loading="lazy"
+              />
+            )}
           </div>
         </div>
 
