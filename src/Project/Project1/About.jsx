@@ -198,17 +198,29 @@ export default function About() {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <p className="text-white text-sm font-medium">
-                    Load the full interactive map on demand.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setLoadSamplingMap(true)}
-                    className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/90 px-4 py-2 text-sm font-semibold text-brown hover:bg-white transition-colors"
-                  >
-                    Load interactive map
-                  </button>
+                <div className="absolute inset-0 flex items-center justify-center p-4">
+                  <div className="w-full max-w-xl rounded-2xl border border-white/40 bg-black/35 backdrop-blur-[2px] px-4 py-4 text-center">
+                    <p className="text-white text-sm font-medium mb-3">
+                      Open the interactive sampling map
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLoadSamplingMap(true)}
+                        className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/90 px-4 py-2 text-sm font-semibold text-brown hover:bg-white transition-colors"
+                      >
+                        Load in this page
+                      </button>
+                      <a
+                        href={samplingMapUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center rounded-full border border-white/70 bg-darkGreen/85 px-4 py-2 text-sm font-semibold text-white hover:bg-darkGreen transition-colors"
+                      >
+                        Open in new tab
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -220,17 +232,6 @@ export default function About() {
               />
             )}
           </div>
-        </div>
-
-        <div className="mt-4 text-center">
-          <a
-            href={samplingMapUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full border border-brown/30 px-4 py-2 text-sm font-semibold text-brown hover:bg-brown hover:text-white transition-colors"
-          >
-            Open map in a new tab
-          </a>
         </div>
       </div>
     </section>
