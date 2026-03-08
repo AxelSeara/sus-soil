@@ -165,6 +165,46 @@ export default function About() {
           );
         })}
       </motion.div>
+
+      {/* Sampling Points */}
+      <div className="relative my-14">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-brown/25 to-transparent" />
+      </div>
+
+      <h2
+        id="sampling-points-title"
+        className="text-3xl md:text-4xl font-semibold text-center mb-6"
+      >
+        Sampling Points
+      </h2>
+
+      <div className="relative bg-white/85 backdrop-blur-sm border border-lightGreen/30 shadow-sm rounded-2xl p-4 sm:p-5 md:p-6">
+        <p className="text-brown/80 text-center mb-4">
+          Interactive map with SUS-SOIL sampling points.
+        </p>
+
+        <div className="w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-white">
+          <div className="relative w-full pb-[62%] sm:pb-[58%] md:pb-[52%]">
+            <iframe
+              title="SUS-SOIL Sampling Points Map"
+              src="/maps/sampling-points-map.html"
+              className="absolute inset-0 h-full w-full"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 text-center">
+          <a
+            href="/maps/sampling-points-map.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-brown/30 px-4 py-2 text-sm font-semibold text-brown hover:bg-brown hover:text-white transition-colors"
+          >
+            Open map in a new tab
+          </a>
+        </div>
+      </div>
     </section>
   );
 }
