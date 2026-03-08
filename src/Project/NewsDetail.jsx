@@ -1,5 +1,5 @@
 // src/components/NewsDetail.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import DOMPurify from 'dompurify';
@@ -436,7 +436,10 @@ export default function NewsDetail() {
   }, [post]);
 
   useEffect(() => {
-    const onScroll = () => {
+    let ticking = false;
+
+    const updateProgress = () => {
+      ticking = false;
       const el = articleRef.current;
       if (!el) return;
       const winH = window.innerHeight || document.documentElement.clientHeight;
@@ -444,8 +447,16 @@ export default function NewsDetail() {
       const total = el.scrollHeight - winH;
       const scrolled = Math.min(Math.max(window.scrollY - elTop, 0), total);
       const pct = total > 0 ? (scrolled / total) * 100 : 0;
-      setReadProgress(Math.max(0, Math.min(100, pct)));
+      const next = Math.max(0, Math.min(100, pct));
+      setReadProgress((prev) => (Math.abs(prev - next) > 0.2 ? next : prev));
     };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateProgress);
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener('scroll', onScroll);
@@ -456,18 +467,20 @@ export default function NewsDetail() {
   // ------------------------------
   const title = post?.title?.rendered || 'No Title';
   const rawContent = post?.content?.rendered || '<p></p>';
-  const fixedContent = fixLazyLoadAndNoscript(rawContent);
-  const sanitized = DOMPurify.sanitize(fixedContent, {
-    ADD_TAGS: ['iframe'],
-    ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'id'],
-  });
-  const { html: anchoredHtml, headings: toc } = addHeadingAnchors(sanitized);
+  const { fixedContent, anchoredHtml, toc } = useMemo(() => {
+    const fixed = fixLazyLoadAndNoscript(rawContent);
+    const safeHtml = DOMPurify.sanitize(fixed, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'id'],
+    });
+    const { html, headings } = addHeadingAnchors(safeHtml);
+    return { fixedContent: fixed, sanitized: safeHtml, anchoredHtml: html, toc: headings };
+  }, [rawContent]);
 
   // Este useEffect DEBE estar antes de cualquier return (para mantener orden de hooks)
   useEffect(() => {
     setHeadings(toc || []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeId, sanitized]);
+  }, [routeId, toc]);
 
   // Con esto ya no cambiamos el número/orden de hooks entre renders 👆
 

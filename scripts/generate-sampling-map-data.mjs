@@ -1,4 +1,89 @@
-<!DOCTYPE html>
+import fs from 'node:fs';
+import path from 'node:path';
+
+const ROOT = process.cwd();
+const SOURCE_HTML =
+  process.env.SAMPLING_MAP_SOURCE ||
+  '/Users/axelsearagomez/Downloads/SusSoil_Mobile_Optimized.html';
+
+const OUTPUT_JSON = path.join(ROOT, 'public/maps/sampling-points-data.json');
+const OUTPUT_HTML = path.join(ROOT, 'public/maps/sampling-points-map.html');
+
+function readFileSafe(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Source map not found: ${filePath}`);
+  }
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function decodePopupData(base64) {
+  const html = Buffer.from(base64, 'base64').toString('utf8');
+  const id = html.match(/ID:\s*([^<]+)/i)?.[1]?.trim() || '';
+  const landCover =
+    html.match(/Land\s*Cover:\s*<\/b>\s*([^<]+)/i)?.[1]?.trim() || '';
+
+  const composition = {};
+  const liRe = /<li>\s*<b>([^<:]+):<\/b>\s*([^<]*)<\/li>/gi;
+  let li;
+  while ((li = liRe.exec(html)) !== null) {
+    const key = li[1].trim();
+    const value = li[2].trim();
+    if (key) composition[key] = value;
+  }
+
+  const links = [];
+  const linkRe = /<a href="([^"]+)"[^>]*>([^<]+)<\/a>/gi;
+  let lm;
+  while ((lm = linkRe.exec(html)) !== null) {
+    const href = lm[1].trim();
+    const label = lm[2]
+      .replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    links.push({ label, href });
+  }
+
+  return { id, landCover, composition, links };
+}
+
+function extractPoints(sourceHtml) {
+  const markerRe =
+    /var marker_[a-f0-9]+ = L\.marker\(\s*\[\s*([0-9.-]+)\s*,\s*([0-9.-]+)\s*\]/g;
+  const iframeRe =
+    /var i_frame_[a-f0-9]+ = \$\(`<iframe src="data:text\/html;charset=utf-8;base64,([^"]+)"/g;
+
+  const markers = [...sourceHtml.matchAll(markerRe)].map((m) => ({
+    lat: Number(m[1]),
+    lng: Number(m[2]),
+  }));
+
+  const popups = [...sourceHtml.matchAll(iframeRe)].map((m) =>
+    decodePopupData(m[1])
+  );
+
+  if (markers.length !== popups.length) {
+    throw new Error(
+      `Marker/popup mismatch: ${markers.length} markers vs ${popups.length} popups`
+    );
+  }
+
+  return markers.map((coords, idx) => ({
+    ...coords,
+    ...popups[idx],
+  }));
+}
+
+function extractViewConfig(sourceHtml) {
+  const center = sourceHtml.match(/center:\s*\[\s*([0-9.-]+)\s*,\s*([0-9.-]+)\s*\]/);
+  const zoom = sourceHtml.match(/"zoom":\s*([0-9]+)/);
+  return {
+    center: center ? [Number(center[1]), Number(center[2])] : [48, 15],
+    zoom: zoom ? Number(zoom[1]) : 4,
+  };
+}
+
+function writeMapHtml({ center, zoom }) {
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -44,8 +129,8 @@
   <script>
     (async function initSamplingMap() {
       const map = L.map('map', {
-        center: [48, 15],
-        zoom: 4,
+        center: [${center[0]}, ${center[1]}],
+        zoom: ${zoom},
         crs: L.CRS.EPSG3857,
         zoomControl: true,
         preferCanvas: false
@@ -122,3 +207,17 @@
   </script>
 </body>
 </html>
+`;
+
+  fs.writeFileSync(OUTPUT_HTML, html, 'utf8');
+}
+
+const sourceHtml = readFileSafe(SOURCE_HTML);
+const points = extractPoints(sourceHtml);
+const view = extractViewConfig(sourceHtml);
+
+fs.writeFileSync(OUTPUT_JSON, JSON.stringify(points), 'utf8');
+writeMapHtml(view);
+
+console.log(`Generated ${OUTPUT_JSON} with ${points.length} points`);
+console.log(`Generated ${OUTPUT_HTML}`);

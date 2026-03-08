@@ -5,7 +5,6 @@ import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Footer from './components/Footer';
 import CookieConsent from 'react-cookie-consent';
-import Deliverables from './Project/Deliverables';
 import { Analytics } from '@vercel/analytics/react';
 import SEO from './components/SEO';
 
@@ -26,6 +25,7 @@ const PracticeAbstracts = lazy(() => import('./Project/Resources/PracticeAbstrac
 const Newsletter = lazy(() => import('./Project/Resources/Newsletter'));
 const KnowledgeCloud = lazy(() => import('./Project/KnowledgeCloud'));
 const Contact = lazy(() => import('./Project/Contact'));
+const Deliverables = lazy(() => import('./Project/Deliverables'));
 const NotFound = lazy(() => import('./Project/NotFound'));
 
 function RouteSEO() {
