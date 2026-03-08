@@ -102,6 +102,14 @@
       const world = latLngToWorld(this.latlng.lat, this.latlng.lng, z);
       const left = world.x - map.topLeft.x;
       const top = world.y - map.topLeft.y;
+      const margin = 28;
+      const inView =
+        left >= -margin &&
+        top >= -margin &&
+        left <= map.viewWidth + margin &&
+        top <= map.viewHeight + margin;
+      this._el.style.display = inView ? 'block' : 'none';
+      if (!inView) return;
       this._el.style.transform = `translate(${left}px, ${top}px)`;
       this._bindClick();
     }
@@ -367,6 +375,8 @@
       const rect = this.root.getBoundingClientRect();
       const width = rect.width || this.root.clientWidth || 800;
       const height = rect.height || this.root.clientHeight || 500;
+      this.viewWidth = width;
+      this.viewHeight = height;
       const centerWorld = latLngToWorld(this.center.lat, this.center.lng, this.zoom);
       this.topLeft = {
         x: centerWorld.x - width / 2,
@@ -417,6 +427,7 @@
     .ml-popup-close { position: absolute; top: 6px; right: 6px; border: 0; background: #eef3f7; border-radius: 999px; width: 22px; height: 22px; cursor: pointer; }
     .ml-popup-body { padding: 14px 10px 10px; }
     .ml-popup iframe { width: min(290px, 74vw); height: 320px; border: 0; }
+    .ml-popup-mini { padding: 2px 4px; font-size: 12px; color: #36454f; }
     .ml-layer-control { position: absolute; top: 10px; right: 10px; z-index: 30; background: rgba(255,255,255,0.92); border: 1px solid #c7d2da; border-radius: 8px; padding: 6px; }
     .ml-select { border: 1px solid #c7d2da; border-radius: 6px; padding: 4px 6px; font-size: 12px; }
     .ml-zoom { position: absolute; left: 10px; top: 10px; z-index: 30; display: grid; gap: 4px; }
