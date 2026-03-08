@@ -6,6 +6,7 @@ import mapPreview from '../../assets/regions/map.webp';
 
 export default function About() {
   const [loadSamplingMap, setLoadSamplingMap] = useState(false);
+  const samplingMapUrl = `${import.meta.env.BASE_URL}maps/sampling-points-map.html`;
 
   // Variants
   const containerVariants = {
@@ -213,7 +214,7 @@ export default function About() {
             ) : (
               <iframe
                 title="SUS-SOIL Sampling Points Map"
-                src="/maps/sampling-points-map.html"
+                src={samplingMapUrl}
                 className="absolute inset-0 h-full w-full"
                 loading="lazy"
               />
@@ -223,7 +224,7 @@ export default function About() {
 
         <div className="mt-4 text-center">
           <a
-            href="/maps/sampling-points-map.html"
+            href={samplingMapUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center rounded-full border border-brown/30 px-4 py-2 text-sm font-semibold text-brown hover:bg-brown hover:text-white transition-colors"
