@@ -1,10 +1,13 @@
 // src/Project/Project1/About.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiTarget, FiDatabase, FiTrendingUp, FiLayers, FiTool, FiShield } from 'react-icons/fi';
 import mapPreview from '../../assets/regions/map.webp';
 
 export default function About() {
+  const [loadSamplingMap, setLoadSamplingMap] = useState(false);
+  const samplingMapUrl = `${import.meta.env.BASE_URL}maps/sampling-points-map.html`;
+
   // Variants
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -181,29 +184,54 @@ export default function About() {
 
       <div className="relative bg-white/85 backdrop-blur-sm border border-lightGreen/30 shadow-sm rounded-2xl p-4 sm:p-5 md:p-6">
         <p className="text-brown/80 text-center mb-4">
-          Sampling points overview across the SUS-SOIL study area.
+          Interactive map with SUS-SOIL sampling points.
         </p>
 
         <div className="w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-white">
-          <div className="relative">
-            <img
-              src={mapPreview}
-              alt="Sampling points map overview"
-              className="w-full h-auto object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
-            <div className="absolute bottom-3 left-3">
-              <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brown">
-                Static Overview
-              </span>
-            </div>
+          <div className="relative w-full pb-[62%] sm:pb-[58%] md:pb-[52%]">
+            {!loadSamplingMap ? (
+              <div className="absolute inset-0">
+                <img
+                  src={mapPreview}
+                  alt="Sampling points map preview"
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <p className="text-white text-sm font-medium">
+                    Load the full interactive map on demand.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setLoadSamplingMap(true)}
+                    className="inline-flex items-center justify-center rounded-full border border-white/70 bg-white/90 px-4 py-2 text-sm font-semibold text-brown hover:bg-white transition-colors"
+                  >
+                    Load interactive map
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <iframe
+                title="SUS-SOIL Sampling Points Map"
+                src={samplingMapUrl}
+                className="absolute inset-0 h-full w-full"
+                loading="lazy"
+              />
+            )}
           </div>
         </div>
 
-        <p className="mt-4 text-sm text-brown/70 text-center">
-          This static representation is optimized for reliability and performance across secure deployments.
-        </p>
+        <div className="mt-4 text-center">
+          <a
+            href={samplingMapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-brown/30 px-4 py-2 text-sm font-semibold text-brown hover:bg-brown hover:text-white transition-colors"
+          >
+            Open map in a new tab
+          </a>
+        </div>
       </div>
     </section>
   );
