@@ -171,8 +171,12 @@
         lat: options.center?.[0] ?? 48,
         lng: options.center?.[1] ?? 15,
       };
-      this.minZoom = 2;
-      this.maxZoom = 18;
+      this.initialCenter = { ...this.center };
+      this.initialZoom = this.zoom;
+      this.minZoom = 3;
+      this.maxZoom = 10;
+      this._wheelAccumulator = 0;
+      this._lastWheelTs = 0;
       this.layers = [];
       this.currentBaseLayer = null;
       this.clusterLayer = null;
@@ -243,16 +247,73 @@
       plus.type = 'button';
       plus.textContent = '+';
       plus.onclick = () => {
-        this.zoom = clamp(this.zoom + 1, this.minZoom, this.maxZoom);
-        this.render();
+        this._zoomBy(1);
       };
       const minus = el('button', 'ml-zoom-btn', ctl);
       minus.type = 'button';
       minus.textContent = '-';
       minus.onclick = () => {
-        this.zoom = clamp(this.zoom - 1, this.minZoom, this.maxZoom);
+        this._zoomBy(-1);
+      };
+
+      const reset = el('button', 'ml-zoom-btn ml-reset-btn', ctl);
+      reset.type = 'button';
+      reset.textContent = 'o';
+      reset.title = 'Reset view';
+      reset.onclick = () => {
+        this.center = { ...this.initialCenter };
+        this.zoom = this.initialZoom;
         this.render();
       };
+    }
+
+    _zoomBy(deltaZoom, anchorClient) {
+      const prevZoom = this.zoom;
+      const nextZoom = clamp(prevZoom + deltaZoom, this.minZoom, this.maxZoom);
+      if (nextZoom === prevZoom) return;
+
+      if (!anchorClient) {
+        this.zoom = nextZoom;
+        this.render();
+        return;
+      }
+
+      const rect = this.root.getBoundingClientRect();
+      const px = clamp(anchorClient.x - rect.left, 0, rect.width || 1);
+      const py = clamp(anchorClient.y - rect.top, 0, rect.height || 1);
+
+      const prevCenterWorld = latLngToWorld(this.center.lat, this.center.lng, prevZoom);
+      const prevTopLeft = {
+        x: prevCenterWorld.x - rect.width / 2,
+        y: prevCenterWorld.y - rect.height / 2,
+      };
+      const anchorWorldPrev = {
+        x: prevTopLeft.x + px,
+        y: prevTopLeft.y + py,
+      };
+
+      const zoomScale = Math.pow(2, nextZoom - prevZoom);
+      const anchorWorldNext = {
+        x: anchorWorldPrev.x * zoomScale,
+        y: anchorWorldPrev.y * zoomScale,
+      };
+
+      const nextTopLeft = {
+        x: anchorWorldNext.x - px,
+        y: anchorWorldNext.y - py,
+      };
+      const nextCenterWorld = {
+        x: nextTopLeft.x + rect.width / 2,
+        y: nextTopLeft.y + rect.height / 2,
+      };
+
+      this.zoom = nextZoom;
+      const nextCenter = worldToLatLng(nextCenterWorld.x, nextCenterWorld.y, nextZoom);
+      this.center = {
+        lat: clamp(nextCenter.lat, -85, 85),
+        lng: ((nextCenter.lng + 540) % 360) - 180,
+      };
+      this.render();
     }
 
     _setupInteraction() {
@@ -261,6 +322,7 @@
       let startCenterWorld = null;
 
       this.root.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return;
         dragging = true;
         start = { x: e.clientX, y: e.clientY };
         startCenterWorld = latLngToWorld(this.center.lat, this.center.lng, this.zoom);
@@ -272,7 +334,10 @@
         const dy = e.clientY - start.y;
         const nextWorld = { x: startCenterWorld.x - dx, y: startCenterWorld.y - dy };
         const next = worldToLatLng(nextWorld.x, nextWorld.y, this.zoom);
-        this.center = next;
+        this.center = {
+          lat: clamp(next.lat, -85, 85),
+          lng: ((next.lng + 540) % 360) - 180,
+        };
         this.render();
       });
 
@@ -282,13 +347,23 @@
 
       this.root.addEventListener('wheel', (e) => {
         e.preventDefault();
-        const delta = e.deltaY < 0 ? 1 : -1;
-        this.zoom = clamp(this.zoom + delta, this.minZoom, this.maxZoom);
-        this.render();
+        const now = Date.now();
+        if (now - this._lastWheelTs > 220) this._wheelAccumulator = 0;
+        this._lastWheelTs = now;
+
+        this._wheelAccumulator += e.deltaY;
+        const threshold = 140;
+        if (Math.abs(this._wheelAccumulator) < threshold) return;
+
+        const step = this._wheelAccumulator < 0 ? 1 : -1;
+        this._wheelAccumulator = 0;
+        this._zoomBy(step, { x: e.clientX, y: e.clientY });
       }, { passive: false });
     }
 
     render() {
+      this.center.lat = clamp(this.center.lat, -85, 85);
+      this.center.lng = ((this.center.lng + 540) % 360) - 180;
       const rect = this.root.getBoundingClientRect();
       const width = rect.width || this.root.clientWidth || 800;
       const height = rect.height || this.root.clientHeight || 500;
@@ -346,6 +421,7 @@
     .ml-select { border: 1px solid #c7d2da; border-radius: 6px; padding: 4px 6px; font-size: 12px; }
     .ml-zoom { position: absolute; left: 10px; top: 10px; z-index: 30; display: grid; gap: 4px; }
     .ml-zoom-btn { width: 30px; height: 30px; border: 1px solid #c7d2da; border-radius: 6px; background: rgba(255,255,255,0.92); font-size: 20px; line-height: 1; cursor: pointer; }
+    .ml-reset-btn { font-size: 14px; font-weight: 700; }
   `;
   document.head.appendChild(style);
 
