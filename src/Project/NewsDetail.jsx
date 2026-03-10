@@ -85,6 +85,32 @@ function transformGalleries(doc) {
     gallery.parentNode.replaceChild(sliderContainer, gallery);
   });
 }
+function isAllowedEmbedUrl(urlValue) {
+  if (!urlValue) return false;
+  try {
+    const parsed = new URL(urlValue, 'https://sus-soil.eu');
+    if (parsed.protocol !== 'https:') return false;
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host.includes('youtube.com') ||
+      host.includes('youtube-nocookie.com') ||
+      host.includes('youtu.be') ||
+      host.includes('maps.google.com')
+    );
+  } catch {
+    return false;
+  }
+}
+function isYoutubeEmbedUrl(urlValue) {
+  if (!urlValue) return false;
+  try {
+    const parsed = new URL(urlValue, 'https://sus-soil.eu');
+    const host = parsed.hostname.toLowerCase();
+    return host.includes('youtube.com') || host.includes('youtube-nocookie.com') || host.includes('youtu.be');
+  } catch {
+    return false;
+  }
+}
 function fixLazyLoadAndNoscript(html) {
   let cleaned = (html || '').replace(/data-src=/g, 'src=').replace(/\sclass="lazyload"/g, '');
   const parser = new DOMParser();
@@ -106,13 +132,25 @@ function fixLazyLoadAndNoscript(html) {
   replaceLeafletWithGoogleMaps(doc);
 
   // YouTube responsive
-  doc.querySelectorAll('iframe[src*="youtube.com"]').forEach((iframe) => {
+  doc.querySelectorAll('iframe').forEach((iframe) => {
     const src = iframe.getAttribute('src');
+    if (!isAllowedEmbedUrl(src)) {
+      iframe.remove();
+      return;
+    }
+    if (!isYoutubeEmbedUrl(src)) return;
+
     const container = doc.createElement('div');
-    container.innerHTML = `<div class="relative w-full aspect-[16/9] overflow-hidden mb-4">
-      <iframe src="${src}" title="${iframe.getAttribute('title') || 'YouTube video'}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="absolute top-0 left-0 w-full h-full"></iframe>
-    </div>`;
-    iframe.parentNode.replaceChild(container, iframe);
+    container.className = 'relative w-full aspect-[16/9] overflow-hidden mb-4';
+    const responsive = doc.createElement('iframe');
+    responsive.setAttribute('src', src || '');
+    responsive.setAttribute('title', iframe.getAttribute('title') || 'YouTube video');
+    responsive.setAttribute('frameborder', '0');
+    responsive.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    responsive.setAttribute('allowfullscreen', 'true');
+    responsive.className = 'absolute top-0 left-0 w-full h-full';
+    container.appendChild(responsive);
+    iframe.parentNode?.replaceChild(container, iframe);
   });
 
   transformGalleries(doc);
@@ -139,6 +177,11 @@ function generateNewsSlug(id, title, date) {
 // ------------------------------
 const stripHtmlText = (html) =>
   new DOMParser().parseFromString(html || '', 'text/html').body.textContent || '';
+const sanitizeInlineHtml = (html) =>
+  DOMPurify.sanitize(html || '', {
+    ALLOWED_TAGS: ['em', 'strong', 'b', 'i', 'br', 'span'],
+    ALLOWED_ATTR: [],
+  });
 const slugify = (text) =>
   (text || '')
     .toLowerCase()
@@ -209,6 +252,7 @@ const EventSkeleton = RecentPostSkeleton;
 function LightweightCarousel({ images = [] }) {
   const [index, setIndex] = useState(0);
   const total = images.length;
+  const touchStartXRef = useRef(null);
 
   useEffect(() => {
     if (index > total - 1) setIndex(0);
@@ -218,29 +262,60 @@ function LightweightCarousel({ images = [] }) {
 
   const prev = () => setIndex((v) => (v - 1 + total) % total);
   const next = () => setIndex((v) => (v + 1) % total);
-  const current = images[index];
+  const onTouchStart = (event) => {
+    touchStartXRef.current = event.touches?.[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (event) => {
+    const startX = touchStartXRef.current;
+    const endX = event.changedTouches?.[0]?.clientX ?? null;
+    touchStartXRef.current = null;
+    if (startX == null || endX == null) return;
+    const delta = endX - startX;
+    if (Math.abs(delta) < 35) return;
+    if (delta > 0) prev();
+    else next();
+  };
 
   return (
-    <div className="relative my-4">
+    <div
+      className="relative my-4"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onKeyDown={(event) => {
+        if (event.key === 'ArrowLeft') prev();
+        if (event.key === 'ArrowRight') next();
+      }}
+      tabIndex={0}
+      aria-label="Image carousel"
+    >
       <div className="relative w-full aspect-[4/3] overflow-hidden rounded-md bg-gray-900">
         <div
-          className="absolute inset-0 transition-opacity duration-200"
-          style={{
-            backgroundImage: `url(${current.src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(8px)',
-            transform: 'scale(1.08)',
-          }}
-          aria-hidden="true"
-        />
-        <img
-          src={current.src}
-          alt={current.alt}
-          className="relative z-10 object-contain w-full h-full"
-          loading="lazy"
-          decoding="async"
-        />
+          className="flex h-full w-full transition-transform duration-300 ease-out"
+          style={{ transform: `translate3d(-${index * 100}%, 0, 0)` }}
+        >
+          {images.map((img, i) => (
+            <div key={`${img.src}-${i}`} className="relative h-full min-w-full">
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${img.src})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  filter: 'blur(8px)',
+                  transform: 'scale(1.08)',
+                }}
+                aria-hidden="true"
+              />
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="relative z-10 object-contain w-full h-full"
+                loading={i === index ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {total > 1 && (
@@ -248,18 +323,18 @@ function LightweightCarousel({ images = [] }) {
           <button
             type="button"
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-2.5 py-1.5 text-white hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            className="absolute left-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-black/55 text-white shadow-md hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/90"
             aria-label="Previous image"
           >
-            ‹
+            <span aria-hidden="true" className="text-xl leading-none">‹</span>
           </button>
           <button
             type="button"
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-2.5 py-1.5 text-white hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            className="absolute right-2 top-1/2 z-10 -translate-y-1/2 inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-black/55 text-white shadow-md hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/90"
             aria-label="Next image"
           >
-            ›
+            <span aria-hidden="true" className="text-xl leading-none">›</span>
           </button>
           <div className="mt-2 flex items-center justify-center gap-1.5" role="tablist" aria-label="Image gallery pagination">
             {images.map((img, i) => (
@@ -294,9 +369,23 @@ const transform = (node, index) => {
       node.attribs.rel = (node.attribs.rel ? node.attribs.rel + ' ' : '') + 'noopener noreferrer';
     }
   }
-  // YouTube
-  if (node.type === 'tag' && node.name === 'iframe' && node.attribs?.src?.includes('youtube.com')) {
+  // Embeds (allowlisted)
+  if (node.type === 'tag' && node.name === 'iframe') {
     const src = node.attribs.src;
+    if (!isAllowedEmbedUrl(src)) return null;
+    if (!isYoutubeEmbedUrl(src)) {
+      return (
+        <div key={index} className="relative w-full aspect-[16/9] overflow-hidden mb-4">
+          <iframe
+            src={src}
+            title={node.attribs.title || 'Embedded content'}
+            frameBorder="0"
+            allowFullScreen
+            className="absolute top-0 left-0 w-full h-full"
+          />
+        </div>
+      );
+    }
     return (
       <div key={index} className="relative w-full aspect-[16/9] overflow-hidden mb-4">
         <iframe
@@ -355,6 +444,7 @@ export default function NewsDetail() {
 
   // State
   const [post, setPost] = useState(undefined);
+  const [postError, setPostError] = useState('');
 
   const [recentPosts, setRecentPosts] = useState([]);
   const [loadingRecent, setLoadingRecent] = useState(true);
@@ -370,7 +460,6 @@ export default function NewsDetail() {
 
   const [shareMsg, setShareMsg] = useState('');
   const [readProgress, setReadProgress] = useState(0);
-  const [headings, setHeadings] = useState([]);
 
   const articleRef = useRef(null);
 
@@ -385,12 +474,25 @@ export default function NewsDetail() {
 
     const fetchPost = async () => {
       setPost(undefined);
+      setPostError('');
+      setPrevPost(null);
+      setNextPost(null);
+      setRelatedPosts([]);
       try {
         const data = await fetchPostById(numericId, { signal: acPost.signal });
+        if (!data) {
+          setPost(null);
+          setPostError('Post not found.');
+          return;
+        }
         setPost(data);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (err) {
-        if (err.name !== 'AbortError') console.error('Error fetching post:', err);
+        if (err.name === 'AbortError') return;
+        const isNotFound = String(err?.message || '').includes('404') || err?.status === 404;
+        setPost(null);
+        setPostError(isNotFound ? 'Post not found.' : 'Unable to load this article right now.');
+        console.error('Error fetching post:', err);
       }
     };
 
@@ -437,7 +539,11 @@ export default function NewsDetail() {
   useEffect(() => {
     if (!post) return;
     const tagArray = post._embedded?.['wp:term']?.[1] || [];
-    if (tagArray.length === 0) return;
+    if (tagArray.length === 0) {
+      setRelatedPosts([]);
+      setLoadingRelated(false);
+      return;
+    }
 
     const acRel = new AbortController();
     const tagIds = tagArray.map((t) => t.id);
@@ -516,15 +622,10 @@ export default function NewsDetail() {
       ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'id'],
     });
     const { html, headings } = addHeadingAnchors(safeHtml);
-    return { fixedContent: fixed, sanitized: safeHtml, anchoredHtml: html, toc: headings };
+    return { fixedContent: fixed, anchoredHtml: html, toc: headings };
   }, [rawContent]);
-
-  // Este useEffect DEBE estar antes de cualquier return (para mantener orden de hooks)
-  useEffect(() => {
-    setHeadings(toc || []);
-  }, [routeId, toc]);
-
-  // Con esto ya no cambiamos el número/orden de hooks entre renders 👆
+  const parsedArticleContent = useMemo(() => parse(anchoredHtml, { replace: transform }), [anchoredHtml]);
+  const safeParsedTitle = useMemo(() => parse(sanitizeInlineHtml(title)), [title]);
 
   // Si aún está cargando y no hay post, ya podemos devolver skeleton
   if (post === undefined) return <PostDetailSkeleton />;
@@ -532,7 +633,7 @@ export default function NewsDetail() {
   if (post === null) {
    return (
      <div className="container mx-auto px-4 py-6">
-       <h2 className="text-2xl font-serif text-red-500">Post not found</h2>
+       <h2 className="text-2xl font-serif text-red-500">{postError || 'Post not found'}</h2>
        <Link to="/news" className="underline mt-4 inline-block">Back to News</Link>
      </div>
    );
@@ -651,7 +752,7 @@ export default function NewsDetail() {
 
           <div className="max-w-prose mx-auto">
             <h1 className="text-3xl md:text-4xl font-serif font-medium text-brown mb-2">
-              {parse(title)}
+              {safeParsedTitle}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3 mb-4 text-sm text-gray-600">
@@ -690,7 +791,7 @@ export default function NewsDetail() {
 
           <div className="max-w-prose mx-auto">
             <div className="prose leading-relaxed mb-6 text-brown prose-a:text-darkGreen prose-a:underline prose-strong:font-bold prose-strong:text-brown">
-              {parse(anchoredHtml, { replace: transform })}
+              {parsedArticleContent}
             </div>
 
             {/* Prev / Next */}
@@ -705,7 +806,7 @@ export default function NewsDetail() {
                       <FaArrowLeft /> Previous
                     </div>
                     <div className="font-serif font-semibold text-brown line-clamp-2">
-                      {parse(prevPost.title?.rendered || '—')}
+                      {parse(sanitizeInlineHtml(prevPost.title?.rendered || '—'))}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
                       {new Date(prevPost.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -728,7 +829,7 @@ export default function NewsDetail() {
                       Next <FaArrowRight />
                     </div>
                     <div className="font-serif font-semibold text-brown line-clamp-2">
-                      {parse(nextPost.title?.rendered || '—')}
+                      {parse(sanitizeInlineHtml(nextPost.title?.rendered || '—'))}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
                       {new Date(nextPost.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -778,18 +879,18 @@ export default function NewsDetail() {
                 <FaArrowLeft />
                 Back to {isEvent ? 'Events' : 'News'}
               </Link>
-              {!!shareMsg && <span className="text-sm text-gray-600 ml-2">{shareMsg}</span>}
+              {!!shareMsg && <span className="text-sm text-gray-600 ml-2" role="status" aria-live="polite">{shareMsg}</span>}
             </div>
           </div>
         </article>
 
         {/* SIDEBAR */}
         <aside className="md:col-span-1 md:sticky md:top-24 self-start flex flex-col space-y-8">
-          {headings?.length >= 2 && (
+          {toc?.length >= 2 && (
             <div>
               <h2 className="text-xl font-serif font-medium text-brown mb-3 border-b border-brown/20 pb-2">Contents</h2>
               <ul className="space-y-2 text-sm">
-                {headings.map((h) => (
+                {toc.map((h) => (
                   <li key={h.id} className={h.level === 'h3' ? 'pl-4' : ''}>
                     <a
                       href={`#${h.id}`}
@@ -835,7 +936,7 @@ export default function NewsDetail() {
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
-                        <div className="font-semibold line-clamp-2">{parse(rpTitle)}</div>
+                        <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rpTitle))}</div>
                         <div className="text-xs text-gray-500">{rpDate}</div>
                         <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {rpTags.map((t) => (
@@ -879,7 +980,7 @@ export default function NewsDetail() {
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
-                        <div className="font-semibold line-clamp-2">{parse(evTitle)}</div>
+                        <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(evTitle))}</div>
                         <div className="text-xs text-gray-500">{evDate}</div>
                         <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {evTags.map((t) => (
@@ -923,7 +1024,7 @@ export default function NewsDetail() {
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
-                        <div className="font-semibold line-clamp-2">{parse(rTitle)}</div>
+                        <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rTitle))}</div>
                         <div className="text-xs text-gray-500">{rDate}</div>
                         <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
                           {rTags.map((t) => (
