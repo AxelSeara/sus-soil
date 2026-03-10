@@ -77,6 +77,17 @@ function getClusterStyle(count) {
   };
 }
 
+function getSafeExternalHref(href) {
+  if (typeof href !== 'string') return null;
+  if (!/^https?:\/\//i.test(href)) return null;
+  try {
+    const parsed = new URL(href);
+    return parsed.href;
+  } catch {
+    return null;
+  }
+}
+
 export default function SamplingPointsMap() {
   const rootRef = useRef(null);
   const dragRef = useRef(null);
@@ -386,7 +397,11 @@ export default function SamplingPointsMap() {
   const showClusters = view.zoom <= CLUSTER_ZOOM_THRESHOLD;
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-[#ecf5e8]">
+    <div
+      className="relative h-full w-full overflow-hidden rounded-xl border border-lightGreen/30 bg-[#ecf5e8]"
+      role="region"
+      aria-label="Sampling points interactive map"
+    >
       <div
         ref={rootRef}
         className="absolute inset-0 cursor-grab active:cursor-grabbing overflow-hidden"
@@ -522,30 +537,34 @@ export default function SamplingPointsMap() {
 
               <div className="flex flex-wrap gap-1.5">
                 <span className="w-full text-[11px] font-semibold text-[#4c6250]">Photos</span>
-                {(popupPoint.links || []).map((link) => (
-                  <a
-                    key={`${popupPoint.id}-${link.href}`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full border border-[#cfe1c4] bg-[#edf5e8] px-2 py-1 text-[11px] text-[#2f4b34] hover:bg-[#e4f0dc]"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {(popupPoint.links || []).map((link) => {
+                  const safeHref = getSafeExternalHref(link?.href);
+                  if (!safeHref) return null;
+                  return (
+                    <a
+                      key={`${popupPoint.id}-${safeHref}`}
+                      href={safeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full border border-[#cfe1c4] bg-[#edf5e8] px-2 py-1 text-[11px] text-[#2f4b34] hover:bg-[#e4f0dc]"
+                    >
+                      {link?.label || 'Open'}
+                    </a>
+                  );
+                })}
               </div>
             </div>
           </div>
         )}
 
         {loading && (
-          <div className="absolute inset-0 z-30 grid place-items-center bg-white/70 text-brown">
+          <div className="absolute inset-0 z-30 grid place-items-center bg-white/70 text-brown" role="status" aria-live="polite">
             Preparing {TOTAL_POINTS.toLocaleString('en-US')} sampling points...
           </div>
         )}
 
         {error && !loading && (
-          <div className="absolute inset-0 z-30 grid place-items-center bg-white/80 text-brown">
+          <div className="absolute inset-0 z-30 grid place-items-center bg-white/80 text-brown" role="alert">
             {error}
           </div>
         )}
@@ -616,7 +635,7 @@ export default function SamplingPointsMap() {
       )}
 
       {isInteractive && (
-        <div className="absolute left-1/2 top-2 z-40 -translate-x-1/2 rounded-lg border border-[#dbe8d6] bg-white/95 px-3 py-1.5 text-[11px] text-[#35533c] shadow">
+        <div className="absolute left-1/2 top-2 z-40 -translate-x-1/2 rounded-lg border border-[#dbe8d6] bg-white/95 px-3 py-1.5 text-[11px] text-[#35533c] shadow" role="status" aria-live="polite">
           Interactive mode · Press Esc to return
         </div>
       )}

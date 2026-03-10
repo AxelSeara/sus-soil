@@ -31,6 +31,15 @@ function scrollAllToTop() {
   }
 }
 
+function focusMainContent() {
+  const main = document.getElementById("main");
+  if (!main) return;
+  if (!main.hasAttribute("tabindex")) {
+    main.setAttribute("tabindex", "-1");
+  }
+  main.focus({ preventScroll: true });
+}
+
 export default function ScrollToTop({
   enableFade = true,
   fadeMs = 140,
@@ -62,6 +71,7 @@ export default function ScrollToTop({
     // 3) refuerzo corto
     const t = setTimeout(() => {
       scrollAllToTop();
+      focusMainContent();
       if (doFade) setShowOverlay(false);
     }, fadeMs);
 

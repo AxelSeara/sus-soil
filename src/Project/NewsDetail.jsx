@@ -7,11 +7,6 @@ import { FaShareAlt, FaArrowLeft, FaLink, FaArrowRight } from 'react-icons/fa';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import parse from 'html-react-parser';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import {
   fetchPostById,
   fetchRecentPosts,
@@ -211,6 +206,79 @@ const RecentPostSkeleton = () => (
 );
 const EventSkeleton = RecentPostSkeleton;
 
+function LightweightCarousel({ images = [] }) {
+  const [index, setIndex] = useState(0);
+  const total = images.length;
+
+  useEffect(() => {
+    if (index > total - 1) setIndex(0);
+  }, [index, total]);
+
+  if (!total) return null;
+
+  const prev = () => setIndex((v) => (v - 1 + total) % total);
+  const next = () => setIndex((v) => (v + 1) % total);
+  const current = images[index];
+
+  return (
+    <div className="relative my-4">
+      <div className="relative w-full aspect-[4/3] overflow-hidden rounded-md bg-gray-900">
+        <div
+          className="absolute inset-0 transition-opacity duration-200"
+          style={{
+            backgroundImage: `url(${current.src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(8px)',
+            transform: 'scale(1.08)',
+          }}
+          aria-hidden="true"
+        />
+        <img
+          src={current.src}
+          alt={current.alt}
+          className="relative z-10 object-contain w-full h-full"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+
+      {total > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-2.5 py-1.5 text-white hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            aria-label="Previous image"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/45 px-2.5 py-1.5 text-white hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            aria-label="Next image"
+          >
+            ›
+          </button>
+          <div className="mt-2 flex items-center justify-center gap-1.5" role="tablist" aria-label="Image gallery pagination">
+            {images.map((img, i) => (
+              <button
+                key={`${img.src}-${i}`}
+                type="button"
+                onClick={() => setIndex(i)}
+                className={`h-2.5 w-2.5 rounded-full transition-colors ${i === index ? 'bg-brown' : 'bg-gray-300 hover:bg-gray-400'}`}
+                aria-label={`Go to image ${i + 1}`}
+                aria-current={i === index ? 'true' : undefined}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ------------------------------
 // Transformador html-react-parser
 // ------------------------------
@@ -257,20 +325,7 @@ const transform = (node, index) => {
         return src ? { src, alt } : null;
       }).filter(Boolean);
       if (images.length) {
-        return (
-          <div key={index} className="relative">
-            <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} spaceBetween={10} slidesPerView={1} className="w-full">
-              {images.map((img, i) => (
-                <SwiperSlide key={i}>
-                  <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-900">
-                    <div className="absolute inset-0" style={{ backgroundImage: `url(${img.src})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(8px)', transform: 'scale(1.1)' }} />
-                    <img src={img.src} alt={img.alt} className="relative z-10 object-contain w-full h-full" loading="lazy" decoding="async" />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        );
+        return <LightweightCarousel key={index} images={images} />;
       }
     }
   }
@@ -285,20 +340,7 @@ const transform = (node, index) => {
       return src ? { src, alt } : null;
     }).filter(Boolean);
     if (images.length) {
-      return (
-        <div key={index} className="relative my-4">
-          <Swiper modules={[Navigation, Pagination]} navigation pagination={{ clickable: true }} spaceBetween={10} slidesPerView={1} className="w-full">
-            {images.map((img, i) => (
-              <SwiperSlide key={i}>
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-900">
-                  <div className="absolute inset-0" style={{ backgroundImage: `url(${img.src})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'blur(8px)', transform: 'scale(1.1)' }} />
-                  <img src={img.src} alt={img.alt} className="relative z-10 object-contain w-full h-full" loading="lazy" decoding="async" />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      );
+      return <LightweightCarousel key={index} images={images} />;
     }
   }
 };
@@ -572,12 +614,17 @@ export default function NewsDetail() {
       </div>
 
       <Helmet>
+        <html lang="en" />
+        <meta httpEquiv="content-language" content="en" />
         <title>{stripHtmlText(title)} | SUS-SOIL {isEvent ? 'Events' : 'News'}</title>
         <meta name="description" content={stripHtmlText(post.excerpt?.rendered) || 'News article'} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonical} />
+        <link rel="alternate" hrefLang="en" href={canonical} />
+        <link rel="alternate" hrefLang="x-default" href={canonical} />
         <meta property="og:type" content={isEvent ? 'article' : 'article'} />
         <meta property="og:site_name" content="SUS-SOIL" />
+        <meta property="og:locale" content="en_GB" />
         <meta property="og:title" content={`${stripHtmlText(title)} | SUS-SOIL`} />
         <meta property="og:description" content={stripHtmlText(post.excerpt?.rendered) || 'News article'} />
         <meta property="og:url" content={canonical} />

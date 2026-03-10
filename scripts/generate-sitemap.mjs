@@ -4,6 +4,8 @@ import path from 'node:path';
 const SITE_URL = (process.env.VITE_SITE_URL || 'https://sus-soil.eu').replace(/\/+$/, '');
 const WP_BASE = 'https://admin.sus-soil.eu/wp-json/wp/v2';
 const OUTPUT_FILE = path.resolve(process.cwd(), 'public', 'sitemap.xml');
+const ENABLE_DYNAMIC = process.env.SITEMAP_DYNAMIC !== '0';
+const FETCH_TIMEOUT_MS = Number(process.env.SITEMAP_FETCH_TIMEOUT_MS || 7000);
 
 const STATIC_ROUTES = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
@@ -41,7 +43,8 @@ function slugify(input) {
 }
 
 async function fetchJson(url) {
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+  const res = await fetch(url, { headers: { Accept: 'application/json' }, signal });
   if (!res.ok) throw new Error(`Failed ${url}: ${res.status}`);
   return res.json();
 }
@@ -54,7 +57,8 @@ async function fetchAllWpPostsByCategory(categoryId) {
 
   while (!done) {
     const url = `${WP_BASE}/posts?categories=${categoryId}&_embed&per_page=${perPage}&page=${page}&orderby=date&order=desc`;
-    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal });
     if (!res.ok) {
       if (res.status === 400 || res.status === 404) break;
       throw new Error(`Failed posts category fetch: ${res.status}`);
@@ -79,7 +83,8 @@ async function fetchAllWpEvents() {
 
   while (!done) {
     const url = `${WP_BASE}/event?_embed&per_page=${perPage}&page=${page}&orderby=date&order=desc`;
-    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    const signal = AbortSignal.timeout(FETCH_TIMEOUT_MS);
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal });
     if (!res.ok) {
       if (res.status === 400 || res.status === 404) break;
       throw new Error(`Failed event fetch: ${res.status}`);
@@ -138,17 +143,31 @@ function toXmlUrlTag(entry) {
 async function main() {
   const routes = [...STATIC_ROUTES];
 
-  try {
-    const [posts, events] = await Promise.all([
-      fetchAllWpPostsByCategory(12),
-      fetchAllWpEvents(),
-    ]);
+  if (!ENABLE_DYNAMIC) {
+    console.log('Sitemap dynamic fetch skipped: SITEMAP_DYNAMIC=0');
+  } else {
+    try {
+      const [posts, events] = await Promise.all([
+        fetchAllWpPostsByCategory(12),
+        fetchAllWpEvents(),
+      ]);
 
-    routes.push(...buildNewsRoutes(posts));
-    routes.push(...buildEventRoutes(events));
-    console.log(`Sitemap: loaded ${posts.length} posts and ${events.length} events.`);
-  } catch (error) {
-    console.warn(`Sitemap dynamic fetch skipped: ${error.message}`);
+      routes.push(...buildNewsRoutes(posts));
+      routes.push(...buildEventRoutes(events));
+      console.log(`Sitemap: loaded ${posts.length} posts and ${events.length} events.`);
+    } catch (error) {
+      const msg = String(error?.message || '');
+      const isOfflineLike =
+        error?.name === 'AbortError' ||
+        msg.includes('ENOTFOUND') ||
+        msg.includes('fetch failed') ||
+        msg.includes('network');
+      if (isOfflineLike) {
+        console.log(`Sitemap dynamic fetch skipped (offline/timeout): ${msg}`);
+      } else {
+        console.warn(`Sitemap dynamic fetch skipped: ${msg}`);
+      }
+    }
   }
 
   const uniqueMap = new Map();
