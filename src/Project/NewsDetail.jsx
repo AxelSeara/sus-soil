@@ -460,6 +460,7 @@ export default function NewsDetail() {
 
   const [shareMsg, setShareMsg] = useState('');
   const [readProgress, setReadProgress] = useState(0);
+  const [activeHeadingId, setActiveHeadingId] = useState('');
 
   const articleRef = useRef(null);
 
@@ -610,6 +611,24 @@ export default function NewsDetail() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!toc?.length) return;
+    const handle = () => {
+      let nextActive = '';
+      for (const h of toc) {
+        const el = document.getElementById(h.id);
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top <= 130) nextActive = h.id;
+      }
+      setActiveHeadingId(nextActive || toc[0]?.id || '');
+    };
+
+    handle();
+    window.addEventListener('scroll', handle, { passive: true });
+    return () => window.removeEventListener('scroll', handle);
+  }, [toc]);
+
   // ------------------------------
   // Derivados SIEMPRE calculados (antes de cualquier return)
   // ------------------------------
@@ -648,9 +667,19 @@ export default function NewsDetail() {
   const featured = heroImageProps?.src || null;
   const fallbackImg = extractFirstImageFromHTML(fixedContent);
   const imageUrl = featured || fallbackImg || null;
+  const formatEnglishDate = (dateValue) => {
+    try {
+      return new Intl.DateTimeFormat('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(new Date(dateValue));
+    } catch {
+      return '';
+    }
+  };
   const dateFormatted = (() => {
-    try { return new Date(post.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); }
-    catch { return ''; }
+    return formatEnglishDate(post.date);
   })();
   const tags = post._embedded?.['wp:term']?.[1] || [];
   const isEvent = tags.some(isEventTag);
@@ -781,7 +810,7 @@ export default function NewsDetail() {
                 sizes={heroImageProps?.sizes}
                 width={heroImageProps?.width}
                 height={heroImageProps?.height}
-                className="w-full max-h-[600px] object-cover rounded-md mb-6 transition-transform duration-300 hover:scale-105"
+                className="w-full max-h-[600px] object-cover rounded-md mb-6"
                 loading={heroImageProps ? 'eager' : 'lazy'}
                 decoding="async"
                 fetchPriority={heroImageProps ? 'high' : undefined}
@@ -800,7 +829,7 @@ export default function NewsDetail() {
                 {prevPost ? (
                   <Link
                     to={`/news/${generateNewsSlug(prevPost.id, prevPost.title?.rendered, prevPost.date)}`}
-                    className="flex-1 rounded-xl border border-brown/20 p-4 hover:bg-lightGreen/10 transition-colors"
+                    className="flex min-h-[152px] flex-1 flex-col justify-between rounded-xl border border-brown/15 bg-white p-4 hover:bg-lightGreen/10 transition-colors"
                   >
                     <div className="text-xs uppercase text-gray-500 mb-2 flex items-center gap-2">
                       <FaArrowLeft /> Previous
@@ -809,11 +838,11 @@ export default function NewsDetail() {
                       {parse(sanitizeInlineHtml(prevPost.title?.rendered || '—'))}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {new Date(prevPost.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {formatEnglishDate(prevPost.date)}
                     </div>
                   </Link>
                 ) : (
-                  <div className="flex-1 opacity-40 cursor-not-allowed rounded-xl border border-dashed border-gray-200 p-4" aria-hidden="true">
+                  <div className="flex min-h-[152px] flex-1 flex-col justify-between opacity-40 cursor-not-allowed rounded-xl border border-dashed border-gray-200 p-4" aria-hidden="true">
                     <div className="text-xs uppercase text-gray-400 mb-2 flex items-center gap-2">
                       <FaArrowLeft /> Previous
                     </div>
@@ -823,7 +852,7 @@ export default function NewsDetail() {
                 {nextPost ? (
                   <Link
                     to={`/news/${generateNewsSlug(nextPost.id, nextPost.title?.rendered, nextPost.date)}`}
-                    className="flex-1 rounded-xl border border-brown/20 p-4 hover:bg-lightGreen/10 transition-colors text-right"
+                    className="flex min-h-[152px] flex-1 flex-col justify-between rounded-xl border border-brown/15 bg-white p-4 hover:bg-lightGreen/10 transition-colors text-right"
                   >
                     <div className="text-xs uppercase text-gray-500 mb-2 flex items-center justify-end gap-2">
                       Next <FaArrowRight />
@@ -832,11 +861,11 @@ export default function NewsDetail() {
                       {parse(sanitizeInlineHtml(nextPost.title?.rendered || '—'))}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      {new Date(nextPost.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {formatEnglishDate(nextPost.date)}
                     </div>
                   </Link>
                 ) : (
-                  <div className="flex-1 opacity-40 cursor-not-allowed rounded-xl border border-dashed border-gray-200 p-4 text-right" aria-hidden="true">
+                  <div className="flex min-h-[152px] flex-1 flex-col justify-between opacity-40 cursor-not-allowed rounded-xl border border-dashed border-gray-200 p-4 text-right" aria-hidden="true">
                     <div className="text-xs uppercase text-gray-400 mb-2 flex items-center justify-end gap-2">
                       Next <FaArrowRight />
                     </div>
@@ -887,14 +916,18 @@ export default function NewsDetail() {
         {/* SIDEBAR */}
         <aside className="md:col-span-1 md:sticky md:top-24 self-start flex flex-col space-y-8">
           {toc?.length >= 2 && (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-3 border-b border-brown/20 pb-2">Contents</h2>
               <ul className="space-y-2 text-sm">
                 {toc.map((h) => (
                   <li key={h.id} className={h.level === 'h3' ? 'pl-4' : ''}>
                     <a
                       href={`#${h.id}`}
-                      className="text-darkGreen hover:underline"
+                      className={`block rounded-md px-2 py-1 transition-colors ${
+                        activeHeadingId === h.id
+                          ? 'bg-lightGreen/35 text-brown font-semibold'
+                          : 'text-darkGreen hover:bg-lightGreen/20 hover:text-brown'
+                      }`}
                       onClick={(e) => {
                         e.preventDefault();
                         const el = document.getElementById(h.id);
@@ -911,17 +944,17 @@ export default function NewsDetail() {
 
           {/* Last News */}
           {loadingRecent ? (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4">Last News</h2>
               <div className="grid grid-cols-1 gap-4">{[...Array(3)].map((_, i) => <RecentPostSkeleton key={i} />)}</div>
             </div>
           ) : recentPosts.length > 0 && (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Last News</h2>
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col gap-2.5">
                 {recentPosts.map((rp) => {
                   const rpTitle = rp.title?.rendered || 'No Title';
-                  const rpDate = new Date(rp.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+                  const rpDate = formatEnglishDate(rp.date);
                   const rpImageProps = getWpImageProps(getFeaturedMedia(rp), {
                     altFallback: stripHtmlText(rpTitle),
                     sizes: '48px',
@@ -929,22 +962,24 @@ export default function NewsDetail() {
                   });
                   const rpTags = rp._embedded?.['wp:term']?.[1] || [];
                   return (
-                    <Link key={rp.id} to={`/news/${generateNewsSlug(rp.id, rpTitle, rp.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
+                    <Link key={rp.id} to={`/news/${generateNewsSlug(rp.id, rpTitle, rp.date)}`} className="rounded-xl border border-transparent bg-white/70 p-2.5 transition-colors hover:border-brown/10 hover:bg-lightGreen/20">
+                      <div className="flex items-center space-x-3">
                       {rpImageProps?.src ? (
-                        <img {...rpImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                        <img {...rpImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rpTitle))}</div>
                         <div className="text-xs text-gray-500">{rpDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
+                        <div className="flex flex-wrap gap-1.5 mt-2" aria-hidden="true">
                           {rpTags.map((t) => (
                             <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
                             </span>
                           ))}
                         </div>
+                      </div>
                       </div>
                     </Link>
                   );
@@ -955,17 +990,17 @@ export default function NewsDetail() {
 
           {/* Latest Events */}
           {loadingEvents ? (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4">Latest Events</h2>
               <div className="grid grid-cols-1 gap-4">{[...Array(3)].map((_, i) => <EventSkeleton key={i} />)}</div>
             </div>
           ) : recentEvents.length > 0 && (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Latest Events</h2>
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col gap-2.5">
                 {recentEvents.map((ev) => {
                   const evTitle = ev.title?.rendered || 'Untitled';
-                  const evDate = new Date(ev.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+                  const evDate = formatEnglishDate(ev.date);
                   const evImageProps = getWpImageProps(getFeaturedMedia(ev), {
                     altFallback: stripHtmlText(evTitle),
                     sizes: '48px',
@@ -973,22 +1008,24 @@ export default function NewsDetail() {
                   });
                   const evTags = ev._embedded?.['wp:term']?.[1] || [];
                   return (
-                    <Link key={ev.id} to={`/news/${generateNewsSlug(ev.id, evTitle, ev.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
+                    <Link key={ev.id} to={`/news/${generateNewsSlug(ev.id, evTitle, ev.date)}`} className="rounded-xl border border-transparent bg-white/70 p-2.5 transition-colors hover:border-brown/10 hover:bg-lightGreen/20">
+                      <div className="flex items-center space-x-3">
                       {evImageProps?.src ? (
-                        <img {...evImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                        <img {...evImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(evTitle))}</div>
                         <div className="text-xs text-gray-500">{evDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
+                        <div className="flex flex-wrap gap-1.5 mt-2" aria-hidden="true">
                           {evTags.map((t) => (
                             <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
                             </span>
                           ))}
                         </div>
+                      </div>
                       </div>
                     </Link>
                   );
@@ -999,17 +1036,17 @@ export default function NewsDetail() {
 
           {/* Related */}
           {loadingRelated ? (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4">Related Posts</h2>
               <div className="grid grid-cols-1 gap-4">{[...Array(3)].map((_, i) => <RecentPostSkeleton key={i} />)}</div>
             </div>
           ) : relatedPosts.length > 0 && (
-            <div>
+            <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
               <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Related Posts</h2>
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col gap-2.5">
                 {relatedPosts.map((r) => {
                   const rTitle = r.title?.rendered || 'No Title';
-                  const rDate = new Date(r.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+                  const rDate = formatEnglishDate(r.date);
                   const relatedImageProps = getWpImageProps(getFeaturedMedia(r), {
                     altFallback: stripHtmlText(rTitle),
                     sizes: '48px',
@@ -1017,22 +1054,24 @@ export default function NewsDetail() {
                   });
                   const rTags = r._embedded?.['wp:term']?.[1] || [];
                   return (
-                    <Link key={r.id} to={`/news/${generateNewsSlug(r.id, rTitle, r.date)}`} className="flex items-center space-x-3 p-2 transition-colors hover:bg-lightGreen/20 rounded">
+                    <Link key={r.id} to={`/news/${generateNewsSlug(r.id, rTitle, r.date)}`} className="rounded-xl border border-transparent bg-white/70 p-2.5 transition-colors hover:border-brown/10 hover:bg-lightGreen/20">
+                      <div className="flex items-center space-x-3">
                       {relatedImageProps?.src ? (
-                        <img {...relatedImageProps} className="w-12 h-12 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                        <img {...relatedImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
                         <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rTitle))}</div>
                         <div className="text-xs text-gray-500">{rDate}</div>
-                        <div className="flex flex-wrap gap-2 mt-2" aria-hidden="true">
+                        <div className="flex flex-wrap gap-1.5 mt-2" aria-hidden="true">
                           {rTags.map((t) => (
                             <span key={t.id} className="bg-lightGreen text-brown text-xs font-medium px-2 py-1 rounded-full">
                               {t.name}
                             </span>
                           ))}
                         </div>
+                      </div>
                       </div>
                     </Link>
                   );
