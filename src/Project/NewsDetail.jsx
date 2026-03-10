@@ -611,6 +611,23 @@ export default function NewsDetail() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // ------------------------------
+  // Derivados SIEMPRE calculados (antes de cualquier return)
+  // ------------------------------
+  const title = post?.title?.rendered || 'No Title';
+  const rawContent = post?.content?.rendered || '<p></p>';
+  const { fixedContent, anchoredHtml, toc } = useMemo(() => {
+    const fixed = fixLazyLoadAndNoscript(rawContent);
+    const safeHtml = DOMPurify.sanitize(fixed, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'id'],
+    });
+    const { html, headings } = addHeadingAnchors(safeHtml);
+    return { fixedContent: fixed, anchoredHtml: html, toc: headings };
+  }, [rawContent]);
+  const parsedArticleContent = useMemo(() => parse(anchoredHtml, { replace: transform }), [anchoredHtml]);
+  const safeParsedTitle = useMemo(() => parse(sanitizeInlineHtml(title)), [title]);
+
   useEffect(() => {
     if (!toc?.length) return;
     const handle = () => {
@@ -628,23 +645,6 @@ export default function NewsDetail() {
     window.addEventListener('scroll', handle, { passive: true });
     return () => window.removeEventListener('scroll', handle);
   }, [toc]);
-
-  // ------------------------------
-  // Derivados SIEMPRE calculados (antes de cualquier return)
-  // ------------------------------
-  const title = post?.title?.rendered || 'No Title';
-  const rawContent = post?.content?.rendered || '<p></p>';
-  const { fixedContent, anchoredHtml, toc } = useMemo(() => {
-    const fixed = fixLazyLoadAndNoscript(rawContent);
-    const safeHtml = DOMPurify.sanitize(fixed, {
-      ADD_TAGS: ['iframe'],
-      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'src', 'id'],
-    });
-    const { html, headings } = addHeadingAnchors(safeHtml);
-    return { fixedContent: fixed, anchoredHtml: html, toc: headings };
-  }, [rawContent]);
-  const parsedArticleContent = useMemo(() => parse(anchoredHtml, { replace: transform }), [anchoredHtml]);
-  const safeParsedTitle = useMemo(() => parse(sanitizeInlineHtml(title)), [title]);
 
   // Si aún está cargando y no hay post, ya podemos devolver skeleton
   if (post === undefined) return <PostDetailSkeleton />;
