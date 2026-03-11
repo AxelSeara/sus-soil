@@ -11,8 +11,8 @@ import {
   FaYoutube,
 } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import susSoilLogo from '../assets/logo.png';
-import euLogo from '../assets/EN-Funded by the EU-POS.png';
+import susSoilLogo from '../assets/logo.webp';
+import euLogo from '../assets/EN-Funded by the EU-POS.webp';
 import bgImage from '../assets/bg2.svg';
 
 const quickLinks = [
