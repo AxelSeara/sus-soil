@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import { FiClock, FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
+import { FiMail, FiMessageCircle, FiSend, FiUser } from 'react-icons/fi';
 import { sectionReveal } from '../lib/motion';
 
 const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || '').toLowerCase());
@@ -92,8 +92,8 @@ export default function Contact() {
             Contact the SUS-SOIL Team
           </h1>
           <p className="text-base md:text-lg text-brown/90 leading-relaxed">
-            For project enquiries, collaboration opportunities, or dissemination requests, please
-            use the form below. Your default email application will open with your message draft.
+            Use the form below to contact the project team. Your default email application will
+            open with a prepared draft.
           </p>
         </motion.header>
 
@@ -111,7 +111,7 @@ export default function Contact() {
             <div className="space-y-4">
               <div className="rounded-xl border border-darkGreen/10 bg-lightGreen/20 p-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-darkGreen mb-1">
-                  General Enquiries
+                  Contact Email
                 </p>
                 <a
                   href="mailto:mrosa.mosquera.losada@usc.es"
@@ -120,13 +120,6 @@ export default function Contact() {
                   <FiMail aria-hidden="true" />
                   mrosa.mosquera.losada@usc.es
                 </a>
-              </div>
-
-              <div className="rounded-xl border border-darkGreen/10 bg-white p-4">
-                <p className="inline-flex items-center gap-2 text-sm text-brown/90">
-                  <FiClock aria-hidden="true" className="text-darkGreen" />
-                  Typical response time: 2-5 working days
-                </p>
               </div>
 
               <div>
@@ -168,9 +161,7 @@ export default function Contact() {
             <div className="flex items-center justify-between gap-3 mb-6">
               <div>
                 <h2 className="text-2xl font-serif font-semibold text-brown">Send a Message</h2>
-                <p className="text-sm text-brown/75 mt-1">
-                  All fields are required unless otherwise indicated.
-                </p>
+                <p className="text-sm text-brown/75 mt-1">All fields are required.</p>
               </div>
               <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-lightGreen/20 px-3 py-1 text-xs font-semibold text-darkGreen">
                 <FiSend aria-hidden="true" />
@@ -255,7 +246,7 @@ export default function Contact() {
                 className={`w-full p-3 rounded-lg text-gray-900 border focus:ring-2 focus:ring-darkGreen ${
                   errors.subject ? 'border-red-400' : 'border-gray-300'
                 }`}
-                placeholder="Example: Collaboration request"
+                placeholder="Subject"
                 required
               />
               {errors.subject ? <p className="mt-1 text-sm text-red-600">{errors.subject}</p> : null}
@@ -277,7 +268,7 @@ export default function Contact() {
                     errors.message ? 'border-red-400' : 'border-gray-300'
                   }`}
                   rows="6"
-                  placeholder="Please include relevant context so we can route your enquiry efficiently."
+                  placeholder="Write your message."
                   minLength={20}
                   maxLength={messageLimit}
                   required
