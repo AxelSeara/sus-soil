@@ -102,7 +102,7 @@ export default function LLRelatedNews({
           variants={listReveal}
         >
           {posts.map((post) => {
-            const titleHtml = post.title?.rendered || "Untitled";
+            const titleHtml = post.title?.rendered || "Title unavailable";
             const titleText = stripHtml(titleHtml);
             const dateObj = new Date(post.date);
             const dateFormatted = dateObj.toLocaleDateString(undefined, {

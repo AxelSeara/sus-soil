@@ -628,7 +628,7 @@ export default function SamplingPointsMap() {
           aria-label="Enable map interaction"
         >
           <div className="rounded-xl border border-[#dbe8d6] bg-white/95 px-4 py-3 text-center shadow-[0_8px_24px_rgba(19,39,22,0.22)]">
-            <p className="text-sm font-semibold text-[#2f4b34]">Click to interact with the map</p>
+            <p className="text-sm font-semibold text-[#2f4b34]">Click to enable map interaction</p>
             <p className="mt-1 text-[11px] text-[#48614d]">Press Esc to return to page scrolling</p>
           </div>
         </button>
@@ -636,7 +636,7 @@ export default function SamplingPointsMap() {
 
       {isInteractive && (
         <div className="absolute left-1/2 top-2 z-40 -translate-x-1/2 rounded-lg border border-[#dbe8d6] bg-white/95 px-3 py-1.5 text-[11px] text-[#35533c] shadow" role="status" aria-live="polite">
-          Interactive mode · Press Esc to return
+          Map interaction enabled · Press Esc to return
         </div>
       )}
 

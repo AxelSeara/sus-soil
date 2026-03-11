@@ -62,7 +62,7 @@ export default function NewsEventsHome() {
   }, []);
 
   const Card = ({ post, featured = false, typeLabel }) => {
-    const titleHtml = post.title?.rendered || 'Untitled';
+    const titleHtml = post.title?.rendered || 'Title unavailable';
     const titleText = stripHtml(titleHtml);
     const dateObj = new Date(post.date);
     const dateFormatted = dateObj.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });

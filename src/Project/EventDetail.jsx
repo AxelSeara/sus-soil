@@ -123,7 +123,7 @@ export default function EventDetail() {
   }
 
   // Extract event data
-  const title = event.acf?.title || event.title?.rendered || 'No Title';
+  const title = event.acf?.title || event.title?.rendered || 'Title unavailable';
   const eventImageProps = getWpImageProps(getFeaturedMedia(event), {
     altFallback: title,
     sizes: '(max-width: 1024px) 100vw, 60vw',

@@ -164,7 +164,7 @@ export default function Contact() {
           {/* Nombre */}
           <div className="mb-5">
             <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
-              Your Name
+              Full name
             </label>
             <div className="relative">
               <FiUser className="absolute left-3 top-3.5 text-gray-400" />
@@ -193,7 +193,7 @@ export default function Contact() {
           {/* Email */}
           <div className="mb-5">
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
-              Your Email
+              Email address
             </label>
             <div className="relative">
               <FiMail className="absolute left-3 top-3.5 text-gray-400" />
@@ -222,7 +222,7 @@ export default function Contact() {
           {/* Mensaje */}
           <div className="mb-6">
             <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900">
-              Your Message
+              Message
             </label>
             <div className="relative">
               <FiMessageCircle className="absolute left-3 top-3.5 text-gray-400" />

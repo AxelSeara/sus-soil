@@ -323,7 +323,7 @@ Your data, including personal information, may be stored on our servers. By usin
                 ))}
               </ul>
               <div className="text-center md:text-right text-xs text-gray-700 max-w-xs leading-relaxed">
-                <p>Connect with us for updates & insights.</p>
+                <p>Follow project updates and official communications.</p>
               </div>
             </div>
           </div>

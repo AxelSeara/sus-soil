@@ -133,7 +133,7 @@ function CookiePreferenceCenter({ consent, onSave, openPanelToken, onVisibilityC
               Your privacy choices
             </h3>
             <p className="mt-1 text-sm text-brown/85">
-              Choose how SUS-SOIL may use optional cookies.
+              Choose whether SUS-SOIL may use optional cookies.
             </p>
           </div>
           {consent && (
@@ -151,7 +151,7 @@ function CookiePreferenceCenter({ consent, onSave, openPanelToken, onVisibilityC
         {mode === 'quick' ? (
           <div className="space-y-3">
             <p className="text-sm text-brown/80">
-              We use strictly necessary cookies for core functionality. Analytics and marketing cookies are optional.
+              We use strictly necessary cookies for core functionality. Analytics and marketing cookies are enabled only with your consent.
             </p>
             <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
               <button
@@ -159,7 +159,7 @@ function CookiePreferenceCenter({ consent, onSave, openPanelToken, onVisibilityC
                 onClick={() => setMode('manage')}
                 className="rounded-full border border-brown/20 px-4 py-2 text-sm font-semibold text-brown hover:bg-lightGreen/20"
               >
-                Manage preferences
+                Customize preferences
               </button>
               <button
                 type="button"
@@ -173,7 +173,7 @@ function CookiePreferenceCenter({ consent, onSave, openPanelToken, onVisibilityC
                 }
                 className="rounded-full border border-brown/20 px-4 py-2 text-sm font-semibold text-brown hover:bg-lightGreen/20"
               >
-                Reject non-essential
+                Reject optional cookies
               </button>
               <button
                 type="button"
@@ -245,7 +245,7 @@ function CookiePreferenceCenter({ consent, onSave, openPanelToken, onVisibilityC
                 }
                 className="rounded-full border border-brown/20 px-4 py-2 text-sm font-semibold text-brown hover:bg-lightGreen/20"
               >
-                Reject non-essential
+                Reject optional cookies
               </button>
               <button
                 type="button"

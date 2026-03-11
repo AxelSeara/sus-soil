@@ -158,7 +158,7 @@ export default function News() {
       '@type': 'ListItem',
       position: index + 1,
       url: `${SITE_URL}/news/${post.id}`,
-      name: (post.title?.rendered || 'Untitled').replace(/<[^>]+>/g, ''),
+      name: (post.title?.rendered || 'Title unavailable').replace(/<[^>]+>/g, ''),
     }));
 
     if (!itemListElement.length) return null;
@@ -240,7 +240,7 @@ export default function News() {
               <button
                 onClick={toggleOrder}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 min-h-[38px] rounded-full bg-gray-100 text-brown hover:bg-brown hover:text-white font-semibold text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brown self-start xl:self-auto"
-                aria-label={orderAsc ? 'Orden cronológico descendente (más recientes primero)' : 'Orden cronológico ascendente (más antiguas primero)'}
+                aria-label={orderAsc ? 'Sort by newest first' : 'Sort by oldest first'}
               >
                 {orderAsc ? <FaSortAmountUp aria-hidden="true" /> : <FaSortAmountDown aria-hidden="true" />}
                 <span>{orderAsc ? 'Oldest → Newest' : 'Newest → Oldest'}</span>
@@ -264,7 +264,7 @@ export default function News() {
             aria-live="polite"
           >
             {items.map((post) => {
-                const titleHtml = post.title?.rendered || 'No Title';
+                const titleHtml = post.title?.rendered || 'Title unavailable';
                 const titleText = stripHtml(titleHtml);
                 const date = new Date(post.date);
                 const dateFormatted = date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });

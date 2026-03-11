@@ -614,7 +614,7 @@ export default function NewsDetail() {
   // ------------------------------
   // Derivados SIEMPRE calculados (antes de cualquier return)
   // ------------------------------
-  const title = post?.title?.rendered || 'No Title';
+  const title = post?.title?.rendered || 'Title unavailable';
   const rawContent = post?.content?.rendered || '<p></p>';
   const { fixedContent, anchoredHtml, toc } = useMemo(() => {
     const fixed = fixLazyLoadAndNoscript(rawContent);
@@ -942,18 +942,18 @@ export default function NewsDetail() {
             </div>
           )}
 
-          {/* Last News */}
+          {/* Latest News */}
           {loadingRecent ? (
             <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
-              <h2 className="text-xl font-serif font-medium text-brown mb-4">Last News</h2>
+              <h2 className="text-xl font-serif font-medium text-brown mb-4">Latest News</h2>
               <div className="grid grid-cols-1 gap-4">{[...Array(3)].map((_, i) => <RecentPostSkeleton key={i} />)}</div>
             </div>
           ) : recentPosts.length > 0 && (
             <div className="rounded-2xl border border-brown/10 bg-white/85 p-4">
-              <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Last News</h2>
+              <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Latest News</h2>
               <div className="flex flex-col gap-2.5">
                 {recentPosts.map((rp) => {
-                  const rpTitle = rp.title?.rendered || 'No Title';
+                  const rpTitle = rp.title?.rendered || 'Title unavailable';
                   const rpDate = formatEnglishDate(rp.date);
                   const rpImageProps = getWpImageProps(getFeaturedMedia(rp), {
                     altFallback: stripHtmlText(rpTitle),
@@ -967,7 +967,7 @@ export default function NewsDetail() {
                       {rpImageProps?.src ? (
                         <img {...rpImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
-                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
+                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">No image</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rpTitle))}</div>
@@ -999,7 +999,7 @@ export default function NewsDetail() {
               <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Latest Events</h2>
               <div className="flex flex-col gap-2.5">
                 {recentEvents.map((ev) => {
-                  const evTitle = ev.title?.rendered || 'Untitled';
+                  const evTitle = ev.title?.rendered || 'Title unavailable';
                   const evDate = formatEnglishDate(ev.date);
                   const evImageProps = getWpImageProps(getFeaturedMedia(ev), {
                     altFallback: stripHtmlText(evTitle),
@@ -1013,7 +1013,7 @@ export default function NewsDetail() {
                       {evImageProps?.src ? (
                         <img {...evImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
-                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
+                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">No image</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(evTitle))}</div>
@@ -1045,7 +1045,7 @@ export default function NewsDetail() {
               <h2 className="text-xl font-serif font-medium text-brown mb-4 border-b border-brown/20 pb-2">Related Posts</h2>
               <div className="flex flex-col gap-2.5">
                 {relatedPosts.map((r) => {
-                  const rTitle = r.title?.rendered || 'No Title';
+                  const rTitle = r.title?.rendered || 'Title unavailable';
                   const rDate = formatEnglishDate(r.date);
                   const relatedImageProps = getWpImageProps(getFeaturedMedia(r), {
                     altFallback: stripHtmlText(rTitle),
@@ -1059,7 +1059,7 @@ export default function NewsDetail() {
                       {relatedImageProps?.src ? (
                         <img {...relatedImageProps} className="w-12 h-12 rounded-full object-cover" />
                       ) : (
-                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">N/A</div>
+                        <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-600">No image</div>
                       )}
                       <div className="text-sm text-brown">
                         <div className="font-semibold line-clamp-2">{parse(sanitizeInlineHtml(rTitle))}</div>
