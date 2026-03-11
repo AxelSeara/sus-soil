@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import portadaLLs from '../assets/regions/Mapa sección LLs.webp';
@@ -11,16 +11,27 @@ const containerVariants = listReveal;
 const cardVariants = cardReveal;
 
 export default function LivingLabs() {
+  const [heroLoaded, setHeroLoaded] = useState(false);
+
   return (
     <main className="w-full bg-gradient-to-b from-[#f3f8f5] via-white to-[#f6faf7]">
       {/* Portada */}
       <section className="w-full bg-white">
         <div className="mx-auto w-full px-4 sm:px-6 py-4 sm:py-6">
+          {!heroLoaded && (
+            <div
+              className="mx-auto w-full max-h-[70vh] h-[40vh] rounded-xl bg-[#e8f1eb] animate-pulse"
+              aria-hidden="true"
+            />
+          )}
           <img
             src={portadaLLs}
             alt="Mapa de las regiones de Living Labs"
-            className="mx-auto w-full max-h-[70vh] object-contain select-none"
+            className={`mx-auto w-full max-h-[70vh] object-contain select-none transition-opacity duration-300 ${
+              heroLoaded ? 'opacity-100 visible' : 'opacity-0 invisible'
+            }`}
             loading="eager"
+            onLoad={() => setHeroLoaded(true)}
           />
         </div>
       </section>

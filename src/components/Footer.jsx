@@ -29,7 +29,7 @@ const socialLinks = [
   { href: 'https://www.youtube.com/@sus-soil', label: 'YouTube', icon: FaYoutube },
 ];
 
-export default function Footer() {
+export default function Footer({ suppressBackToTop = false, onOpenCookieSettings }) {
   const location = useLocation();
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(path + '/');
@@ -352,6 +352,14 @@ Your data, including personal information, may be stored on our servers. By usin
               <span aria-hidden="true">•</span>
               <button
                 type="button"
+                onClick={onOpenCookieSettings}
+                className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              >
+                Edit Cookie Preferences
+              </button>
+              <span aria-hidden="true">•</span>
+              <button
+                type="button"
                 onClick={() => openModal('privacy')}
                 className="underline hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               >
@@ -364,8 +372,8 @@ Your data, including personal information, may be stored on our servers. By usin
 
       {/* Back to top */}
       <div
-        className={`fixed right-5 bottom-5 z-[1050] transition-all duration-300 ${
-          showTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        className={`fixed right-5 bottom-5 z-[60] transition-all duration-300 ${
+          showTop && !suppressBackToTop ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
       >
         <button
