@@ -20,10 +20,10 @@ export default function Hero() {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
-      className="relative min-h-screen flex flex-col items-center justify-center px-4 overflow-hidden bg-scroll md:bg-fixed"
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-12 md:pt-28 md:pb-16 overflow-hidden bg-scroll md:bg-fixed"
     >
       <div
-        className="absolute inset-0 bg-gradient-to-b from-[#eff8f0]/45 via-[#f6fbf6]/30 to-white/50"
+        className="absolute inset-0 bg-gradient-to-b from-[#eff8f0]/38 via-[#f6fbf6]/22 to-white/42"
         aria-hidden="true"
       />
       <div
@@ -32,11 +32,11 @@ export default function Hero() {
       />
 
       {/* Contenido centrado */}
-      <div className="relative text-center max-w-2xl rounded-3xl border border-white/60 bg-white/55 backdrop-blur-md px-6 py-10 md:px-12 md:py-12 shadow-[0_16px_45px_-26px_rgba(20,64,37,0.55)]">
-        <h1 className="text-4xl md:text-5xl font-bold font-serif text-brown mb-6">
+      <div className="relative text-center max-w-3xl rounded-2xl border border-white/55 bg-[#f6fbf5]/86 backdrop-blur-sm px-6 py-8 md:px-12 md:py-10 shadow-[0_12px_30px_-18px_rgba(20,64,37,0.48)]">
+        <h1 className="text-4xl md:text-5xl font-bold font-serif text-[#3f2416] mb-5 leading-[1.06]">
           Sustainable Soil and Subsoil Health
         </h1>
-        <p className="text-lg text-brown/85 mb-8 leading-relaxed">
+        <p className="mx-auto max-w-[62ch] text-lg text-[#5a3a2a]/90 mb-7 leading-relaxed">
           Join us in preserving and improving the soils for a greener future.
         </p>
         <div className="flex flex-wrap justify-center gap-4">
@@ -44,7 +44,7 @@ export default function Hero() {
             whileHover={hoverLift.whileHover}
             whileTap={hoverLift.whileTap}
             to="/project/about"
-            className="px-6 py-3 bg-darkGreen text-white font-bold rounded-full hover:bg-darkGreen/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-md"
+            className="px-6 py-3 bg-darkGreen text-white font-semibold rounded-lg hover:bg-darkGreen/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-[0_8px_20px_-12px_rgba(20,64,37,0.6)]"
           >
             Learn More
           </MotionLink>
