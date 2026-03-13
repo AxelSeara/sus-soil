@@ -40,7 +40,7 @@ export default function Hero() {
             whileHover={hoverLift.whileHover}
             whileTap={hoverLift.whileTap}
             to="/project/about"
-            className="px-6 py-3 bg-darkGreen text-white font-semibold rounded-lg hover:bg-darkGreen/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-[0_8px_20px_-12px_rgba(20,64,37,0.6)]"
+            className="px-6 py-3 bg-[#4a2a1c] text-white font-semibold rounded-lg hover:bg-[#3f2416] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4a2a1c] focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-[0_8px_20px_-12px_rgba(40,24,16,0.6)]"
           >
             Learn More
           </MotionLink>
