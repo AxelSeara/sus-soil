@@ -41,12 +41,17 @@ export default function Mapa() {
   const overlayImg = regionData?.img || mapBase;
   const overlayKey = finalRegion || 'noMap';
 
-  const ctaLabel = activeRegion ? `Explore ${regionData?.label}` : 'Explore our Living Labs';
+  const ctaLabel = 'Explore Living Labs';
   const ctaTo = activeRegion ? `/living-labs/${slug(activeRegion)}` : '/living-labs';
-  const ctaBg = activeRegion ? (regionData?.color || '#4b3a2f') : '#4b3a2f';
+  const ctaBg = '#4b3a2f';
 
   const handleRegionClick = (id) => {
     setActiveRegion((prev) => (prev === id ? null : id));
+  };
+
+  const clearSelection = () => {
+    setActiveRegion(null);
+    setHoveredRegion(null);
   };
 
   const handleKey = (e, id) => {
@@ -79,7 +84,7 @@ export default function Mapa() {
               the overall location of our Living Labs.
             </p>
 
-            {/* Region chips (mejorados para evitar desborde) */}
+            {/* Region chips */}
             <div
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3"
               role="toolbar"
@@ -101,13 +106,13 @@ export default function Mapa() {
                     className={[
                       // Layout truncado fiable
                       'w-full min-w-0 overflow-hidden',
-                      'rounded-full py-2 px-3 min-h-[36px]',
+                      'rounded-full py-2 px-3 min-h-[40px]',
                       'ring-offset-2 focus:outline-none focus-visible:ring-2',
                       'transition-all font-semibold',
                       // Tipografía fluida y compacta
                       'text-[clamp(11px,2.6vw,14px)] leading-[1.1]',
                       // Estado visual
-                      isActive ? 'text-white scale-[1.03]' : 'text-brown hover:shadow-md',
+                      isActive ? 'text-white scale-[1.03] border border-white/40' : 'text-brown hover:shadow-md border border-transparent',
                     ].join(' ')}
                     style={{
                       backgroundColor: isActive ? r.color : '#f6f6f6',
@@ -124,6 +129,11 @@ export default function Mapa() {
                         style={{ backgroundColor: r.color }}
                         aria-hidden="true"
                       />
+                      {isActive && (
+                        <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/20 text-[10px] font-bold leading-none" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
                       {/* Contenedor con min-w-0 para hacer efectivo el truncate */}
                       <span className="min-w-0">
                         <span className="block truncate max-w-full">{r.label}</span>
@@ -132,6 +142,16 @@ export default function Mapa() {
                   </motion.button>
                 );
               })}
+            </div>
+
+            <div className="mt-4 min-h-[24px]">
+              {activeRegion ? (
+                <p className="text-sm text-brown/80">
+                  Selected region: <span className="font-semibold">{regionData?.label}</span>
+                </p>
+              ) : (
+                <p className="text-sm text-brown/70">Select a region to preview it on the map.</p>
+              )}
             </div>
 
             {/* Primary CTA (always visible) */}
@@ -144,7 +164,7 @@ export default function Mapa() {
               <Link
                 to={ctaTo}
                 aria-label={activeRegion ? `Go to ${regionData?.label}` : 'Go to Living Labs'}
-                className="px-6 py-3 font-bold rounded-full shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen ring-offset-2"
+                className="px-6 py-3 font-bold rounded-lg shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen ring-offset-2"
                 style={{ backgroundColor: ctaBg }}
               >
                 {ctaLabel}
@@ -168,7 +188,7 @@ export default function Mapa() {
                 decoding="async"
                 fetchPriority="high"
               />
-              <AnimatePresence initial={false} mode="wait">
+              <AnimatePresence initial={false} mode="sync">
                 {overlayImg && (
                   <motion.img
                     key={overlayKey}
@@ -178,7 +198,7 @@ export default function Mapa() {
                     initial={false}
                     animate={imageFadeScale.animate}
                     exit={imageFadeScale.exit}
-                    transition={imageFadeScale.transition}
+                    transition={{ ...imageFadeScale.transition, duration: 0.28 }}
                     loading="lazy"
                     decoding="async"
                   />
@@ -187,14 +207,20 @@ export default function Mapa() {
 
               {/* Corner caption for subtle feedback */}
               <div className="absolute bottom-3 right-3">
-                <span
-                  className="px-2.5 py-1 text-[11px] rounded-full bg-white/80 backdrop-blur border border-black/5"
-                  style={{ color: regionData?.color || '#4b3a2f' }}
+                <button
+                  type="button"
+                  onClick={clearSelection}
+                  className="px-2.5 py-1 text-[11px] rounded-full bg-white/85 backdrop-blur border border-black/5 text-brown hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen"
+                  aria-label="Reset map to overview"
+                  title="Reset to overview"
                 >
-                  {regionData ? regionData.label : 'Overview'}
-                </span>
+                  {regionData ? `Current: ${regionData.label} · Reset` : 'Current: Overview'}
+                </button>
               </div>
             </div>
+            <p className="mt-3 text-xs text-brown/70 text-center lg:text-left">
+              Tip: Tap a region chip to preview it. Tap “Reset” to return to overview.
+            </p>
           </motion.div>
         </motion.div>
       </div>
