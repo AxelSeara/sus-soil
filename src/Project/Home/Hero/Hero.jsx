@@ -23,11 +23,7 @@ export default function Hero() {
       className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-12 md:pt-28 md:pb-16 overflow-hidden bg-scroll md:bg-fixed"
     >
       <div
-        className="absolute inset-0 bg-gradient-to-b from-[#eff8f0]/38 via-[#f6fbf6]/22 to-white/42"
-        aria-hidden="true"
-      />
-      <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_18%_25%,rgba(122,194,129,0.25),transparent_36%),radial-gradient(circle_at_82%_70%,rgba(46,132,121,0.16),transparent_40%)]"
+        className="absolute inset-0 bg-gradient-to-b from-white/8 via-transparent to-white/12"
         aria-hidden="true"
       />
 
