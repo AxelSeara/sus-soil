@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { cardReveal, imageFadeScale, listReveal, sectionReveal, hoverLift } from '../../../lib/motion';
+import { cardReveal, listReveal, sectionReveal, hoverLift } from '../../../lib/motion';
 
 import mapBase from '../../../assets/regions/map.webp'; // fallback
 import noMap from '../../../assets/regions/Nomap.webp';
@@ -183,7 +183,7 @@ export default function Mapa() {
               <img
                 src={noMap}
                 alt="Base map"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-contain"
                 loading="eager"
                 decoding="async"
                 fetchPriority="high"
@@ -194,11 +194,11 @@ export default function Mapa() {
                     key={overlayKey}
                     src={overlayImg}
                     alt={regionData ? `${regionData.label} overlay` : 'Map overlay'}
-                    className="motion-stable absolute inset-0 w-full h-full object-cover"
-                    initial={false}
-                    animate={imageFadeScale.animate}
-                    exit={imageFadeScale.exit}
-                    transition={{ ...imageFadeScale.transition, duration: 0.28 }}
+                    className="motion-stable absolute inset-0 w-full h-full object-contain"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     loading="lazy"
                     decoding="async"
                   />
