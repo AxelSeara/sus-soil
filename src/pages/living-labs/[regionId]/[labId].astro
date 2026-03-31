@@ -1,0 +1,48 @@
+---
+import LegacyPage from '../../../components/LegacyPage.astro';
+import { regions } from '../../../data/regions';
+import { livingLabs } from '../../../data/livingLabs';
+
+export function getStaticPaths() {
+  const out = [];
+
+  regions.forEach((region) => {
+    const regionSlug = region.id?.toString().trim().toLowerCase().replace(/\s+/g, '-');
+    const regionVariants = [region.id, regionSlug];
+
+    livingLabs.forEach((lab) => {
+      const ids = Array.isArray(lab.regionIds)
+        ? lab.regionIds
+        : (lab.regionId ? [lab.regionId] : []);
+
+      if (!ids.includes(region.id)) return;
+
+      regionVariants.forEach((regionId) => {
+        out.push({
+          params: {
+            regionId,
+            labId: lab.id,
+          },
+        });
+      });
+    });
+  });
+
+  const uniq = new Map();
+  out.forEach((item) => {
+    const key = `${item.params.regionId}::${item.params.labId}`;
+    if (!uniq.has(key)) uniq.set(key, item);
+  });
+
+  return [...uniq.values()];
+}
+
+const { regionId, labId } = Astro.params;
+---
+<LegacyPage
+  title="Living Lab Detail | SUS-SOIL"
+  description="Read details about this SUS-SOIL living lab and its regional context."
+  canonicalPath={`/living-labs/${regionId}/${labId}`}
+  path={`/living-labs/${regionId}/${labId}`}
+  hydrate={true}
+/>

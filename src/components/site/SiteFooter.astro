@@ -1,0 +1,31 @@
+---
+import susSoilLogo from '../../assets/logo.webp';
+import euLogo from '../../assets/EN-Funded by the EU-POS.webp';
+---
+<footer class="border-t border-darkGreen/20 relative bg-gradient-to-b from-[#eef8f0] via-[#f5fbf7] to-[#e8f4ec]">
+  <div class="py-10 px-4 bg-gradient-to-b from-white/70 to-[#eff8f1] border-b border-darkGreen/10">
+    <div class="max-w-6xl mx-auto flex flex-col items-center">
+      <div class="w-full flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 mb-4">
+        <img src={susSoilLogo.src} alt="SUS-SOIL project logo" class="h-20 sm:h-24 md:h-36 w-auto" loading="lazy" />
+        <img src={euLogo.src} alt="Funded by the European Union" class="h-12 sm:h-14 md:h-16 w-auto" loading="lazy" />
+      </div>
+      <p class="text-xs text-gray-700 leading-snug max-w-3xl font-sans text-center">
+        This project has received funding from the European Union’s Horizon Europe research
+        and innovation programme under grant agreement No GA 101157560.
+      </p>
+    </div>
+  </div>
+
+  <div class="px-6 py-10">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 md:items-center md:justify-between text-sm text-brown">
+      <p>© {new Date().getFullYear()} SUS-SOIL. All rights reserved.</p>
+      <div class="flex flex-wrap items-center gap-3">
+        <a href="/" class="underline hover:text-darkGreen">Home</a>
+        <span aria-hidden="true">•</span>
+        <a href="/news" class="underline hover:text-darkGreen">News</a>
+        <span aria-hidden="true">•</span>
+        <button id="open-cookie-settings" type="button" class="underline hover:text-darkGreen">Cookie Settings</button>
+      </div>
+    </div>
+  </div>
+</footer>

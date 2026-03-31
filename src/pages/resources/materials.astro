@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  fetchPostsByCategory,
+  WP_CATEGORY_IDS,
+  fileExtensionFromMime,
+  toMaterialItem,
+} from '../../lib/wp';
+
+let materials = [];
+try {
+  const posts = await fetchPostsByCategory(WP_CATEGORY_IDS.MATERIALS);
+  materials = posts.map(toMaterialItem);
+} catch (error) {
+  materials = [];
+}
+---
+<BaseLayout
+  title="Materials | SUS-SOIL Resources"
+  description="Access SUS-SOIL project materials and knowledge assets."
+  canonicalPath="/resources/materials"
+>
+  <section class="max-w-screen-xl mx-auto px-4 py-16 text-brown">
+    <h1 class="text-4xl md:text-5xl font-bold font-serif mb-3">Materials</h1>
+    <p class="text-lg md:text-xl text-gray-700 font-medium mb-12 max-w-2xl">
+      In this section you will find materials produced by the SUS-SOIL project.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {materials.length ? (
+        materials.map((m) => {
+          const extension = fileExtensionFromMime(m.file.mime);
+          return (
+            <article class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div class="relative w-full rounded-lg overflow-hidden mb-4">
+                <div class="aspect-[16/9] w-full bg-gray-100">
+                  {m.imageUrl ? (
+                    <img src={m.imageUrl} alt={m.imageAlt || m.title} class="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-gray-500 text-sm">No image</div>
+                  )}
+                </div>
+                {m.file?.mime ? <span class="absolute top-2 left-2 text-[11px] px-2 py-1 rounded-full bg-white/90 backdrop-blur border border-black/5">{extension}</span> : null}
+              </div>
+
+              <h2 class="text-lg font-semibold leading-snug">{m.title}</h2>
+              <p class="text-xs text-gray-500 mt-0.5">Uploaded: {m.date ? new Date(m.date).toLocaleDateString() : 'N/A'}</p>
+
+              <div class="prose prose-sm max-w-none text-gray-700 my-4" set:html={m.contentHtml} />
+
+              {m.file?.url ? (
+                <a href={m.file.url} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-brown text-white px-4 py-2 rounded-lg hover:bg-darkGreen transition-colors">
+                  Download ({extension})
+                </a>
+              ) : (
+                <span class="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-gray-100 text-gray-500 text-sm">File coming soon</span>
+              )}
+            </article>
+          );
+        })
+      ) : (
+        <p class="text-center text-gray-500 col-span-full">No materials available at the moment.</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

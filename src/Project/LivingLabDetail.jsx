@@ -2,7 +2,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import LLRelatedNews from "../components/LLRelatedNews";
-import { HeroSectionSkeleton } from '../components/Skeletons';
+import { regions as regionsData } from '../data/regions';
+import { livingLabs as livingLabsData } from '../data/livingLabs';
 
 const toSlug = (s) => s?.toString().trim().toLowerCase().replace(/\s+/g, '-');
 
@@ -18,27 +19,6 @@ const ACTIVE_REGION_IDS = new Set([
 export default function LivingLabDetail() {
   const { regionId, labId } = useParams();
   const [loadingHero, setLoadingHero] = useState(true);
-  const [regionsData, setRegionsData] = useState([]);
-  const [livingLabsData, setLivingLabsData] = useState([]);
-  const [loadingData, setLoadingData] = useState(true);
-
-  // Lazy-load static regions/livingLabs data
-  useEffect(() => {
-    let cancelled = false;
-    setLoadingData(true);
-    Promise.all([import('../data/regions'), import('../data/livingLabs')])
-      .then(([regionsMod, labsMod]) => {
-        if (cancelled) return;
-        setRegionsData(regionsMod.regions || []);
-        setLivingLabsData(labsMod.livingLabs || []);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingData(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const region = useMemo(() => {
     if (!regionId || !regionsData.length) return null;
@@ -82,10 +62,6 @@ export default function LivingLabDetail() {
     () => regionsData.filter((r) => ACTIVE_REGION_IDS.has(r.id)),
     [regionsData]
   );
-
-  if (loadingData) {
-    return <HeroSectionSkeleton />;
-  }
 
   if (!lab || !region || !labBelongsToRegion) {
     return (

@@ -2,10 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cardReveal, listReveal, sectionReveal } from '../../../lib/motion';
 
-import AwarenessIcon from '../../../assets/icons/Awareness.svg';
-import EcosystemIcon from '../../../assets/icons/Ecosystem.svg';
-import EUIcon from '../../../assets/icons/EU.svg';
-import WaterIcon from '../../../assets/icons/Water.svg';
+import AwarenessIcon from '../../../assets/icons/Awareness.svg?url';
+import EcosystemIcon from '../../../assets/icons/Ecosystem.svg?url';
+import EUIcon from '../../../assets/icons/EU.svg?url';
+import WaterIcon from '../../../assets/icons/Water.svg?url';
 
 const objectives = [
   { title: 'Awareness for land managers', icon: AwarenessIcon },

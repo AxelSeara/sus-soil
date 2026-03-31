@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildNewsSlug, fetchPostsByCategory, toNewsCard, WP_CATEGORY_IDS } from '../../lib/wp';
+
+export async function getStaticPaths() {
+  try {
+    const posts = await fetchPostsByCategory(WP_CATEGORY_IDS.NEWS);
+    return posts.map((post) => {
+      const id = buildNewsSlug(post.id, post?.title?.rendered || '', post?.date);
+      return {
+        params: { id },
+        props: { card: toNewsCard(post) },
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+const { card } = Astro.props;
+
+if (!card) {
+  Astro.response.status = 404;
+}
+
+const postStructuredData = card
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'NewsArticle',
+      headline: card.title,
+      datePublished: card.date,
+      dateModified: card.date,
+      image: card.imageUrl || 'https://sus-soil.eu/logo.webp',
+      author: {
+        '@type': 'Organization',
+        name: 'SUS-SOIL',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'SUS-SOIL',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://sus-soil.eu/logo.webp',
+        },
+      },
+      description: card.excerpt || card.title,
+      mainEntityOfPage: `https://sus-soil.eu${card.linkPath}`,
+    }
+  : null;
+---
+<BaseLayout
+  title={card ? `${card.title} | SUS-SOIL News` : 'News | SUS-SOIL'}
+  description={card?.excerpt || 'SUS-SOIL news update.'}
+  canonicalPath={card?.linkPath || '/news'}
+  image={card?.imageUrl || '/logo.webp'}
+  type="article"
+  structuredData={postStructuredData}
+>
+  {card ? (
+    <article class="content-shell section-shell py-12 sm:py-14">
+      <nav aria-label="Breadcrumb" class="mb-6 text-sm text-brown/80">
+        <a href="/" class="underline hover:opacity-80">Home</a> / <a href="/news" class="underline hover:opacity-80">News</a> / <span class="font-semibold">Article</span>
+      </nav>
+
+      <h1 class="text-3xl md:text-4xl font-bold font-serif text-brown mb-3">{card.title}</h1>
+      <p class="text-sm text-brown/70 mb-6">{card.date ? new Date(card.date).toLocaleDateString() : ''}</p>
+
+      {card.imageUrl ? (
+        <img src={card.imageUrl} alt={card.imageAlt || card.title} class="w-full max-h-[560px] object-cover rounded-xl mb-8" loading="eager" />
+      ) : null}
+
+      <div class="prose prose-lg max-w-none text-brown" set:html={card.contentHtml} />
+
+      <div class="mt-10">
+        <a href="/news" class="inline-flex items-center rounded-full bg-brown px-4 py-2 text-sm font-semibold text-white hover:bg-brown/90">
+          Back to News
+        </a>
+      </div>
+    </article>
+  ) : (
+    <section class="content-shell section-shell py-12 sm:py-14 text-center">
+      <h1 class="text-2xl font-bold text-red-500 mb-3">News article not found</h1>
+      <a href="/news" class="underline">Back to news</a>
+    </section>
+  )}
+</BaseLayout>

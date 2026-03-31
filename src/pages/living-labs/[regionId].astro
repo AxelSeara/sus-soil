@@ -1,0 +1,23 @@
+---
+import LegacyPage from '../../components/LegacyPage.astro';
+import { regions } from '../../data/regions';
+
+export function getStaticPaths() {
+  const ids = new Set();
+  regions.forEach((region) => {
+    ids.add(region.id);
+    ids.add(region.id?.toLowerCase().replace(/\s+/g, '-'));
+  });
+
+  return [...ids].map((regionId) => ({ params: { regionId } }));
+}
+
+const { regionId } = Astro.params;
+---
+<LegacyPage
+  title="Region Detail | SUS-SOIL Living Labs"
+  description="Explore the selected biogeographic region and related SUS-SOIL living labs."
+  canonicalPath={`/living-labs/${regionId}`}
+  path={`/living-labs/${regionId}`}
+  hydrate={true}
+/>

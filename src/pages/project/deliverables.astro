@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchPostsByCategory, WP_CATEGORY_IDS, toDeliverableItem } from '../../lib/wp';
+
+let items = [];
+try {
+  const posts = await fetchPostsByCategory(WP_CATEGORY_IDS.DELIVERABLES);
+  items = posts
+    .map(toDeliverableItem)
+    .sort((a, b) => {
+      if (a.number && b.number) {
+        return a.number.localeCompare(b.number, undefined, { numeric: true });
+      }
+      return b.id - a.id;
+    });
+} catch (error) {
+  items = [];
+}
+---
+<BaseLayout
+  title="Deliverables | SUS-SOIL"
+  description="Access SUS-SOIL public deliverables and project outputs."
+  canonicalPath="/project/deliverables"
+>
+  <main class="min-h-screen bg-white py-16 px-4 sm:px-6 lg:px-10">
+    <header class="max-w-5xl mx-auto mb-10 text-center">
+      <h1 class="text-4xl md:text-5xl font-serif font-bold text-brown mb-4">Deliverables</h1>
+      <p class="text-brown/80 text-base md:text-lg max-w-3xl mx-auto">
+        Public deliverables produced within the SUS-SOIL project.
+      </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto">
+      <div class="bg-white rounded-3xl shadow-lg ring-1 ring-black/5 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full border-separate border-spacing-0">
+            <thead>
+              <tr class="text-left text-xs md:text-sm uppercase tracking-wide text-darkGreen">
+                <th class="px-6 py-4 bg-lightGreen/5 font-semibold">Deliverable number &amp; name</th>
+                <th class="px-4 py-4 bg-lightGreen/5 font-semibold text-center">Work package</th>
+                <th class="px-4 py-4 bg-lightGreen/5 font-semibold text-center">Leader</th>
+                <th class="px-4 py-4 bg-lightGreen/5 font-semibold text-center">Dissemination level</th>
+                <th class="px-4 py-4 bg-lightGreen/5 font-semibold text-center">Date</th>
+                <th class="px-4 py-4 bg-lightGreen/5 font-semibold text-center">PDF</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.length ? (
+                items.map((d, idx) => (
+                  <tr class={`text-sm md:text-base text-brown border-t border-darkGreen/25 ${idx % 2 === 1 ? 'bg-lightGreen/5' : 'bg-white'}`}>
+                    <td class="px-6 py-5 align-middle">
+                      {d.pdfUrl ? (
+                        <a href={d.pdfUrl} target="_blank" rel="noopener noreferrer" class="font-semibold font-serif text-brown hover:text-darkGreen hover:underline">
+                          {d.title}
+                        </a>
+                      ) : (
+                        <span class="font-semibold font-serif text-brown">{d.title}</span>
+                      )}
+                    </td>
+                    <td class="px-4 py-5 text-center">{d.workPackage ? `WP${d.workPackage}` : '-'}</td>
+                    <td class="px-4 py-5 text-center">{d.leader || '-'}</td>
+                    <td class="px-4 py-5 text-center">{d.level || '-'}</td>
+                    <td class="px-4 py-5 text-center">{d.milestone || '-'}</td>
+                    <td class="px-4 py-5 text-center">
+                      {d.pdfUrl ? <a href={d.pdfUrl} target="_blank" rel="noopener noreferrer" class="underline">Download</a> : '-'}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" class="px-6 py-8 text-center text-gray-500">No deliverables available yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

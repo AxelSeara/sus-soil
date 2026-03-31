@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { fetchEvents, stripHtml } from '../../lib/wp';
+
+const slugify = (value = '') =>
+  stripHtml(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+function buildEventSlug(event) {
+  const title = event?.acf?.title || event?.title?.rendered || 'event';
+  const date = event?.acf?.date || event?.date;
+  const datePart = date ? new Date(date).toISOString().slice(0, 10) : 'unknown-date';
+  return `${event.id}-${slugify(title)}-${datePart}`;
+}
+
+export async function getStaticPaths() {
+  try {
+    const events = await fetchEvents();
+    return events.map((event) => ({
+      params: { id: buildEventSlug(event) },
+      props: { event },
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const { event } = Astro.props;
+
+if (!event) {
+  Astro.response.status = 404;
+}
+
+const title = event?.acf?.title || stripHtml(event?.title?.rendered || '') || 'Event';
+const date = event?.acf?.date || event?.date;
+const location = event?.acf?.location || '';
+const description = event?.acf?.description || event?.content?.rendered || '';
+const imageUrl = event?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/logo.webp';
+
+const structuredData = event
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Event',
+      name: title,
+      startDate: date,
+      endDate: date,
+      eventStatus: 'https://schema.org/EventScheduled',
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: location
+        ? {
+            '@type': 'Place',
+            name: location,
+            address: location,
+          }
+        : undefined,
+      image: imageUrl,
+      description: stripHtml(description) || `SUS-SOIL event: ${title}`,
+      organizer: {
+        '@type': 'Organization',
+        name: 'SUS-SOIL',
+        url: 'https://sus-soil.eu',
+      },
+      url: `https://sus-soil.eu/event/${Astro.params.id}`,
+    }
+  : null;
+---
+<BaseLayout
+  title={event ? `${title} | SUS-SOIL Event` : 'Event | SUS-SOIL'}
+  description={stripHtml(description) || `Details about the SUS-SOIL event: ${title}`}
+  canonicalPath={event ? `/event/${Astro.params.id}` : '/news'}
+  image={imageUrl}
+  type="article"
+  structuredData={structuredData}
+>
+  {event ? (
+    <article class="content-shell section-shell py-12 sm:py-14">
+      <nav aria-label="Breadcrumb" class="mb-6 text-sm text-brown/80">
+        <a href="/" class="underline hover:opacity-80">Home</a> / <a href="/news" class="underline hover:opacity-80">News</a> / <span class="font-semibold">Event</span>
+      </nav>
+
+      <h1 class="text-3xl md:text-4xl font-bold font-serif text-brown mb-3">{title}</h1>
+      <p class="text-sm text-brown/70 mb-2">{date ? new Date(date).toLocaleDateString() : ''}</p>
+      {location ? <p class="text-sm text-brown/80 mb-6"><strong>Location:</strong> {location}</p> : null}
+
+      {imageUrl ? <img src={imageUrl} alt={title} class="w-full max-h-[560px] object-cover rounded-xl mb-8" loading="eager" /> : null}
+
+      <div class="prose prose-lg max-w-none text-brown" set:html={description} />
+
+      <div class="mt-10">
+        <a href="/news?filter=events" class="inline-flex items-center rounded-full bg-brown px-4 py-2 text-sm font-semibold text-white hover:bg-brown/90">
+          Back to Events
+        </a>
+      </div>
+    </article>
+  ) : (
+    <section class="content-shell section-shell py-12 sm:py-14 text-center">
+      <h1 class="text-2xl font-bold text-red-500 mb-3">Event not found</h1>
+      <a href="/news" class="underline">Back to news</a>
+    </section>
+  )}
+</BaseLayout>

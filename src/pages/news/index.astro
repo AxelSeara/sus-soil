@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  fetchPostsByCategory,
+  isEventLikePost,
+  toNewsCard,
+  WP_CATEGORY_IDS,
+} from '../../lib/wp';
+
+let cards = [];
+try {
+  const posts = await fetchPostsByCategory(WP_CATEGORY_IDS.NEWS);
+  cards = posts
+    .map(toNewsCard)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+} catch (error) {
+  cards = [];
+}
+
+const listStructuredData = cards.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'News & Events | SUS-SOIL',
+      description: 'Read the latest SUS-SOIL news and events on sustainable soil and subsoil management.',
+      url: 'https://sus-soil.eu/news',
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: cards.slice(0, 12).map((post, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          url: `https://sus-soil.eu${post.linkPath}`,
+          name: post.title,
+        })),
+      },
+    }
+  : null;
+---
+<BaseLayout
+  title="News & Events | SUS-SOIL"
+  description="Read the latest SUS-SOIL news and events on sustainable soil and subsoil management."
+  canonicalPath="/news"
+  keywords="SUS-SOIL news, SUS-SOIL events, sustainable soil management, agroecology updates"
+  structuredData={listStructuredData}
+>
+  <section class="content-shell section-shell py-10 sm:py-12">
+    <div class="card-elevated mb-8 px-4 py-5 md:px-6 md:py-6">
+      <h1 class="text-3xl md:text-4xl font-medium font-serif text-brown leading-tight">News &amp; Events</h1>
+      <p class="text-sm text-brown/70 mt-2">{cards.length} {cards.length === 1 ? 'entry' : 'entries'}</p>
+    </div>
+
+    {cards.length ? (
+      <div class="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-7">
+        {cards.map((post) => (
+          <article class="relative group bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 flex flex-col min-h-[24rem] overflow-hidden">
+            <div class="mb-3 flex flex-wrap items-center gap-2">
+              <span class="text-xs text-gray-500">
+                <time dateTime={post.date || undefined}>{post.date ? new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : ''}</time>
+              </span>
+              {isEventLikePost({ _embedded: { 'wp:term': [post.terms] } }) ? <span class="meta-chip">Event</span> : null}
+            </div>
+
+            <h2 class="text-xl font-serif mb-3 text-brown font-semibold leading-tight">
+              <a href={post.linkPath} class="hover:underline">{post.title}</a>
+            </h2>
+
+            {post.imageUrl ? (
+              <img src={post.imageUrl} alt={post.imageAlt || post.title} class="mb-4 object-cover w-full h-40 rounded-lg" loading="lazy" />
+            ) : (
+              <div class="w-full h-40 bg-gray-200 flex items-center justify-center rounded-lg mb-4 text-xs text-gray-500">No image</div>
+            )}
+
+            <p class="text-sm text-gray-700 mb-4 leading-relaxed">{post.excerpt.slice(0, 140)}{post.excerpt.length > 140 ? '…' : ''}</p>
+            <a href={post.linkPath} class="mt-auto text-sm font-semibold text-darkGreen hover:underline">Read article →</a>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <p class="text-center text-gray-500">No news available right now.</p>
+    )}
+  </section>
+</BaseLayout>

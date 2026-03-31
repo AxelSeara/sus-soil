@@ -4,14 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { cardReveal, listReveal, sectionReveal, hoverLift } from '../../../lib/motion';
 
-import mapBase from '../../../assets/regions/map.webp'; // fallback
-import noMap from '../../../assets/regions/Nomap.webp';
-import borealImage from '../../../assets/regions/Boreal.webp';
-import atlanticImage from '../../../assets/regions/Atlantic.webp';
-import continentalImage from '../../../assets/regions/Continental.webp';
-import pannonianImage from '../../../assets/regions/Pannonian.webp';
-import mediterraneanImage from '../../../assets/regions/Mediterranean.webp';
-import alpineImage from '../../../assets/regions/Alpine.webp';
+import mapBase from '../../../assets/regions/map.webp?url'; // fallback
+import noMap from '../../../assets/regions/Nomap.webp?url';
+import borealImage from '../../../assets/regions/Boreal.webp?url';
+import atlanticImage from '../../../assets/regions/Atlantic.webp?url';
+import continentalImage from '../../../assets/regions/Continental.webp?url';
+import pannonianImage from '../../../assets/regions/Pannonian.webp?url';
+import mediterraneanImage from '../../../assets/regions/Mediterranean.webp?url';
+import alpineImage from '../../../assets/regions/Alpine.webp?url';
 
 const containerVariants = listReveal;
 const itemVariants = cardReveal;

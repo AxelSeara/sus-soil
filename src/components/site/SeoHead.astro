@@ -1,0 +1,45 @@
+---
+const {
+  title = 'SUS-SOIL',
+  description = 'SUS-SOIL develops sustainable solutions for soil and subsoil health.',
+  canonicalPath = '/',
+  keywords,
+  image = '/logo.webp',
+  type = 'website',
+  noindex = false,
+  structuredData,
+} = Astro.props;
+
+const baseUrl = (import.meta.env.VITE_SITE_URL || 'https://sus-soil.eu').replace(/\/+$/, '');
+const canonical = canonicalPath.startsWith('http')
+  ? canonicalPath
+  : `${baseUrl}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
+const imageUrl = image.startsWith('http')
+  ? image
+  : `${baseUrl}${image.startsWith('/') ? image : `/${image}`}`;
+const robots = noindex ? 'noindex, nofollow' : 'index, follow';
+const schemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
+---
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="robots" content={robots} />
+<meta http-equiv="content-language" content="en" />
+<link rel="canonical" href={canonical} />
+<link rel="alternate" hrefLang="en" href={canonical} />
+<link rel="alternate" hrefLang="x-default" href={canonical} />
+{keywords ? <meta name="keywords" content={keywords} /> : null}
+
+<meta property="og:site_name" content="SUS-SOIL" />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{schemas.map((schema) => <script type="application/ld+json" set:html={JSON.stringify(schema)} />)}

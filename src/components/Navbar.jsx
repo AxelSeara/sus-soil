@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { FaFacebookF, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
-import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg';
+import logo from '../assets/SUS-SOIL_LOGO__Logo 1.svg?url';
 
 // --- Data ------------------------------------------------------------------
 const projectItems = [

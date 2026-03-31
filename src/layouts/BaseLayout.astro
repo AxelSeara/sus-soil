@@ -1,0 +1,52 @@
+---
+import '../index.css';
+import SeoHead from '../components/site/SeoHead.astro';
+import SiteNav from '../components/site/SiteNav.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import CookiePreferenceCenter from '../components/CookiePreferenceCenter.jsx';
+
+const {
+  title,
+  description,
+  canonicalPath,
+  keywords,
+  image,
+  type,
+  noindex,
+  structuredData,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <SeoHead
+      title={title}
+      description={description}
+      canonicalPath={canonicalPath}
+      keywords={keywords}
+      image={image}
+      type={type}
+      noindex={noindex}
+      structuredData={structuredData}
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <SiteNav />
+    <main id="main" class="pt-16">
+      <slot />
+    </main>
+    <SiteFooter />
+    <CookiePreferenceCenter client:load />
+    <script is:inline>
+      const cookieButton = document.getElementById('open-cookie-settings');
+      if (cookieButton) {
+        cookieButton.addEventListener('click', () => {
+          window.dispatchEvent(new Event('open-cookie-settings'));
+        });
+      }
+    </script>
+  </body>
+</html>

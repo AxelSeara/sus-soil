@@ -1,0 +1,48 @@
+---
+import logo from '../../assets/SUS-SOIL_LOGO__Logo 1.svg';
+const currentPath = Astro.url.pathname;
+const isActive = (path) => currentPath === path || currentPath.startsWith(`${path}/`);
+---
+<nav class="fixed top-0 left-0 w-full h-16 z-[1000] bg-white/90 backdrop-blur border-b border-gray-200 shadow-sm px-4" aria-label="Main navigation">
+  <div class="container mx-auto flex items-center justify-between h-full">
+    <a href="/" class="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brown focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+      <img src={logo.src} alt="SUS-SOIL logo" class="h-10 w-auto mr-2" />
+    </a>
+
+    <div class="hidden lg:flex items-center gap-6 text-brown text-sm lg:text-base font-medium">
+      <a href="/" class={`hover:text-darkGreen ${isActive('/') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Home</a>
+      <a href="/project/about" class={`hover:text-darkGreen ${isActive('/project') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Project</a>
+      <a href="/resources/materials" class={`hover:text-darkGreen ${isActive('/resources') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Resources</a>
+      <a href="/living-labs" class={`hover:text-darkGreen ${isActive('/living-labs') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Living Labs</a>
+      <a href="/news" class={`hover:text-darkGreen ${isActive('/news') || isActive('/event') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>News</a>
+      <a href="/contact" class={`hover:text-darkGreen ${isActive('/contact') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Contact</a>
+    </div>
+
+    <button id="site-mobile-toggle" type="button" class="lg:hidden p-2 text-gray-600 rounded-md hover:bg-gray-100" aria-label="Toggle menu" aria-expanded="false" aria-controls="site-mobile-menu">
+      <svg viewBox="0 0 24 24" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+    </button>
+  </div>
+
+  <div id="site-mobile-menu" class="lg:hidden hidden border-t border-gray-200 bg-white shadow-md">
+    <div class="px-4 py-3 space-y-2 text-brown">
+      <a href="/" class="block py-1">Home</a>
+      <a href="/project/about" class="block py-1">Project</a>
+      <a href="/resources/materials" class="block py-1">Resources</a>
+      <a href="/living-labs" class="block py-1">Living Labs</a>
+      <a href="/news" class="block py-1">News</a>
+      <a href="/contact" class="block py-1">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<script is:inline>
+  const toggle = document.getElementById('site-mobile-toggle');
+  const menu = document.getElementById('site-mobile-menu');
+  if (toggle && menu) {
+    toggle.addEventListener('click', () => {
+      const expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      menu.classList.toggle('hidden');
+    });
+  }
+</script>

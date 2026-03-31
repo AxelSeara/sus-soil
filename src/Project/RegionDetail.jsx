@@ -1,7 +1,8 @@
 // src/Project/RegionDetail.jsx
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { HeroSectionSkeleton } from '../components/Skeletons';
+import { regions as regionsData } from '../data/regions';
+import { livingLabs as livingLabsData } from '../data/livingLabs';
 
 const toSlug = (s) => s?.toLowerCase().replace(/\s+/g, '-');
 
@@ -18,27 +19,6 @@ const ACTIVE_REGION_IDS = new Set([
 export default function RegionDetail() {
   const { regionId } = useParams();
   const [loadingHero, setLoadingHero] = useState(false);
-  const [regionsData, setRegionsData] = useState([]);
-  const [livingLabsData, setLivingLabsData] = useState([]);
-  const [loadingData, setLoadingData] = useState(true);
-
-  // Lazy-load static regions/livingLabs data to keep initial bundle smaller
-  useEffect(() => {
-    let cancelled = false;
-    setLoadingData(true);
-    Promise.all([import('../data/regions'), import('../data/livingLabs')])
-      .then(([regionsMod, labsMod]) => {
-        if (cancelled) return;
-        setRegionsData(regionsMod.regions || []);
-        setLivingLabsData(labsMod.livingLabs || []);
-      })
-      .finally(() => {
-        if (!cancelled) setLoadingData(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Encontrar región (case-insensitive) y validar que esté activa
   const region = useMemo(() => {
@@ -71,10 +51,6 @@ export default function RegionDetail() {
       })
       .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
   }, [region, livingLabsData]);
-
-  if (loadingData) {
-    return <HeroSectionSkeleton />;
-  }
 
   if (!region) {
     return (

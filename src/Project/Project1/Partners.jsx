@@ -1,29 +1,29 @@
 import React from 'react';
 
 // Import logos
-import p1 from '../../../src/assets/partners/1.webp';  // USC
-import p2 from '../../../src/assets/partners/2.webp';  // Región de Murcia
-import p3 from '../../../src/assets/partners/3.webp';  // ZALF
-import p4 from '../../../src/assets/partners/4.webp';  // Universidade de Coimbra
-import p5 from '../../../src/assets/partners/5.webp';  // Università di Pisa
-import p6 from '../../../src/assets/partners/6.webp';  // Université de Tunis El Manar
-import p7 from '../../../src/assets/partners/7.webp';  // Geoponiko Panepistimion Athinon
-import p8 from '../../../src/assets/partners/8.webp';  // Univerzitet u Sarajevu
-import p9 from '../../../src/assets/partners/9.webp';  // Universidade da Coruña
-import p10 from '../../../src/assets/partners/10.webp'; // Universidad Politécnica de Madrid
-import p11 from '../../../src/assets/partners/11.webp'; // Lifewatch
-import p12 from '../../../src/assets/partners/12.webp'; // Narodne Lesnicke Centrum
-import p13 from '../../../src/assets/partners/13.webp'; // Ver de Terre Production
-import p14 from '../../../src/assets/partners/14.webp'; // Venetian Cluster
-import p15 from '../../../src/assets/partners/15.webp'; // Luonnonvarakeskus (Finland)
-import p16 from '../../../src/assets/partners/16.webp'; // PEFC Italia
-import p17 from '../../../src/assets/partners/17.webp'; // FEUGA
-import p18 from '../../../src/assets/partners/18.webp'; // CIHEAM
-import p19 from '../../../src/assets/partners/19.webp'; // Cukurova
-import p22 from '../../../src/assets/partners/22.webp'; // Heliopolis
-import p23 from '../../../src/assets/partners/23.webp'; // A Carqueixa
-import p24 from '../../../src/assets/partners/24.webp'; // Asociación Forestal de Galicia
-import p25 from '../../../src/assets/partners/25.webp'; // Larenstein University of Applied Sciences (optional)
+import p1 from '../../../src/assets/partners/1.webp?url';  // USC
+import p2 from '../../../src/assets/partners/2.webp?url';  // Región de Murcia
+import p3 from '../../../src/assets/partners/3.webp?url';  // ZALF
+import p4 from '../../../src/assets/partners/4.webp?url';  // Universidade de Coimbra
+import p5 from '../../../src/assets/partners/5.webp?url';  // Università di Pisa
+import p6 from '../../../src/assets/partners/6.webp?url';  // Université de Tunis El Manar
+import p7 from '../../../src/assets/partners/7.webp?url';  // Geoponiko Panepistimion Athinon
+import p8 from '../../../src/assets/partners/8.webp?url';  // Univerzitet u Sarajevu
+import p9 from '../../../src/assets/partners/9.webp?url';  // Universidade da Coruña
+import p10 from '../../../src/assets/partners/10.webp?url'; // Universidad Politécnica de Madrid
+import p11 from '../../../src/assets/partners/11.webp?url'; // Lifewatch
+import p12 from '../../../src/assets/partners/12.webp?url'; // Narodne Lesnicke Centrum
+import p13 from '../../../src/assets/partners/13.webp?url'; // Ver de Terre Production
+import p14 from '../../../src/assets/partners/14.webp?url'; // Venetian Cluster
+import p15 from '../../../src/assets/partners/15.webp?url'; // Luonnonvarakeskus (Finland)
+import p16 from '../../../src/assets/partners/16.webp?url'; // PEFC Italia
+import p17 from '../../../src/assets/partners/17.webp?url'; // FEUGA
+import p18 from '../../../src/assets/partners/18.webp?url'; // CIHEAM
+import p19 from '../../../src/assets/partners/19.webp?url'; // Cukurova
+import p22 from '../../../src/assets/partners/22.webp?url'; // Heliopolis
+import p23 from '../../../src/assets/partners/23.webp?url'; // A Carqueixa
+import p24 from '../../../src/assets/partners/24.webp?url'; // Asociación Forestal de Galicia
+import p25 from '../../../src/assets/partners/25.webp?url'; // Larenstein University of Applied Sciences (optional)
 
 // Optional: create a reusable LogoBox component for consistency
 function LogoBox({ src, alt }) {

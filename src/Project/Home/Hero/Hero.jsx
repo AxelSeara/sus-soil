@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import bgImage from '../../../assets/bg2.svg';
+import bgImage from '../../../assets/bg2.svg?url';
 import { EASE_STANDARD, hoverLift, sectionReveal } from '../../../lib/motion';
 
 const MotionLink = motion(Link);

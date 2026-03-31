@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LegacyRouteRenderer from '../astro/LegacyRouteRenderer.jsx';
+
+const {
+  title,
+  description,
+  canonicalPath,
+  keywords,
+  image,
+  type,
+  noindex,
+  structuredData,
+  path = Astro.url.pathname,
+} = Astro.props;
+---
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+  keywords={keywords}
+  image={image}
+  type={type}
+  noindex={noindex}
+  structuredData={structuredData}
+>
+  <LegacyRouteRenderer path={path} client:load />
+</BaseLayout>

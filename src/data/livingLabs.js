@@ -1,19 +1,19 @@
 // src/data/livingLabs.js
-import LL_France        from "../assets/thumbnails/ll/LL_France.webp";
-import LL_Germany       from "../assets/thumbnails/ll/LL_Germany.webp";
-import LL_Spain_Galicia from "../assets/thumbnails/ll/LL_Spain_Galicia.webp";
-import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.webp";
-import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.webp";
-import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.webp";
-import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.webp";
-import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.webp";
-import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.webp";
-import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.webp";
-import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.webp";
-import LL_Turkey        from "../assets/thumbnails/ll/LL_Turkey.webp";
-import LL_Netherlands   from "../assets/thumbnails/ll/LL_Netherlands.webp";
-import LL_Egypt         from "../assets/thumbnails/ll/LL_Egypt.webp";
-import LL_Portugal      from "../assets/thumbnails/ll/LL_Portugal.webp";
+import LL_France        from "../assets/thumbnails/ll/LL_France.webp?url";
+import LL_Germany       from "../assets/thumbnails/ll/LL_Germany.webp?url";
+import LL_Spain_Galicia from "../assets/thumbnails/ll/LL_Spain_Galicia.webp?url";
+import LL_Finland       from "../assets/thumbnails/ll/LL_Finland.webp?url";
+import LL_Bosnia        from "../assets/thumbnails/ll/LL_Bosnia.webp?url";
+import LL_Spain_Madrid  from "../assets/thumbnails/ll/LL_Spain_Madrid.webp?url";
+import LL_Greece        from "../assets/thumbnails/ll/LL_Greece.webp?url";
+import LL_Slovakia      from "../assets/thumbnails/ll/LL_Slovakia.webp?url";
+import LL_Tunisia       from "../assets/thumbnails/ll/LL_Tunisia.webp?url";
+import LL_Veneto        from "../assets/thumbnails/ll/LL_Veneto_1.webp?url";
+import LL_Tuscany       from "../assets/thumbnails/ll/LL_Tuscany.webp?url";
+import LL_Turkey        from "../assets/thumbnails/ll/LL_Turkey.webp?url";
+import LL_Netherlands   from "../assets/thumbnails/ll/LL_Netherlands.webp?url";
+import LL_Egypt         from "../assets/thumbnails/ll/LL_Egypt.webp?url";
+import LL_Portugal      from "../assets/thumbnails/ll/LL_Portugal.webp?url";
 
 // Living Labs (texts exactly as provided; gallery left empty on purpose)
 const rawLivingLabs = [

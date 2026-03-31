@@ -1,16 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import WP1 from '../../assets/wp/WP1.webp';
-import WP2 from '../../assets/wp/WP2.webp';
-import WP3 from '../../assets/wp/WP3.webp';
-import WP4 from '../../assets/wp/WP4.webp';
-import WP5 from '../../assets/wp/WP5.webp';
-import WP6 from '../../assets/wp/WP6.webp';
-import WP7 from '../../assets/wp/WP7.webp';
-import WP8 from '../../assets/wp/WP8.webp';
-import WP9 from '../../assets/wp/WP9.webp';
-import WP10 from '../../assets/wp/WP10.webp';
+import WP1 from '../../assets/wp/WP1.webp?url';
+import WP2 from '../../assets/wp/WP2.webp?url';
+import WP3 from '../../assets/wp/WP3.webp?url';
+import WP4 from '../../assets/wp/WP4.webp?url';
+import WP5 from '../../assets/wp/WP5.webp?url';
+import WP6 from '../../assets/wp/WP6.webp?url';
+import WP7 from '../../assets/wp/WP7.webp?url';
+import WP8 from '../../assets/wp/WP8.webp?url';
+import WP9 from '../../assets/wp/WP9.webp?url';
+import WP10 from '../../assets/wp/WP10.webp?url';
 
 const workPackages = [
   {

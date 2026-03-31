@@ -1,10 +1,10 @@
 // src/data/regions.js
-import Region_Alpine        from "../assets/thumbnails/regions/Alpine.webp";
-import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.webp";
-import Region_Boreal        from "../assets/thumbnails/regions/Boreal.webp";
-import Region_Continental   from "../assets/thumbnails/regions/Continental.webp";
-import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.webp";
-import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.webp";
+import Region_Alpine        from "../assets/thumbnails/regions/Alpine.webp?url";
+import Region_Atlantic      from "../assets/thumbnails/regions/Atlantic.webp?url";
+import Region_Boreal        from "../assets/thumbnails/regions/Boreal.webp?url";
+import Region_Continental   from "../assets/thumbnails/regions/Continental.webp?url";
+import Region_Mediterranean from "../assets/thumbnails/regions/Mediterranean.webp?url";
+import Region_Pannonian     from "../assets/thumbnails/regions/Pannonian.webp?url";
 
 // Biogeographic regions (texts exactly as provided)
 export const regions = [
