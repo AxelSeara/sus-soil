@@ -29,38 +29,103 @@
     <noscript>
       <style>
         body {
-          background-color: #e6f4e4;
-          color: #5c3a1a;
-          font-family: 'Merriweather', serif;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
           margin: 0;
-          padding: 2rem;
-          text-align: center;
+          background: linear-gradient(180deg, #eef8f0 0%, #f8fcf9 100%);
+          color: #4c2b1c;
+          font-family: Georgia, "Times New Roman", serif;
         }
         .noscript-message {
-          max-width: 600px;
-          background-color: #ffffff;
-          border: 1px solid #cce3cc;
-          padding: 2rem;
-          border-radius: 12px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+          box-sizing: border-box;
+          max-width: 880px;
+          margin: 32px auto;
+          background: #ffffff;
+          border: 1px solid #d8e7dc;
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 8px 22px rgba(32, 52, 39, 0.08);
+        }
+        .noscript-message .eyebrow {
+          display: inline-block;
+          font-size: 12px;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          color: #2d6a4f;
+          background: #eaf5ee;
+          border: 1px solid #c8dfd1;
+          border-radius: 999px;
+          padding: 4px 10px;
+          margin-bottom: 10px;
         }
         .noscript-message h1 {
-          font-size: 1.5rem;
-          margin-bottom: 1rem;
-          color: #5c3a1a;
+          margin: 0 0 10px;
+          font-size: 28px;
+          line-height: 1.2;
+          color: #4c2b1c;
         }
         .noscript-message p {
-          font-size: 1rem;
-          color: #5c3a1a;
+          margin: 0 0 14px;
+          font-size: 16px;
+          line-height: 1.55;
+          color: #3f4a44;
+        }
+        .noscript-links {
+          list-style: none;
+          margin: 16px 0 0;
+          padding: 0;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+        .noscript-links a {
+          display: block;
+          text-decoration: none;
+          background: #f7faf8;
+          border: 1px solid #dbe8e1;
+          border-radius: 10px;
+          color: #2b3d33;
+          font-weight: 600;
+          padding: 10px 12px;
+        }
+        .noscript-links a:hover {
+          background: #edf6f1;
+        }
+        .noscript-note {
+          margin-top: 14px;
+          font-size: 14px;
+          color: #5f6a64;
+        }
+        @media (max-width: 640px) {
+          .noscript-message {
+            margin: 16px;
+            padding: 18px;
+            border-radius: 12px;
+          }
+          .noscript-message h1 {
+            font-size: 24px;
+          }
+          .noscript-links {
+            grid-template-columns: 1fr;
+          }
         }
       </style>
       <div class="noscript-message">
-        <h1>JavaScript is disabled</h1>
-        <p>This website requires JavaScript to function properly. Please enable JavaScript in your browser settings and reload the page.</p>
+        <span class="eyebrow">SUS-SOIL Project</span>
+        <h1>Limited version without JavaScript</h1>
+        <p>
+          This website works best with JavaScript enabled. Some interactive elements are unavailable,
+          but you can still access key pages from the links below.
+        </p>
+        <ul class="noscript-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/project/about">Project / About</a></li>
+          <li><a href="/news">News &amp; Events</a></li>
+          <li><a href="/resources/materials">Resources / Materials</a></li>
+          <li><a href="/resources/practice-abstracts">Resources / Practice Abstracts</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+        <p class="noscript-note">
+          For full functionality, enable JavaScript and reload this page.
+        </p>
       </div>
     </noscript>
     <script type="module" src="/src/main.jsx"></script>
