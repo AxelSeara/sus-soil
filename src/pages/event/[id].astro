@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { fetchEvents, stripHtml } from '../../lib/wp';
+import { fetchEvents, stripHtml, transformRichContentHtml } from '../../lib/wp';
 
 const slugify = (value = '') =>
   stripHtml(value)
@@ -36,7 +36,7 @@ if (!event) {
 const title = event?.acf?.title || stripHtml(event?.title?.rendered || '') || 'Event';
 const date = event?.acf?.date || event?.date;
 const location = event?.acf?.location || '';
-const description = event?.acf?.description || event?.content?.rendered || '';
+const description = transformRichContentHtml(event?.acf?.description || event?.content?.rendered || '');
 const imageUrl = event?._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/logo.webp';
 
 const structuredData = event

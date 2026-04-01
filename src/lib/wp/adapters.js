@@ -53,6 +53,112 @@ export function buildNewsSlug(id, title, date) {
   return `${id}-${slugifiedTitle}-${datePart}`;
 }
 
+function ensureHttpsForKnownHosts(value = '') {
+  return String(value).replace(/http:\/\/admin\.sus-soil\.eu/gi, 'https://admin.sus-soil.eu');
+}
+
+function sanitizeClassList(classValue = '') {
+  return classValue
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .filter((token) => token.toLowerCase() !== 'lazyload')
+    .join(' ');
+}
+
+function normalizeMediaTag(tag, type = 'img') {
+  let out = ensureHttpsForKnownHosts(tag);
+
+  const dataSrcMatch = out.match(/\sdata-src\s*=\s*(['"])(.*?)\1/i);
+  const dataLazySrcMatch = out.match(/\sdata-lazy-src\s*=\s*(['"])(.*?)\1/i);
+  const sourceUrl = dataSrcMatch?.[2] || dataLazySrcMatch?.[2];
+  const normalizedSource = sourceUrl ? ensureHttpsForKnownHosts(sourceUrl) : '';
+
+  if (normalizedSource) {
+    if (/\ssrc\s*=\s*(['"]).*?\1/i.test(out)) {
+      out = out.replace(/\ssrc\s*=\s*(['"]).*?\1/i, ` src="${normalizedSource}"`);
+    } else {
+      out = out.replace(/^<\w+/, (m) => `${m} src="${normalizedSource}"`);
+    }
+  }
+
+  out = out.replace(/\sdata-src\s*=\s*(['"]).*?\1/gi, '');
+  out = out.replace(/\sdata-lazy-src\s*=\s*(['"]).*?\1/gi, '');
+
+  out = out.replace(/\sclass\s*=\s*(['"])(.*?)\1/i, (_full, quote, classValue) => {
+    const cleaned = sanitizeClassList(classValue);
+    return cleaned ? ` class=${quote}${cleaned}${quote}` : '';
+  });
+
+  if (type === 'img' && !/\sloading\s*=/.test(out)) {
+    out = out.replace(/^<img/i, '<img loading="lazy" decoding="async"');
+  }
+
+  if (type === 'iframe' && !/\sloading\s*=/.test(out)) {
+    out = out.replace(/^<iframe/i, '<iframe loading="lazy"');
+  }
+
+  if (type === 'video' && !/\spreload\s*=/.test(out)) {
+    out = out.replace(/^<video/i, '<video preload="metadata"');
+  }
+
+  return out;
+}
+
+function extractAttr(tag, name) {
+  const match = tag.match(new RegExp(`\\s${name}\\s*=\\s*(['"])(.*?)\\1`, 'i'));
+  return match?.[2] || '';
+}
+
+function transformThemeisleSliderBlock(block = '') {
+  const rawImgs = block.match(/<img\b[^>]*>/gi) || [];
+  const urls = new Set();
+  const slides = [];
+
+  rawImgs.forEach((rawTag) => {
+    const normalizedTag = normalizeMediaTag(rawTag, 'img');
+    const src = extractAttr(normalizedTag, 'src');
+    if (!src || urls.has(src)) return;
+    urls.add(src);
+
+    const alt = extractAttr(normalizedTag, 'alt');
+    slides.push(
+      `<figure class="overflow-hidden rounded-xl border border-black/5 bg-white">` +
+        `<img src="${src}" alt="${alt || ''}" loading="lazy" decoding="async" class="w-full h-auto object-cover" />` +
+      `</figure>`
+    );
+  });
+
+  if (!slides.length) return '';
+
+  return (
+    `<div class="not-prose my-8 grid grid-cols-1 gap-3 sm:grid-cols-2">` +
+      slides.join('') +
+    `</div>`
+  );
+}
+
+export function transformRichContentHtml(html = '') {
+  let out = ensureHttpsForKnownHosts(String(html || ''));
+
+  // Make lazy-loaded media render in static Astro output.
+  out = out.replace(/<img\b[^>]*>/gi, (tag) => normalizeMediaTag(tag, 'img'));
+  out = out.replace(/<iframe\b[^>]*>/gi, (tag) => normalizeMediaTag(tag, 'iframe'));
+  out = out.replace(/<video\b[^>]*>/gi, (tag) => normalizeMediaTag(tag, 'video'));
+  out = out.replace(/<source\b[^>]*>/gi, (tag) => normalizeMediaTag(tag, 'source'));
+
+  // noscript media is not shown with JS enabled; avoid duplicated/unparsed blocks.
+  out = out.replace(/<noscript>[\s\S]*?<\/noscript>/gi, '');
+
+  // Replace Themeisle slider blocks (JS-driven) with static responsive media grid.
+  out = out.replace(
+    /<div[^>]*class=['"][^'"]*wp-block-themeisle-blocks-slider[^'"]*['"][^>]*>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi,
+    (block) => transformThemeisleSliderBlock(block)
+  );
+
+  return out;
+}
+
 export function toNewsCard(post) {
   const titleHtml = post?.title?.rendered || 'Untitled';
   return {
@@ -61,7 +167,7 @@ export function toNewsCard(post) {
     title: stripHtml(titleHtml),
     excerptHtml: post?.excerpt?.rendered || '',
     excerpt: stripHtml(post?.excerpt?.rendered || ''),
-    contentHtml: post?.content?.rendered || '',
+    contentHtml: transformRichContentHtml(post?.content?.rendered || ''),
     date: post?.date || null,
     imageUrl: getFeaturedImageUrl(post),
     imageAlt: getFeaturedImageAlt(post, stripHtml(titleHtml)),
