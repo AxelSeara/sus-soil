@@ -11,6 +11,7 @@ const STATIC_ROUTES = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/news', changefreq: 'daily', priority: '0.9' },
   { loc: '/living-labs', changefreq: 'weekly', priority: '0.9' },
+  { loc: '/project', changefreq: 'monthly', priority: '0.7' },
   { loc: '/project/about', changefreq: 'monthly', priority: '0.7' },
   { loc: '/project/work-packages', changefreq: 'monthly', priority: '0.7' },
   { loc: '/project/partners', changefreq: 'monthly', priority: '0.7' },

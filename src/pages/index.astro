@@ -1,10 +1,21 @@
 ---
-import LegacyPage from '../components/LegacyPage.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../Project/Home/Hero/Hero.jsx';
+import Details from '../Project/Home/Detalles/Detalles.jsx';
+import Map from '../Project/Home/Mapa/Mapa.jsx';
+import Colaboradores from '../Project/Home/Colaboradores/Colaboradores.jsx';
+import HomeNewsEvents from '../components/home/HomeNewsEvents.astro';
 ---
-<LegacyPage
+
+<BaseLayout
   title="SUS-SOIL | Sustainable Soil and Subsoil Management"
   description="SUS-SOIL develops innovative, climate-resilient solutions for sustainable soil and subsoil management across European Living Labs."
   canonicalPath="/"
   keywords="SUS-SOIL, sustainable soil, subsoil, living labs, agroecology, Horizon Europe"
-  hydrate={true}
-/>
+>
+  <Hero />
+  <Details />
+  <Map client:visible />
+  <HomeNewsEvents />
+  <Colaboradores />
+</BaseLayout>

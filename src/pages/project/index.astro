@@ -3,39 +3,45 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const sections = [
   {
-    title: 'Materials',
-    description: 'Technical files and project materials published by SUS-SOIL.',
-    href: '/resources/materials',
-    cta: 'Open Materials',
+    title: 'About',
+    description: 'Project mission, expected outcomes, and sampling points context.',
+    href: '/project/about',
+    cta: 'Open About',
   },
   {
-    title: 'Practice Abstracts',
-    description: 'Practice-oriented outputs prepared for field adoption and replication.',
-    href: '/resources/practice-abstracts',
-    cta: 'Open Practice Abstracts',
+    title: 'Work Packages',
+    description: 'Structure of technical work streams and implementation priorities.',
+    href: '/project/work-packages',
+    cta: 'Open Work Packages',
   },
   {
-    title: 'Newsletter',
-    description: 'Project updates, milestones, and dissemination highlights.',
-    href: '/resources/newsletter',
-    cta: 'Open Newsletter',
+    title: 'Partners',
+    description: 'Consortium members and institutional participants in SUS-SOIL.',
+    href: '/project/partners',
+    cta: 'Open Partners',
+  },
+  {
+    title: 'Deliverables',
+    description: 'Public deliverables and official project outputs.',
+    href: '/project/deliverables',
+    cta: 'Open Deliverables',
   },
 ];
 ---
 <BaseLayout
-  title="Resources | SUS-SOIL"
-  description="Browse SUS-SOIL resources, materials, practice abstracts, and newsletters."
-  canonicalPath="/resources"
+  title="Project | SUS-SOIL"
+  description="Discover the SUS-SOIL project structure, partners, work packages, and public deliverables."
+  canonicalPath="/project"
 >
   <section class="content-shell section-shell py-14 sm:py-16">
     <div class="mx-auto max-w-3xl text-center">
-      <h1 class="font-serif text-4xl font-bold text-brown md:text-5xl">Resources</h1>
+      <h1 class="font-serif text-4xl font-bold text-brown md:text-5xl">Project</h1>
       <p class="mt-4 text-base text-brown/80 md:text-lg">
-        Access SUS-SOIL publications and downloadable project outputs.
+        Explore the project framework, consortium, technical work packages, and outputs.
       </p>
     </div>
 
-    <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+    <div class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
       {sections.map((section) => (
         <article class="flex h-full flex-col rounded-2xl border border-darkGreen/10 bg-white p-6 shadow-[0_14px_32px_-24px_rgba(20,66,38,0.65)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-24px_rgba(20,66,38,0.8)]">
           <h2 class="font-serif text-2xl font-semibold text-brown">{section.title}</h2>

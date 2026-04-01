@@ -1,10 +1,11 @@
 ---
-import LegacyPage from '../../components/LegacyPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Partners from '../../Project/Project1/Partners';
 ---
-<LegacyPage
+<BaseLayout
   title="Partners | SUS-SOIL Consortium"
   description="Meet the SUS-SOIL consortium partners driving innovation in sustainable land and soil management."
   canonicalPath="/project/partners"
-  path="/project/partners"
-  hydrate={true}
-/>
+>
+  <Partners />
+</BaseLayout>

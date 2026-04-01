@@ -12,6 +12,7 @@ const {
   noindex,
   structuredData,
   path = Astro.url.pathname,
+  hydrate = 'idle',
 } = Astro.props;
 ---
 <BaseLayout
@@ -24,5 +25,11 @@ const {
   noindex={noindex}
   structuredData={structuredData}
 >
-  <LegacyRouteRenderer path={path} client:load />
+  {hydrate === 'load' ? (
+    <LegacyRouteRenderer path={path} client:load />
+  ) : hydrate === 'visible' ? (
+    <LegacyRouteRenderer path={path} client:visible />
+  ) : (
+    <LegacyRouteRenderer path={path} client:idle />
+  )}
 </BaseLayout>

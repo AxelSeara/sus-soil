@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import portadaLLs from '../assets/regions/Mapa sección LLs.webp?url';
+import portadaLLs from '../assets/regions/map.webp?url';
 import { cardReveal, listReveal } from '../lib/motion';
 
 // ✅ IMPORTAR DESDE DATA (fuente única)
@@ -12,6 +12,14 @@ const cardVariants = cardReveal;
 
 export default function LivingLabs() {
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const [heroError, setHeroError] = useState(false);
+  const heroImgRef = useRef(null);
+
+  useEffect(() => {
+    if (heroImgRef.current?.complete) {
+      setHeroLoaded(true);
+    }
+  }, []);
 
   return (
     <main className="w-full bg-gradient-to-b from-[#f3f8f5] via-white to-[#f6faf7]">
@@ -24,15 +32,26 @@ export default function LivingLabs() {
               aria-hidden="true"
             />
           )}
-          <img
-            src={portadaLLs}
-            alt="Mapa de las regiones de Living Labs"
-            className={`mx-auto w-full max-h-[70vh] object-contain select-none transition-opacity duration-300 ${
-              heroLoaded ? 'opacity-100 visible' : 'opacity-0 invisible'
-            }`}
-            loading="eager"
-            onLoad={() => setHeroLoaded(true)}
-          />
+          {!heroError ? (
+            <img
+              ref={heroImgRef}
+              src={portadaLLs}
+              alt="Mapa de las regiones de Living Labs"
+              className={`mx-auto w-full max-h-[70vh] object-contain select-none transition-opacity duration-300 ${
+                heroLoaded ? 'opacity-100 visible' : 'opacity-0 invisible'
+              }`}
+              loading="eager"
+              onLoad={() => setHeroLoaded(true)}
+              onError={() => {
+                setHeroError(true);
+                setHeroLoaded(true);
+              }}
+            />
+          ) : (
+            <div className="mx-auto w-full max-h-[70vh] h-[40vh] rounded-xl bg-[#e8f1eb] flex items-center justify-center text-brown/70">
+              Map preview unavailable
+            </div>
+          )}
         </div>
       </section>
 

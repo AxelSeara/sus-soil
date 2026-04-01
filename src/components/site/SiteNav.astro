@@ -2,6 +2,23 @@
 import logo from '../../assets/SUS-SOIL_LOGO__Logo 1.svg';
 const currentPath = Astro.url.pathname;
 const isActive = (path) => currentPath === path || currentPath.startsWith(`${path}/`);
+const isAnyActive = (paths) => paths.some((path) => isActive(path));
+
+const projectItems = [
+  { href: '/project/about', label: 'About' },
+  { href: '/project/work-packages', label: 'Work Packages' },
+  { href: '/project/partners', label: 'Partners' },
+  { href: '/project/deliverables', label: 'Deliverables' },
+];
+
+const resourcesItems = [
+  { href: '/resources/materials', label: 'Materials' },
+  { href: '/resources/practice-abstracts', label: 'Practice Abstracts' },
+  { href: '/resources/newsletter', label: 'Newsletter' },
+];
+
+const projectActive = isAnyActive(['/project']);
+const resourcesActive = isAnyActive(['/resources']);
 ---
 <nav class="fixed top-0 left-0 w-full h-16 z-[1000] bg-white/90 backdrop-blur border-b border-gray-200 shadow-sm px-4" aria-label="Main navigation">
   <div class="container mx-auto flex items-center justify-between h-full">
@@ -11,8 +28,57 @@ const isActive = (path) => currentPath === path || currentPath.startsWith(`${pat
 
     <div class="hidden lg:flex items-center gap-6 text-brown text-sm lg:text-base font-medium">
       <a href="/" class={`hover:text-darkGreen ${isActive('/') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Home</a>
-      <a href="/project/about" class={`hover:text-darkGreen ${isActive('/project') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Project</a>
-      <a href="/resources/materials" class={`hover:text-darkGreen ${isActive('/resources') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Resources</a>
+
+      <div class="relative group">
+        <a
+          href="/project"
+          class={`inline-flex items-center gap-1 hover:text-darkGreen ${projectActive ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}
+          aria-haspopup="true"
+        >
+          Project
+          <svg viewBox="0 0 20 20" class="h-4 w-4 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </a>
+        <div class="invisible absolute left-0 top-full z-[1050] mt-2 min-w-[220px] rounded-xl border border-gray-200 bg-white/95 p-2 opacity-0 shadow-lg backdrop-blur transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          {projectItems.map((item) => (
+            <a
+              href={item.href}
+              class={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                isActive(item.href) ? 'bg-green text-white' : 'text-brown hover:bg-lightGreen/30'
+              }`}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="relative group">
+        <a
+          href="/resources"
+          class={`inline-flex items-center gap-1 hover:text-darkGreen ${resourcesActive ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}
+          aria-haspopup="true"
+        >
+          Resources
+          <svg viewBox="0 0 20 20" class="h-4 w-4 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </a>
+        <div class="invisible absolute left-0 top-full z-[1050] mt-2 min-w-[240px] rounded-xl border border-gray-200 bg-white/95 p-2 opacity-0 shadow-lg backdrop-blur transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          {resourcesItems.map((item) => (
+            <a
+              href={item.href}
+              class={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                isActive(item.href) ? 'bg-green text-white' : 'text-brown hover:bg-lightGreen/30'
+              }`}
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <a href="/living-labs" class={`hover:text-darkGreen ${isActive('/living-labs') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Living Labs</a>
       <a href="/news" class={`hover:text-darkGreen ${isActive('/news') || isActive('/event') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>News</a>
       <a href="/contact" class={`hover:text-darkGreen ${isActive('/contact') ? 'text-darkGreen font-semibold underline decoration-lightGreen decoration-2 underline-offset-4' : ''}`}>Contact</a>
@@ -26,8 +92,38 @@ const isActive = (path) => currentPath === path || currentPath.startsWith(`${pat
   <div id="site-mobile-menu" class="lg:hidden hidden border-t border-gray-200 bg-white shadow-md">
     <div class="px-4 py-3 space-y-2 text-brown">
       <a href="/" class="block py-1">Home</a>
-      <a href="/project/about" class="block py-1">Project</a>
-      <a href="/resources/materials" class="block py-1">Resources</a>
+      <details class="rounded-md border border-darkGreen/10 bg-white" data-mobile-accordion>
+        <summary class="cursor-pointer list-none px-3 py-2 flex items-center justify-between font-medium">
+          <span>Project</span>
+          <svg viewBox="0 0 20 20" class="h-4 w-4 transition-transform duration-200 text-brown details-chevron" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </summary>
+        <div class="px-3 pb-3 pt-1 space-y-1">
+          {projectItems.map((item) => (
+            <a href={item.href} class={`block rounded px-2 py-1.5 text-sm ${isActive(item.href) ? 'bg-green text-white' : 'hover:bg-lightGreen/30'}`}>
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </details>
+
+      <details class="rounded-md border border-darkGreen/10 bg-white" data-mobile-accordion>
+        <summary class="cursor-pointer list-none px-3 py-2 flex items-center justify-between font-medium">
+          <span>Resources</span>
+          <svg viewBox="0 0 20 20" class="h-4 w-4 transition-transform duration-200 text-brown details-chevron" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M5 8l5 5 5-5" />
+          </svg>
+        </summary>
+        <div class="px-3 pb-3 pt-1 space-y-1">
+          {resourcesItems.map((item) => (
+            <a href={item.href} class={`block rounded px-2 py-1.5 text-sm ${isActive(item.href) ? 'bg-green text-white' : 'hover:bg-lightGreen/30'}`}>
+              {item.label}
+            </a>
+          ))}
+        </div>
+      </details>
+
       <a href="/living-labs" class="block py-1">Living Labs</a>
       <a href="/news" class="block py-1">News</a>
       <a href="/contact" class="block py-1">Contact</a>
@@ -43,6 +139,22 @@ const isActive = (path) => currentPath === path || currentPath.startsWith(`${pat
       const expanded = toggle.getAttribute('aria-expanded') === 'true';
       toggle.setAttribute('aria-expanded', String(!expanded));
       menu.classList.toggle('hidden');
+    });
+
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.classList.add('hidden');
+      });
+    });
+
+    menu.querySelectorAll('details[data-mobile-accordion]').forEach((details) => {
+      details.addEventListener('toggle', () => {
+        const icon = details.querySelector('.details-chevron');
+        if (icon) {
+          icon.classList.toggle('rotate-180', details.open);
+        }
+      });
     });
   }
 </script>

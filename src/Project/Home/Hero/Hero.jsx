@@ -1,11 +1,10 @@
 // src/components/Hero.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import bgImage from '../../../assets/bg2.svg?url';
 import { EASE_STANDARD, hoverLift, sectionReveal } from '../../../lib/motion';
 
-const MotionLink = motion(Link);
+const MotionLink = motion.a;
 
 export default function Hero() {
   return (
@@ -39,7 +38,7 @@ export default function Hero() {
           <MotionLink
             whileHover={hoverLift.whileHover}
             whileTap={hoverLift.whileTap}
-            to="/project/about"
+            href="/project/about"
             className="px-6 py-3 bg-[#4a2a1c] text-white font-semibold rounded-lg hover:bg-[#3f2416] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4a2a1c] focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-[0_8px_20px_-12px_rgba(40,24,16,0.6)]"
           >
             Learn More

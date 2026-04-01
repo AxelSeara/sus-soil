@@ -6,6 +6,10 @@ export default defineConfig({
   site: process.env.VITE_SITE_URL || 'https://sus-soil.eu',
   integrations: [react(), tailwind({ applyBaseStyles: false })],
   vite: {
+    build: {
+      // Keep media as cacheable files instead of inlining data URIs into HTML.
+      assetsInlineLimit: 0,
+    },
     resolve: {
       alias: {
         '@': '/src',

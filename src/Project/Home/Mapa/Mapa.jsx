@@ -1,7 +1,6 @@
 // src/components/Mapa.jsx
 import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { cardReveal, listReveal, sectionReveal, hoverLift } from '../../../lib/motion';
 
 import mapBase from '../../../assets/regions/map.webp?url'; // fallback
@@ -161,14 +160,14 @@ export default function Mapa() {
               initial={false}
               animate="visible"
             >
-              <Link
-                to={ctaTo}
+              <a
+                href={ctaTo}
                 aria-label={activeRegion ? `Go to ${regionData?.label}` : 'Go to Living Labs'}
                 className="px-6 py-3 font-bold rounded-lg shadow-md text-white hover:-translate-y-0.5 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-darkGreen ring-offset-2"
                 style={{ backgroundColor: ctaBg }}
               >
                 {ctaLabel}
-              </Link>
+              </a>
             </motion.div>
 
             {/* A11y live status */}
@@ -184,9 +183,8 @@ export default function Mapa() {
                 src={noMap}
                 alt="Base map"
                 className="absolute inset-0 w-full h-full object-contain"
-                loading="eager"
+                loading="lazy"
                 decoding="async"
-                fetchPriority="high"
               />
               <AnimatePresence initial={false} mode="sync">
                 {overlayImg && (

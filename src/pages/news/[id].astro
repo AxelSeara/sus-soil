@@ -30,7 +30,7 @@ const postStructuredData = card
       headline: card.title,
       datePublished: card.date,
       dateModified: card.date,
-      image: card.imageUrl || 'https://sus-soil.eu/logo.webp',
+      image: card.heroImageUrl || card.imageUrl || 'https://sus-soil.eu/logo.webp',
       author: {
         '@type': 'Organization',
         name: 'SUS-SOIL',
@@ -52,7 +52,7 @@ const postStructuredData = card
   title={card ? `${card.title} | SUS-SOIL News` : 'News | SUS-SOIL'}
   description={card?.excerpt || 'SUS-SOIL news update.'}
   canonicalPath={card?.linkPath || '/news'}
-  image={card?.imageUrl || '/logo.webp'}
+  image={card?.heroImageUrl || card?.imageUrl || '/logo.webp'}
   type="article"
   structuredData={postStructuredData}
 >
@@ -65,8 +65,15 @@ const postStructuredData = card
       <h1 class="text-3xl md:text-4xl font-bold font-serif text-brown mb-3">{card.title}</h1>
       <p class="text-sm text-brown/70 mb-6">{card.date ? new Date(card.date).toLocaleDateString() : ''}</p>
 
-      {card.imageUrl ? (
-        <img src={card.imageUrl} alt={card.imageAlt || card.title} class="w-full max-h-[560px] object-cover rounded-xl mb-8" loading="eager" />
+      {card.heroImageUrl || card.imageUrl ? (
+        <img
+          src={card.heroImageUrl || card.imageUrl}
+          alt={card.imageAlt || card.title}
+          class="w-full max-h-[560px] object-cover rounded-xl mb-8"
+          loading="eager"
+          decoding="async"
+          fetchpriority="high"
+        />
       ) : null}
 
       <div class="prose prose-lg max-w-none text-brown" set:html={card.contentHtml} />
@@ -76,6 +83,86 @@ const postStructuredData = card
           Back to News
         </a>
       </div>
+
+      <script is:inline>
+        (() => {
+          const modulo = (value, max) => ((value % max) + max) % max;
+
+          const initCarousel = (root) => {
+            if (!root || root.dataset.carouselReady === '1') return;
+            const track = root.querySelector('[data-carousel-track]');
+            if (!track) return;
+
+            const slides = Array.from(track.children);
+            if (!slides.length) return;
+
+            const dots = Array.from(root.querySelectorAll('[data-carousel-dot]'));
+            const prevButton = root.querySelector('[data-carousel-prev]');
+            const nextButton = root.querySelector('[data-carousel-next]');
+            let index = 0;
+            let touchStartX = null;
+
+            const setIndex = (next) => {
+              index = modulo(next, slides.length);
+              track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+
+              dots.forEach((dot, dotIndex) => {
+                const active = dotIndex === index;
+                dot.classList.toggle('is-active', active);
+                if (active) {
+                  dot.setAttribute('aria-current', 'true');
+                } else {
+                  dot.removeAttribute('aria-current');
+                }
+              });
+            };
+
+            prevButton?.addEventListener('click', () => setIndex(index - 1));
+            nextButton?.addEventListener('click', () => setIndex(index + 1));
+
+            dots.forEach((dot) => {
+              dot.addEventListener('click', () => {
+                const next = Number(dot.getAttribute('data-carousel-dot') || '0');
+                setIndex(next);
+              });
+            });
+
+            root.addEventListener('keydown', (event) => {
+              if (event.key === 'ArrowLeft') setIndex(index - 1);
+              if (event.key === 'ArrowRight') setIndex(index + 1);
+            });
+
+            root.addEventListener('touchstart', (event) => {
+              touchStartX = event.touches?.[0]?.clientX ?? null;
+            });
+
+            root.addEventListener('touchend', (event) => {
+              const endX = event.changedTouches?.[0]?.clientX ?? null;
+              if (touchStartX == null || endX == null) return;
+              const delta = endX - touchStartX;
+              touchStartX = null;
+              if (Math.abs(delta) < 35) return;
+              if (delta > 0) setIndex(index - 1);
+              else setIndex(index + 1);
+            });
+
+            root.dataset.carouselReady = '1';
+            setIndex(0);
+          };
+
+          const boot = () => {
+            document.querySelectorAll('[data-ss-carousel]').forEach((root) => {
+              initCarousel(root);
+            });
+          };
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', boot, { once: true });
+          } else {
+            boot();
+          }
+        })();
+      </script>
     </article>
   ) : (
     <section class="content-shell section-shell py-12 sm:py-14 text-center">

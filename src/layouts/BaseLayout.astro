@@ -39,7 +39,7 @@ const {
       <slot />
     </main>
     <SiteFooter />
-    <CookiePreferenceCenter client:load />
+    <CookiePreferenceCenter client:idle />
     <script is:inline>
       const cookieButton = document.getElementById('open-cookie-settings');
       if (cookieButton) {

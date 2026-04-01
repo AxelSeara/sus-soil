@@ -1,10 +1,11 @@
 ---
-import LegacyPage from '../../components/LegacyPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import About from '../../Project/Project1/About';
 ---
-<LegacyPage
+<BaseLayout
   title="About SUS-SOIL | Project Overview"
   description="Learn about SUS-SOIL objectives, methodology, and impact for sustainable soil and subsoil management."
   canonicalPath="/project/about"
-  path="/project/about"
-  hydrate={true}
-/>
+>
+  <About client:load />
+</BaseLayout>

@@ -16,9 +16,24 @@ export function getFeaturedMedia(post) {
   return post?._embedded?.['wp:featuredmedia']?.[0] || null;
 }
 
-export function getFeaturedImageUrl(post) {
+export function getFeaturedImageUrl(
+  post,
+  preferredSizes = ['medium_large', 'large', 'medium', 'thumbnail', 'full']
+) {
   const media = getFeaturedMedia(post);
-  return media?.source_url || null;
+  if (!media) return null;
+
+  const sizes = media?.media_details?.sizes || {};
+  for (const size of preferredSizes) {
+    if (size === 'full' && media?.source_url) {
+      return ensureHttpsForKnownHosts(media.source_url);
+    }
+
+    const candidate = sizes?.[size]?.source_url;
+    if (candidate) return ensureHttpsForKnownHosts(candidate);
+  }
+
+  return media?.source_url ? ensureHttpsForKnownHosts(media.source_url) : null;
 }
 
 export function getFeaturedImageAlt(post, fallback = '') {
@@ -110,6 +125,63 @@ function extractAttr(tag, name) {
   return match?.[2] || '';
 }
 
+function escapeHtmlAttr(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function buildImageCarouselMarkup(slides = []) {
+  if (!slides.length) return '';
+
+  const slidesMarkup = slides
+    .map((slide, idx) => {
+      const src = escapeHtmlAttr(slide.src || '');
+      const alt = escapeHtmlAttr(slide.alt || `Slide ${idx + 1}`);
+      return (
+        `<figure class="ss-carousel__slide">` +
+          `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" class="ss-carousel__img" />` +
+        `</figure>`
+      );
+    })
+    .join('');
+
+  const hasMultiple = slides.length > 1;
+  const controls = hasMultiple
+    ? (
+      `<button type="button" class="ss-carousel__arrow ss-carousel__arrow--prev" data-carousel-prev aria-label="Previous image">‹</button>` +
+      `<button type="button" class="ss-carousel__arrow ss-carousel__arrow--next" data-carousel-next aria-label="Next image">›</button>`
+    )
+    : '';
+
+  const dots = hasMultiple
+    ? (
+      `<div class="ss-carousel__dots" role="tablist" aria-label="Image gallery pagination">` +
+        slides
+          .map(
+            (_slide, idx) =>
+              `<button type="button" class="ss-carousel__dot${idx === 0 ? ' is-active' : ''}" data-carousel-dot="${idx}" aria-label="Go to image ${idx + 1}"${idx === 0 ? ' aria-current="true"' : ''}></button>`
+          )
+          .join('') +
+      `</div>`
+    )
+    : '';
+
+  return (
+    `<div class="not-prose my-6 ss-carousel" data-ss-carousel tabindex="0" aria-label="Image carousel">` +
+      `<div class="ss-carousel__viewport">` +
+        `<div class="ss-carousel__track" data-carousel-track>` +
+          slidesMarkup +
+        `</div>` +
+      `</div>` +
+      controls +
+      dots +
+    `</div>`
+  );
+}
+
 function transformThemeisleSliderBlock(block = '') {
   const rawImgs = block.match(/<img\b[^>]*>/gi) || [];
   const urls = new Set();
@@ -122,20 +194,12 @@ function transformThemeisleSliderBlock(block = '') {
     urls.add(src);
 
     const alt = extractAttr(normalizedTag, 'alt');
-    slides.push(
-      `<figure class="overflow-hidden rounded-xl border border-black/5 bg-white">` +
-        `<img src="${src}" alt="${alt || ''}" loading="lazy" decoding="async" class="w-full h-auto object-cover" />` +
-      `</figure>`
-    );
+    slides.push({ src, alt: alt || '' });
   });
 
   if (!slides.length) return '';
 
-  return (
-    `<div class="not-prose my-8 grid grid-cols-1 gap-3 sm:grid-cols-2">` +
-      slides.join('') +
-    `</div>`
-  );
+  return buildImageCarouselMarkup(slides);
 }
 
 export function transformRichContentHtml(html = '') {
@@ -150,7 +214,7 @@ export function transformRichContentHtml(html = '') {
   // noscript media is not shown with JS enabled; avoid duplicated/unparsed blocks.
   out = out.replace(/<noscript>[\s\S]*?<\/noscript>/gi, '');
 
-  // Replace Themeisle slider blocks (JS-driven) with static responsive media grid.
+  // Replace Themeisle slider blocks (JS-driven) with lightweight native carousel.
   out = out.replace(
     /<div[^>]*class=['"][^'"]*wp-block-themeisle-blocks-slider[^'"]*['"][^>]*>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi,
     (block) => transformThemeisleSliderBlock(block)
@@ -169,7 +233,8 @@ export function toNewsCard(post) {
     excerpt: stripHtml(post?.excerpt?.rendered || ''),
     contentHtml: transformRichContentHtml(post?.content?.rendered || ''),
     date: post?.date || null,
-    imageUrl: getFeaturedImageUrl(post),
+    imageUrl: getFeaturedImageUrl(post, ['medium_large', 'large', 'medium', 'thumbnail', 'full']),
+    heroImageUrl: getFeaturedImageUrl(post, ['large', '2048x2048', '1536x1536', 'full', 'medium_large', 'medium']),
     imageAlt: getFeaturedImageAlt(post, stripHtml(titleHtml)),
     terms: getNonCategoryTerms(post),
     slug: buildNewsSlug(post.id, titleHtml, post?.date),
@@ -210,7 +275,7 @@ export function toMaterialItem(post) {
     contentHtml: post?.content?.rendered || '',
     date: post?.date || null,
     file: acfFile,
-    imageUrl: getFeaturedImageUrl(post),
+    imageUrl: getFeaturedImageUrl(post, ['medium_large', 'large', 'medium', 'thumbnail', 'full']),
     imageAlt: getFeaturedImageAlt(post, stripHtml(titleHtml)),
   };
 }
@@ -224,7 +289,7 @@ export function toNewsletterItem(post) {
     excerptHtml: post?.excerpt?.rendered || '',
     date: post?.date || null,
     url: post?.acf?.url || post?.link || '#',
-    imageUrl: getFeaturedImageUrl(post),
+    imageUrl: getFeaturedImageUrl(post, ['medium_large', 'large', 'medium', 'thumbnail', 'full']),
     imageAlt: getFeaturedImageAlt(post, stripHtml(titleHtml)),
   };
 }

@@ -1,10 +1,11 @@
 ---
-import LegacyPage from '../../components/LegacyPage.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkPackages from '../../Project/Project1/WorkPackages';
 ---
-<LegacyPage
+<BaseLayout
   title="Work Packages | SUS-SOIL"
   description="Explore SUS-SOIL work packages and the technical roadmap for research, validation, and impact."
   canonicalPath="/project/work-packages"
-  path="/project/work-packages"
-  hydrate={true}
-/>
+>
+  <WorkPackages />
+</BaseLayout>
